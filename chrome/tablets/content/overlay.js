@@ -2,8 +2,10 @@ function Tablets() {
   const CC = Components.classes;
   const CI = Components.interfaces;
 
+  const svc = CC['@oy/tablets;1'].getService(CI.oyITablets);
+
   this.onclick = function() {
-    alert('todo');
+    alert(svc);
   }
 }
 
