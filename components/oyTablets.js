@@ -121,7 +121,7 @@ var Module = {
       throw Cr.NS_ERROR_NOT_IMPLEMENTED;
 
     if (cid.equals(TB_CLASSID))
-      return new GenericComponentFactory(MetricsService)
+      return new GenericComponentFactory(TabletsService)
 
     throw Cr.NS_ERROR_NO_INTERFACE;
   },
