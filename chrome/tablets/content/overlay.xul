@@ -18,14 +18,15 @@
 <overlay id="tabletOverlay"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+  <script type="application/x-javascript" src="chrome://tablets/content/overlay.js"/>
+
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="tablets-toolbarbutton"
       label="Tablets"
       tooltiptext="save this tab to read later"
-      oncommand="alert('code me')"
+      oncommand="tablets.onclick()"
       class="toolbarbutton-1 chromeclass-toolbar-additional custombutton" />
   </toolbarpalette>
-
 
 </overlay>
 
