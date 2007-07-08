@@ -17,7 +17,7 @@ interface nsISimpleEnumerator;
 
 [scriptable, uuid(8d5388b0-7490-47b0-a7e2-e92beadbb0db)]
 interface oyITablets : nsISupports {
-  void save(in unsigned long aIndex, in AUTF8String aDescription);
+  boolean save(in unsigned long aIndex, in AUTF8String aDescription);
   void delete(in AUTF8String aURL);
   void open(in AUTF8String aURL, in AUTF8String aWhere);
 

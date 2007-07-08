@@ -12,7 +12,7 @@
  */
 
 const TB_CONTRACTID = '@oy/tablets;1';
-const TB_CLASSID    = Components.ID('962a9516-b177-4083-bbe8-e10f47cf8570}');
+const TB_CLASSID    = Components.ID('{962a9516-b177-4083-bbe8-e10f47cf8570}');
 const TB_CLASSNAME  = 'Tablets Service';
 
 const Cc = Components.classes;
@@ -25,6 +25,7 @@ function TabletsService() {
 
 TabletsService.prototype = {
   save: function TB_save(aIndex, aDescription) {
+    return true;
   },
   delete: function TB_delete(aURL) {
   },
