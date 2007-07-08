@@ -1,0 +1,9 @@
+#tablets-toolbarbutton {
+    list-style-image: url("assets/hourglass.png");
+    -moz-image-region: rect( 0px 24px 24px  0px);
+}
+
+#tablets-toolbarbutton:hover {
+    -moz-image-region: rect(24px 24px 48px  0px);
+}
+
