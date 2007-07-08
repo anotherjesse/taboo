@@ -19,6 +19,32 @@ const Cc = Components.classes;
 const Ci = Components.interfaces; 
 const Cr = Components.results;
 
+/*
+ * Tablet Info Instance
+ */
+
+function TabletInfo() {
+}
+
+TabletInfo.prototype = {
+  title: "",
+  url: "",
+  description: null,
+  imageURL: "",
+  created: null,
+  updated: null,
+  QueryInterface: function(iid) {
+    if (!iid.equals(Ci.nsISupports) &&
+        !iid.equals(Ci.oyITabletInfo)) {
+      throw Cr.NS_ERROR_NO_INTERFACE;
+    }
+    return this;
+  }
+}
+
+/*
+ * Tablets Service Component
+ */
 
 function TabletsService() {
 }
