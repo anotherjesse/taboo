@@ -1,11 +1,15 @@
 function Tablets() {
   const CC = Components.classes;
   const CI = Components.interfaces;
-
-  const svc = CC['@oy/tablets;1'].getService(CI.oyITablets);
+  const SVC = CC['@oy/tablets;1'].getService(CI.oyITablets);
 
   this.onclick = function() {
-    alert(svc);
+    var enum = SVC.getTablets();
+    while (enum.hasMoreElements()) {
+      var tab = enum.getNext();
+      tab.QueryInterface(Ci.oyITabletInfo);
+      alert(tab.title);
+    }
   }
 }
 

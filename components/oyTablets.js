@@ -58,7 +58,17 @@ TabletsService.prototype = {
   open: function TB_open(aURL, aWhere) {
   },
   getTablets: function TB_getTablets() {
-    return null;
+    var tabs = ['overstimulate', 'yosh'];
+    return {
+      getNext: function() {
+        var tab = new TabletInfo();
+        tab.title = tabs.shift();
+        return tab;
+      },
+      hasMoreElements: function() {
+        return (tabs.length > 0);
+      }
+    }
   },
 
   getInterfaces: function TB_getInterfaces(countRef) {
