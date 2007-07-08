@@ -17,5 +17,6 @@ interface oyITabletInfo : nsISupports {
   attribute AUTF8String url;
   attribute AUTF8String description;
   attribute AUTF8String imageURL;
-  attribute PRTime timestamp;
+  attribute PRTime created;
+  attribute PRTime updated;
 };
