@@ -58,11 +58,13 @@ TabletsService.prototype = {
   open: function TB_open(aURL, aWhere) {
   },
   getTablets: function TB_getTablets() {
-    var tabs = ['overstimulate', 'yosh'];
+    var tabs = ['http://overstimulate.com', 'http://yosh.org'];
     return {
       getNext: function() {
         var tab = new TabletInfo();
-        tab.title = tabs.shift();
+        tab.url = tabs.shift();
+        tab.title = tab.url.slice(7, -4);
+        tab.imageURL = "chrome://tablets/content/assets/" + tab.title + ".png";
         return tab;
       },
       hasMoreElements: function() {
