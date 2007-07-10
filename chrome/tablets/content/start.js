@@ -17,7 +17,7 @@ while (enum.hasMoreElements()) {
       tab.url + '</span><img src="' + tab.imageURL + '" />';
 
     box.onclick = function(event) {
-      window.location.href = tab.url;
+      openUILinkIn(tab.url, whereToOpenLink(event));
     }
 
     ul.appendChild(box);
