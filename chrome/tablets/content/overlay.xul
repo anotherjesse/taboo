@@ -24,7 +24,7 @@
     <toolbarbutton id="tablets-toolbarbutton"
       label="Tablets"
       tooltiptext="save this tab to read later"
-      oncommand="tablets.onclick()"
+      oncommand="tablets.onclick(event)"
       class="toolbarbutton-1 chromeclass-toolbar-additional custombutton" />
   </toolbarpalette>
 

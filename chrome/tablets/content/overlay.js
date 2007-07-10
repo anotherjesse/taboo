@@ -4,7 +4,12 @@ function Tablets() {
   const SVC = CC['@oy/tablets;1'].getService(CI.oyITablets);
 
   this.onclick = function(event) {
-    SVC.save(getBrowser().mCurrentTab, null);
+    if (event.shiftKey) {
+      openUILinkIn('chrome://tablets/content/start.xul', 'tab');
+    }
+    else {
+      SVC.save(getBrowser().mCurrentTab, null);
+    }
   }
 }
 

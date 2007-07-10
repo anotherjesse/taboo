@@ -57,8 +57,8 @@ function snapshot() {
   var realW = content.innerWidth;
   var realH = content.innerHeight;
 
-  var pW = 125/realW;
-  var pH = 125/realH;
+  var pW = 125.0/realW;
+  var pH = 125.0/realH;
 
   var p = pW;
 
