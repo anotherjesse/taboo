@@ -12,12 +12,18 @@ while (enum.hasMoreElements()) {
   // this should be a custom xbl:
   (function (tab){ 
     var box = document.createElement('li');
-    box.innerHTML = '<span class="title">' +
+    box.innerHTML = '<span class="delete"></span><span class="title">' +
       tab.title + '</span><span class="url">' +
-      tab.url + '</span><img src="' + tab.imageURL + '" />';
+      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" />';
 
     box.onclick = function(event) {
-      openUILinkIn(tab.url, whereToOpenLink(event));
+      if (event.originalTarget.className == 'delete') {
+        SVC.delete(tab.url);
+        box.parentNode.removeChild(box);
+      }
+      else {
+        openUILinkIn(tab.url, whereToOpenLink(event));
+      }
     }
 
     ul.appendChild(box);

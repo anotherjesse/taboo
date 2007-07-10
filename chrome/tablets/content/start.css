@@ -20,20 +20,35 @@ li span.url {
 
 li {
   float: left;
-  display: inline;
+  display: block;
   margin: 5px;
   padding: 5px;
   -moz-border-radius: 10px;
   border: 1px solid #e8e8e8;
   background: #f8f8f8;
   height: 120px;
+  width: 140px;
   cursor: pointer;
   color: #333;
 }
 
-li img {
+li img.preview {
   margin: 5px 0 0 0;
   border: 1px solid #888;
+}
+
+li .delete {
+  background: transparent url("close.png") top no-repeat;
+  width: 14px !important;
+  height: 14px !important;
+  float: right;
+  top: -10px;
+  right: -10px;
+  position: relative;
+}
+
+li .delete:hover {
+  background: transparent url("close.png") bottom no-repeat;
 }
 
 li:hover {
