@@ -46,11 +46,47 @@ TabletInfo.prototype = {
  * Tablets Service Component
  */
 
+
+function snapshot() {
+  var wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
+  var win = wm.getMostRecentWindow('navigator:browser');
+  var content = win.content;
+
+  var canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+
+  var realW = content.innerWidth;
+  var realH = content.innerHeight;
+
+  var pW = 125/realW;
+  var pH = 125/realH;
+
+  var p = pW;
+
+  if (pH < pW) {
+    p = pH;
+  }
+
+  var w = p * realW;
+  var h = p * realH;
+
+  canvas.setAttribute("width", Math.floor(w));
+  canvas.setAttribute("height", Math.floor(h));
+  
+  var ctx = canvas.getContext("2d");
+  ctx.scale(p, p);
+  ctx.drawWindow(content, content.scrollX, content.scrollY, content.innerWidth, content.innerHeight, "rgb(0,0,0)");
+
+  return canvas.toDataURL(); 
+}
+
 function TabletsService() {
 }
 
+var tabs = [];
+
 TabletsService.prototype = {
   save: function TB_save(aIndex, aDescription) {
+    tabs.push( snapshot() );
     return true;
   },
   delete: function TB_delete(aURL) {
@@ -58,17 +94,18 @@ TabletsService.prototype = {
   open: function TB_open(aURL, aWhere) {
   },
   getTablets: function TB_getTablets() {
-    var tabs = ['http://overstimulate.com', 'http://yosh.org'];
+    var cur = 0;
     return {
       getNext: function() {
         var tab = new TabletInfo();
-        tab.url = tabs.shift();
-        tab.title = tab.url.slice(7, -4);
-        tab.imageURL = "chrome://tablets/content/assets/" + tab.title + ".png";
+        tab.url = 'http://test.com';
+        tab.title = 'test'
+        tab.imageURL = tabs[cur];
+        cur = cur + 1;
         return tab;
       },
       hasMoreElements: function() {
-        return (tabs.length > 0);
+        return (cur < tabs.length);
       }
     }
   },
