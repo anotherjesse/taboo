@@ -5,7 +5,7 @@ function Tablets() {
 
   this.onclick = function(event) {
     if (event.shiftKey) {
-      openUILinkIn('chrome://tablets/content/start.xul', 'tab');
+      openUILinkIn('chrome://tablets/content/start.html', 'tab');
     }
     else {
       SVC.save(getBrowser().mCurrentTab, null);

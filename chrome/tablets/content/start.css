@@ -1,0 +1,43 @@
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+li span {
+  display: block;
+}
+
+li span.title {
+  font-size: 12px;
+}
+
+li span.url {
+  font-size: 10px;
+  color: blue;
+  text-decoration: underline;
+  padding-bottom: 2px;
+}
+
+li {
+  float: left;
+  display: inline;
+  margin: 5px;
+  padding: 5px;
+  -moz-border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  background: #f8f8f8;
+  height: 120px;
+  cursor: pointer;
+}
+
+li:hover {
+  border-color: #aaa;
+  background: #888;
+  color: white;
+}
+
+body {
+  background: #eee;
+}
+
+

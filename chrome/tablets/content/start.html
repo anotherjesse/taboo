@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <!--
  Copyright 2007 Jesse Andrews and Manish Singh
@@ -12,12 +12,13 @@
  for the specific language governing rights and limitations under the
  License.
 -->
+<html>
+  <head>
+    <title>Tablets</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript">
 
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet type="text/css" href="chrome://tablets/content/overlay.css"?>
-<page xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
-  <script type="text/javascript"><![CDATA[ 
+    document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />');
 
     function loadJS() {
       const loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
@@ -33,8 +34,8 @@
     }
 
     window.addEventListener("load", loadJS, false);
-  ]]></script>
-
-  <hbox id="list" />
-</page>
+    </script>
+  </head>
+  <body></body>
+</html>
 
