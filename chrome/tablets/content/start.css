@@ -13,7 +13,7 @@ li span.title {
 
 li span.url {
   font-size: 10px;
-  color: blue;
+  color: #08f;
   text-decoration: underline;
   padding-bottom: 2px;
 }
@@ -28,12 +28,26 @@ li {
   background: #f8f8f8;
   height: 120px;
   cursor: pointer;
+  color: #333;
+}
+
+li img {
+  margin: 5px 0 0 0;
+  border: 1px solid #888;
 }
 
 li:hover {
-  border-color: #aaa;
-  background: #888;
-  color: white;
+  border-color: #ddd;
+  background: #fff;
+  color: black;
+}
+
+li:hover img {
+  border-color: black;
+}
+
+li:hover span.url {
+  color: #f80;
 }
 
 body {
