@@ -20,13 +20,15 @@
 
   <script type="application/x-javascript" src="chrome://tablets/content/overlay.js"/>
 
-  <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="tablets-toolbarbutton"
-      label="Tablets"
-      tooltiptext="save this tab to read later"
-      oncommand="tablets.onclick(event)"
-      class="toolbarbutton-1 chromeclass-toolbar-additional custombutton" />
-  </toolbarpalette>
+  <toolbox id="navigator-toolbox">
+    <toolbarpalette id="BrowserToolbarPalette">
+      <toolbarbutton id="tablets-toolbarbutton"
+        label="Tablets"
+        tooltiptext="save this tab to read later"
+        oncommand="tablets.onclick(event)"
+        class="toolbarbutton-1 chromeclass-toolbar-additional" />
+    </toolbarpalette>
+  </toolbox>
 
 </overlay>
 

@@ -4,8 +4,6 @@
   <RDF:Seq RDF:about="urn:mozilla:package:root">
     <RDF:li RDF:resource="urn:mozilla:package:tablets"></RDF:li>
   </RDF:Seq>
-  <RDF:Description chrome:extension="true" chrome:author="Obvious Inc." chrome:displayName="Tablets" chrome:name="tablets" chrome:description="Tablets" chrome:authorURL="http://overstimulate.com" RDF:about="urn:mozilla:package:tablets">
-  </RDF:Description>
   <RDF:Seq RDF:about="urn:mozilla:overlays">
     <RDF:li RDF:resource="chrome://browser/content/browser.xul"></RDF:li>
   </RDF:Seq>
