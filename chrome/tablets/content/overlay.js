@@ -3,13 +3,8 @@ function Tablets() {
   const CI = Components.interfaces;
   const SVC = CC['@oy/tablets;1'].getService(CI.oyITablets);
 
-  this.onclick = function() {
-    var enum = SVC.getTablets();
-    while (enum.hasMoreElements()) {
-      var tab = enum.getNext();
-      tab.QueryInterface(Ci.oyITabletInfo);
-      alert(tab.title);
-    }
+  this.onclick = function(event) {
+    SVC.save(getBrowser().mCurrentTab, null);
   }
 }
 
