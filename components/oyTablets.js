@@ -54,6 +54,8 @@ function hex_md5_stream(stream) {
       ret += '0';
     ret += hexChar;
   }
+
+  return ret;
 }
 
 function hex_md5(s) {
@@ -143,6 +145,18 @@ TabletStorageFS.prototype = {
   save: function TSFS_save(url, data, preview) {
     this._data[url] = data;
     this._saveState();
+
+    try {
+      var file = this._getPreviewFile(url);
+
+      var ostream = Cc['@mozilla.org/network/file-output-stream;1']
+        .createInstance(Ci.nsIFileOutputStream);
+      ostream.init(file, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 0600, 0);
+
+      ostream.write(preview, preview.length);
+      ostream.close();
+    }
+    catch (e) { }
   },
   delete: function TSFS_delete(url) {
     try {
@@ -165,7 +179,7 @@ TabletStorageFS.prototype = {
   },
   _getPreviewFile: function TSFS__getPreviewFile(url) {
     var id = hex_md5(url);
-    var file = this._tabletDir.clone();
+    var file = this._tabletsDir.clone();
     file.append(id + '.png');
     return file;
   },
@@ -273,8 +287,10 @@ TabletsService.prototype = {
 
     var state = winState.windows[0].tabs[currentTab];
 
+    var previewData = canvas.toDataURL();
+    var preview = win.atob(previewData.substr('data:image/png;base64,'.length));
+
     var url = selectedBrowser.currentURI.spec;
-    var preview = canvas.toDataURL();
 
     this._storage.save(url, state, preview);
 
