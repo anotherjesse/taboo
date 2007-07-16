@@ -171,7 +171,7 @@ TabletStorageFS.prototype = {
   },
   _saveState: function TSFS__saveState() {
     try {
-      var file = this._tabletFile;
+      var file = this._tabletsFile;
 
       var ostream = Cc['@mozilla.org/network/safe-file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
@@ -181,7 +181,9 @@ TabletStorageFS.prototype = {
         .createInstance(Ci.nsIScriptableUnicodeConverter);
       converter.charset = 'UTF-8';
 
+      var data = this._data.toSource();
       var convdata = converter.ConvertFromUnicode(data) + converter.Finish();
+
       ostream.write(convdata, convdata.length);
 
       if (ostream instanceof Ci.nsISafeOutputStream) {
@@ -194,7 +196,7 @@ TabletStorageFS.prototype = {
   },
   _loadState: function TSFS__loadState() {
     try { 
-      var file = this._tabletFile;
+      var file = this._tabletsFile;
  
       var stream = Cc['@mozilla.org/network/file-input-stream;1']
           .createInstance(Ci.nsIFileInputStream);
@@ -213,7 +215,10 @@ TabletStorageFS.prototype = {
 
       cvstream.close();
 
-      this._data = content.replace(/\r\n?/g, '\n');
+      content = content.replace(/\r\n?/g, '\n');
+
+      var sandbox = new Cu.Sandbox('about:blank');
+      this._data = Cu.evalInSandbox(content, sandbox);
     }
     catch (e) {
       this._data = {};
@@ -264,7 +269,7 @@ TabletsService.prototype = {
       .getService(Ci.nsISessionStore);
     var winJSON = "(" + ss.getWindowState(win) + ")";
 
-    var sandbox = new Cu.Sandbox("about:blank");
+    var sandbox = new Cu.Sandbox('about:blank');
     var winState = Cu.evalInSandbox(winJSON, sandbox);
 
     var state = winState.windows[0].tabs[currentTab];
