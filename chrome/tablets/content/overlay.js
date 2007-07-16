@@ -8,7 +8,7 @@ function Tablets() {
       openUILinkIn('chrome://tablets/content/start.html', 'tab');
     }
     else {
-      SVC.save(getBrowser().mCurrentTab, null);
+      SVC.save(null);
     }
   }
 }
