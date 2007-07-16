@@ -257,8 +257,7 @@ TabletsService.prototype = {
     var currentTab = -1;
     var browsers = tabbrowser.browsers;
     for (var i = 0; i < browsers.length; i++) {
-      var browser = browsers[i];
-      if (browsers[i] == tabbrowser.selectedBrowser)
+      if (browsers[i] == selectedBrowser)
         currentTab = i;
     }
 
