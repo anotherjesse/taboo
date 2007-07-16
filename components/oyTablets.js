@@ -169,7 +169,15 @@ TabletStorageFS.prototype = {
     this._saveState();
   },
   retrieve: function TSFS_retrieve(url) {
-    return this._data[url];
+    var file = this._getPreviewFile(url);
+
+    var ios = Cc['@mozilla.org/network/io-service;1']
+      .getService(Ci.nsIIOService);
+    var fileHandler = ios.getProtocolHandler('file')
+      .QueryInterface(Ci.nsIFileProtocolHandler);
+    var previewURL = fileHandler.getURLSpecFromFile(file);
+
+    return [this._data[url], previewURL];
   },
   getURLs: function TSFS_getURLs() {
     var urls = [];
@@ -302,20 +310,29 @@ TabletsService.prototype = {
   open: function TB_open(aURL, aWhere) {
   },
   getTablets: function TB_getTablets() {
-    var cur = 0;
-    return {
+    var urls = this._storage.getURLs();
+
+    var enumerator = {
+      _urls: urls,
+      _storage: this._storage,
       getNext: function() {
+        var url = this._urls.shift();
+
+        var data, imageURL;
+        [data, imageURL] = this._storage.retrieve(url);
+
         var tab = new TabletInfo();
-        tab.url = 'http://test.com';
-        tab.title = 'test'
-        tab.imageURL = tabs[cur];
-        cur = cur + 1;
+        tab.url = url;
+        tab.title = data.entries[data.index - 1].title;
+        tab.imageURL = imageURL;
         return tab;
       },
       hasMoreElements: function() {
-        return (cur < tabs.length);
+        return this._urls.length > 0;
       }
     }
+
+    return enumerator;
   },
 
   getInterfaces: function TB_getInterfaces(countRef) {
