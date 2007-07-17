@@ -1,5 +1,6 @@
 #tablets {
   background: #eee;
+  padding: 10px;
 }
 
 label.title {
@@ -25,7 +26,7 @@ label.url {
   color: #333;
 }
 
-.tablet image {
+.tablet image.preview {
   margin: 5px 0 0 0;
   border: 1px solid #888;
 }
@@ -36,7 +37,7 @@ label.url {
   color: black;
 }
 
-.tablet:hover image {
+.tablet:hover image.preview {
   border-color: black;
 }
 
@@ -44,19 +45,22 @@ label.url {
   color: #f80;
 }
 
-/*
-li .delete {
-  background: transparent url("close.png") top no-repeat;
+.delete {
+  background: transparent url("chrome://tablets/content/close.png") top no-repeat;
   width: 14px !important;
   height: 14px !important;
-  float: right;
   top: -10px;
   right: -10px;
-  position: relative;
+  display: block;
+  position: fixed;
 }
 
+.delete:hover {
+    background: transparent url("close.png") bottom no-repeat;
+}
+
+/*
 li .delete:hover {
-  background: transparent url("close.png") bottom no-repeat;
 }
 
 
