@@ -14,9 +14,22 @@ while (enum.hasMoreElements()) {
     
     var box = document.createElement('vbox');
     box.setAttribute('class', 'tablet')
-        
+    
+    var node = document.createElement('image');
+    node.setAttribute('class', 'delete')
+    box.appendChild(node);
+    
     var node = document.createElement('label');
     node.setAttribute('class', 'title')
+    node.setAttribute('tooltiptext', tab.title);
+    node.setAttribute('value', tab.title);
+    node.setAttribute('minwidth', '125')
+    node.setAttribute('maxwidth', '125')
+    node.setAttribute('crop', 'end');
+    
+    var node = document.createElement('label');
+    node.setAttribute('class', 'title')
+    node.setAttribute('tooltiptext', tab.title);
     node.setAttribute('value', tab.title);
     node.setAttribute('minwidth', '125')
     node.setAttribute('maxwidth', '125')
@@ -27,6 +40,7 @@ while (enum.hasMoreElements()) {
     var node = document.createElement('label');
     node.setAttribute('class', 'url')
     node.setAttribute('value', tab.url);
+    node.setAttribute('tooltiptext', tab.url);
     node.setAttribute('minwidth', '125')
     node.setAttribute('maxwidth', '125')
     node.setAttribute('crop', 'end');
@@ -35,11 +49,18 @@ while (enum.hasMoreElements()) {
     
     var node = document.createElement('image');
     node.setAttribute('src', tab.imageURL);
+    node.setAttribute('class', 'preview')
     
     box.appendChild(node);
     
     box.onclick = function(event) {
-      SVC.open(tab.url, whereToOpenLink(event));
+      if (event.originalTarget.className == 'delete') {
+        SVC.delete(tab.url);
+        box.parentNode.removeChild(box);
+      }
+      else {
+        SVC.open(tab.url, whereToOpenLink(event));
+      }
     }
     
     groupbox.appendChild(box);
