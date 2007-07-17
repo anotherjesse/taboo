@@ -22,7 +22,7 @@ while (enum.hasMoreElements()) {
         box.parentNode.removeChild(box);
       }
       else {
-        openUILinkIn(tab.url, whereToOpenLink(event));
+        SVC.open(tab.url, whereToOpenLink(event));
       }
     }
 

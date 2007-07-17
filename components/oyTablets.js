@@ -31,6 +31,10 @@ const PR_TRUNCATE    = 0x20;
 const PR_SYNC        = 0x40;
 const PR_EXCL        = 0x80;
 
+const CAPABILITIES = [
+  "Subframes", "Plugins", "Javascript", "MetaRedirects", "Images"
+];
+
 
 function getObserverService() {
   return Cc['@mozilla.org/observer-service;1']
@@ -307,8 +311,6 @@ TabletsService.prototype = {
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
   },
-  open: function TB_open(aURL, aWhere) {
-  },
   getTablets: function TB_getTablets() {
     var urls = this._storage.getURLs();
 
@@ -334,6 +336,180 @@ TabletsService.prototype = {
 
     return enumerator;
   },
+
+  /* Because sessionstore doesn't let us restore a single tab, we cut'n'paste
+   * a bunch of code here
+   */
+  open: function TB_open(aURL, aWhere) {
+    var tabData, imageURL;
+    [tabData, imageURL] = this._storage.retrieve(aURL);
+
+    // helper hash for ensuring unique frame IDs
+    var idMap = { used: {} };
+
+    var wm = Cc['@mozilla.org/appshell/window-mediator;1']
+      .getService(Ci.nsIWindowMediator);
+    var win = wm.getMostRecentWindow('navigator:browser');
+
+    var tab = win.getBrowser().addTab();
+
+    var _this = this;
+
+    var browser = win.getBrowser().getBrowserForTab(tab);
+    var history = browser.webNavigation.sessionHistory;
+
+    if (history.count > 0) {
+      history.PurgeHistory(history.count);
+    }
+    history.QueryInterface(Ci.nsISHistoryInternal);
+
+    browser.markupDocumentViewer.textZoom = parseFloat(tabData.zoom || 1);
+
+    for (var i = 0; i < tabData.entries.length; i++) {
+      history.addEntry(this._deserializeHistoryEntry(tabData.entries[i], idMap), true);
+    }
+
+    // make sure to reset the capabilities and attributes, in case this tab gets reused
+    var disallow = (tabData.disallow)?tabData.disallow.split(","):[];
+    CAPABILITIES.forEach(function(aCapability) {
+      browser.docShell["allow" + aCapability] = disallow.indexOf(aCapability) == -1;
+    });
+    Array.filter(tab.attributes, function(aAttr) {
+      return (_this.xulAttributes.indexOf(aAttr.name) > -1);
+    }).forEach(tab.removeAttribute, tab);
+    if (tabData.xultab) {
+      tabData.xultab.split(" ").forEach(function(aAttr) {
+        if (/^([^\s=]+)=(.*)/.test(aAttr)) {
+          tab.setAttribute(RegExp.$1, decodeURI(RegExp.$2));
+        }
+      });
+    }
+
+    // notify the tabbrowser that the tab chrome has been restored
+    var event = win.document.createEvent("Events");
+    event.initEvent("SSTabRestoring", true, false);
+    tab.dispatchEvent(event);
+
+    var activeIndex = (tabData.index || tabData.entries.length) - 1;
+    try {
+      browser.webNavigation.gotoIndex(activeIndex);
+    }
+    catch (ex) { } // ignore an invalid tabData.index
+
+    // restore those aspects of the currently active documents
+    // which are not preserved in the plain history entries
+    // (mainly scroll state and text data)
+    browser.__SS_restore_data = tabData.entries[activeIndex] || {};
+    browser.__SS_restore_text = tabData.text || "";
+    browser.__SS_restore_tab = tab;
+    browser.__SS_restore = this.restoreDocument_proxy;
+    browser.addEventListener("load", browser.__SS_restore, true);
+  },
+  _deserializeHistoryEntry: function TB__deserializeHistoryEntry(aEntry, aIdMap) {
+    var shEntry = Cc["@mozilla.org/browser/session-history-entry;1"].
+                  createInstance(Ci.nsISHEntry);
+    
+    var ioService = Cc["@mozilla.org/network/io-service;1"].
+                    getService(Ci.nsIIOService);
+    shEntry.setURI(ioService.newURI(aEntry.url, null, null));
+    shEntry.setTitle(aEntry.title || aEntry.url);
+    shEntry.setIsSubFrame(aEntry.subframe || false);
+    shEntry.loadType = Ci.nsIDocShellLoadInfo.loadHistory;
+    
+    if (aEntry.cacheKey) {
+      var cacheKey = Cc["@mozilla.org/supports-PRUint32;1"].
+                     createInstance(Ci.nsISupportsPRUint32);
+      cacheKey.data = aEntry.cacheKey;
+      shEntry.cacheKey = cacheKey;
+    }
+    if (aEntry.ID) {
+      // get a new unique ID for this frame (since the one from the last
+      // start might already be in use)
+      var id = aIdMap[aEntry.ID] || 0;
+      if (!id) {
+        for (id = Date.now(); aIdMap.used[id]; id++);
+        aIdMap[aEntry.ID] = id;
+        aIdMap.used[id] = true;
+      }
+      shEntry.ID = id;
+    }
+    
+    var scrollPos = (aEntry.scroll || "0,0").split(",");
+    scrollPos = [parseInt(scrollPos[0]) || 0, parseInt(scrollPos[1]) || 0];
+    shEntry.setScrollPosition(scrollPos[0], scrollPos[1]);
+    
+    if (aEntry.postdata) {
+      var stream = Cc["@mozilla.org/io/string-input-stream;1"].
+                   createInstance(Ci.nsIStringInputStream);
+      stream.setData(aEntry.postdata, -1);
+      shEntry.postData = stream;
+    }
+    
+    if (aEntry.children && shEntry instanceof Ci.nsISHContainer) {
+      for (var i = 0; i < aEntry.children.length; i++) {
+        shEntry.AddChild(this._deserializeHistoryEntry(aEntry.children[i], aIdMap), i);
+      }
+    }
+    
+    return shEntry;
+  },
+  restoreDocument_proxy: function TB_restoreDocument_proxy(aEvent) {
+    // wait for the top frame to be loaded completely
+    if (!aEvent || !aEvent.originalTarget || !aEvent.originalTarget.defaultView || aEvent.originalTarget.defaultView != aEvent.originalTarget.defaultView.top) {
+      return;
+    }
+    
+    var textArray = this.__SS_restore_text ? this.__SS_restore_text.split(" ") : [];
+    function restoreTextData(aContent, aPrefix) {
+      textArray.forEach(function(aEntry) {
+        if (/^((?:\d+\|)*)(#?)([^\s=]+)=(.*)$/.test(aEntry) && (!RegExp.$1 || RegExp.$1 == aPrefix)) {
+          var document = aContent.document;
+          var node = RegExp.$2 ? document.getElementById(RegExp.$3) : document.getElementsByName(RegExp.$3)[0] || null;
+          if (node && "value" in node) {
+            node.value = decodeURI(RegExp.$4);
+            
+            var event = document.createEvent("UIEvents");
+            event.initUIEvent("input", true, true, aContent, 0);
+            node.dispatchEvent(event);
+          }
+        }
+      });
+    }
+    
+    function restoreTextDataAndScrolling(aContent, aData, aPrefix) {
+      restoreTextData(aContent, aPrefix);
+      if (aData.innerHTML) {
+        aContent.setTimeout(function(aHTML) { if (this.document.designMode == "on") { this.document.body.innerHTML = aHTML; } }, 0, aData.innerHTML);
+      }
+      if (aData.scroll && /(\d+),(\d+)/.test(aData.scroll)) {
+        aContent.scrollTo(RegExp.$1, RegExp.$2);
+      }
+      for (var i = 0; i < aContent.frames.length; i++) {
+        if (aData.children && aData.children[i]) {
+          restoreTextDataAndScrolling(aContent.frames[i], aData.children[i], i + "|" + aPrefix);
+        }
+      }
+    }
+    
+    var content = XPCNativeWrapper(aEvent.originalTarget).defaultView;
+    if (this.currentURI.spec == "about:config") {
+      // unwrap the document for about:config because otherwise the properties
+      // of the XBL bindings - as the textbox - aren't accessible (see bug 350718)
+      content = content.wrappedJSObject;
+    }
+    restoreTextDataAndScrolling(content, this.__SS_restore_data, "");
+    
+    // notify the tabbrowser that this document has been completely restored
+    var event = this.ownerDocument.createEvent("Events");
+    event.initEvent("SSTabRestored", true, false);
+    this.__SS_restore_tab.dispatchEvent(event);
+    
+    this.removeEventListener("load", this.__SS_restore, true);
+    delete this.__SS_restore_data;
+    delete this.__SS_restore_text;
+    delete this.__SS_restore_tab;
+  },
+  xulAttributes: [],
 
   getInterfaces: function TB_getInterfaces(countRef) {
     var interfaces = [Ci.oyITablets, Ci.nsIObserver, Ci.nsISupports];
