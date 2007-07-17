@@ -29,6 +29,17 @@
         class="toolbarbutton-1 chromeclass-toolbar-additional" />
     </toolbarpalette>
   </toolbox>
+  
+  <keyset id="mainKeyset">
+      <key id="key_showFolds"
+          key="F"
+          command="cmd_showFolds"
+          modifiers="accel shift"/>
+  </keyset>
+  
+  <commandset id="mainCommandSet">
+    <command id="cmd_showFolds" oncommand="tablets.show()" />
+  </commandset>
 
 </overlay>
 

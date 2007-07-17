@@ -5,11 +5,14 @@ function Tablets() {
 
   this.onclick = function(event) {
     if (event.shiftKey) {
-      openUILinkIn('chrome://tablets/content/start.xul', 'tab');
+      this.show();
     }
     else {
       SVC.save(null);
     }
+  }
+  this.show = function() {
+    openUILinkIn('chrome://tablets/content/start.xul', 'tab');
   }
 }
 
