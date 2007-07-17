@@ -41,6 +41,17 @@ function getObserverService() {
     .getService(Ci.nsIObserverService);
 }
 
+function getBoolPref(prefName, defaultValue) {
+  try {
+    var prefs = Cc['@mozilla.org/preferences-service;1']
+      .getService(Ci.nsIPrefBranch);
+    return prefs.getBoolPref(prefName);
+  }
+  catch (e) {
+    return defaultValue;
+  }
+}
+
 
 /* MD5 wrapper */
 function hex_md5_stream(stream) {   
@@ -371,7 +382,25 @@ TabletsService.prototype = {
       .getService(Ci.nsIWindowMediator);
     var win = wm.getMostRecentWindow('navigator:browser');
 
-    var tab = win.getBrowser().addTab();
+    var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false);
+
+    var tabbrowser = win.getBrowser();
+
+    var tab;
+    switch (aWhere) {
+      case 'current':
+        tab = tabbrowser.mCurrentTab;
+        break;
+      case 'tabshifted':
+        loadInBackground = !loadInBackground;
+        // fall through
+      case 'tab':
+        tab = tabbrowser.loadOneTab('about:blank', null, null, null,
+                                    loadInBackground, false);
+        break;
+      default:
+        return;
+    }
 
     var _this = this;
 
