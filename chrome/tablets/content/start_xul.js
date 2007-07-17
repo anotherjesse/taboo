@@ -47,11 +47,19 @@ while (enum.hasMoreElements()) {
     
     box.appendChild(node);
     
+    var hbox = document.createElement('hbox');
+    var spacer = document.createElement('spacer');
+    spacer.setAttribute('flex', 1)
+    hbox.appendChild(spacer);
     var node = document.createElement('image');
     node.setAttribute('src', tab.imageURL);
     node.setAttribute('class', 'preview')
+    hbox.appendChild(node);
+    var spacer = document.createElement('spacer');
+    spacer.setAttribute('flex', 1)
+    hbox.appendChild(spacer);
     
-    box.appendChild(node);
+    box.appendChild(hbox);
     
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
