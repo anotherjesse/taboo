@@ -304,6 +304,24 @@ TabletsService.prototype = {
 
     var url = selectedBrowser.currentURI.spec;
 
+    var oldData, oldPreview;
+    [oldData, oldPreview] = this._storage.retrieve(url);
+
+    if (oldData && oldData.tablet) {
+      var tabletState = oldData.tablet;
+      tabletState.updated = new Date();
+      if (aDescription != null)
+        tabletState.description = aDescription;
+    } else {
+      var now = new Date();
+      var tabletState = { description: aDescription,
+                          created:     now,
+                          updated:     now
+                        };
+    }
+
+    state.tablet = tabletState;
+
     this._storage.save(url, state, preview);
 
     return true;
@@ -327,6 +345,8 @@ TabletsService.prototype = {
         tab.url = url;
         tab.title = data.entries[data.index - 1].title;
         tab.imageURL = imageURL;
+        tab.created = data.tablet.created;
+        tab.updated = data.tablet.updated;
         return tab;
       },
       hasMoreElements: function() {
