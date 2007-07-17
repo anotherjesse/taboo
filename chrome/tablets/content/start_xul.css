@@ -1,0 +1,63 @@
+#tablets {
+  background: #eee;
+}
+
+label.title {
+  font-size: 11px;
+  margin-left: 0;
+}
+
+label.url {
+  margin-left: 0;
+  font-size: 9px;
+  color: #08f;
+  text-decoration: underline;
+  padding-bottom: 2px;
+}
+
+.tablet {
+  margin: 5px;
+  padding: 5px;
+  -moz-border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  background: #f8f8f8;
+  cursor: pointer;
+  color: #333;
+}
+
+.tablet image {
+  margin: 5px 0 0 0;
+  border: 1px solid #888;
+}
+
+.tablet:hover {
+  border-color: #ddd;
+  background: #fff;
+  color: black;
+}
+
+.tablet:hover image {
+  border-color: black;
+}
+
+.tablet:hover label.url {
+  color: #f80;
+}
+
+/*
+li .delete {
+  background: transparent url("close.png") top no-repeat;
+  width: 14px !important;
+  height: 14px !important;
+  float: right;
+  top: -10px;
+  right: -10px;
+  position: relative;
+}
+
+li .delete:hover {
+  background: transparent url("close.png") bottom no-repeat;
+}
+
+
+*/
