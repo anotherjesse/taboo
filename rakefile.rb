@@ -1,4 +1,4 @@
-task :default => 'components/oyITaboo.xpt'
+task :default => ['components/oyITaboo.xpt', :xpi]
 
 file 'components/oyITaboo.xpt' => 'components/oyITaboo.idl' do
   puts "Generating oyITaboo.xpt. (requires flock dev environment)"
