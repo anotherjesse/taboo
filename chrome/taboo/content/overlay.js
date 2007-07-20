@@ -8,7 +8,7 @@ function Taboo() {
   const CI = Components.interfaces;
   const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
-  this.onclick = function(event) {
+  this.addTaboo = function(event) {
     if (event.shiftKey) {
       this.show();
     }
@@ -48,21 +48,18 @@ window.addEventListener("load", taboo_init, true);
 function tboInstallInToolbar() {
 	// Make sure not to run this twice
 	if (!tboPrefs.getPrefType("extensions.taboo.setup")) {
-		if (!document.getElementById("taboo-toolbarbutton")) {
+		if (!document.getElementById("taboo-toolbarbutton-add")) {
 			var insertBeforeBtn = "urlbar-container";
 			var toolbar = document.getElementById("nav-bar");
-			if (!toolbar) {
-				insertBeforeBtn = "button-junk";
-				toolbar = document.getElementById("mail-bar");
-			}
 			if (toolbar && "insertItem" in toolbar) {
 				var insertBefore = $(insertBeforeBtn);
 				log(insertBefore);
 				if (insertBefore && insertBefore.parentNode != toolbar)
 					insertBefore = null;
 	
-				toolbar.insertItem("taboo-toolbarbutton", insertBefore, null, false);
-	
+				toolbar.insertItem("taboo-toolbarbutton-add", insertBefore, null, false);
+				toolbar.insertItem("taboo-toolbarbutton-view", insertBefore, null, false);
+					
 				toolbar.setAttribute("currentset", toolbar.currentSet);
 				document.persist(toolbar.id, "currentset");
 			}
