@@ -86,16 +86,17 @@ function hex_md5(s) {
  * Taboo Info Instance
  */
 
-function TabooInfo() {
+function TabooInfo(url, title, description, imageURL, created, updated, data) {
+  this.url = url;
+  this.title = title;
+  this.description = description;
+  this.imageURL = imageURL;
+  this.created = new Date(created);
+  this.updated = new Date(updated);
+  this.data = data;
 }
 
 TabooInfo.prototype = {
-  title: "",
-  url: "",
-  description: null,
-  imageURL: "",
-  created: null,
-  updated: null,
   QueryInterface: function(iid) {
     if (!iid.equals(Ci.nsISupports) &&
         !iid.equals(Ci.oyITabooInfo)) {
@@ -142,7 +143,17 @@ function snapshot() {
   return [win, canvas];
 }
 
-function TabooStorageFS() {
+
+function createStatement(dbconn, sql) {
+  var stmt = dbconn.createStatement(sql);
+  var wrapper = Cc["@mozilla.org/storage/statement-wrapper;1"]
+    .createInstance(Ci.mozIStorageStatementWrapper);
+
+  wrapper.initialize(stmt);
+  return wrapper;
+}
+
+function TabooStorageSQL() {
   this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
     .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
   this._tabooDir.append('taboo');
@@ -150,19 +161,76 @@ function TabooStorageFS() {
   if (!this._tabooDir.exists())
     this._tabooDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
 
-  this._tabooFile = this._tabooDir.clone();
-  this._tabooFile.append('taboo.js');
+  var dbfile = this._tabooDir.clone();
+  dbfile.append('taboo.sqlite');
 
-  this._loadState();
+  var storageService = Cc['@mozilla.org/storage/service;1']
+    .getService(Ci.mozIStorageService);
+  this._DBConn = storageService.openDatabase(dbfile);
+
+  var schema = 'url TEXT PRIMARY KEY, title TEXT, description TEXT, ' +
+               'md5 TEXT, created INTEGER, updated INTEGER, full TEXT';
+
+  try {
+    this._DBConn.createTable('taboo_data', schema);
+  }
+  catch (e) { }
+
+  this._fetchData = createStatement(this._DBConn,
+    'SELECT * FROM taboo_data WHERE url = :url');
+
+  this._removeURL = createStatement(this._DBConn,
+    'DELETE FROM taboo_data WHERE url = :url');
+  this._insertURL = createStatement(this._DBConn,
+    'INSERT INTO taboo_data ' +
+    '(url, title, description, md5, created, updated, full) ' +
+    'VALUES (:url, :title, :description, :md5, :created, :updated, :full)');
+
+  this._fetchURLs = createStatement(this._DBConn,
+    'SELECT url FROM taboo_data');
 }
 
-TabooStorageFS.prototype = {
-  save: function TSFS_save(url, data, preview) {
-    this._data[url] = data;
-    this._saveState();
+TabooStorageSQL.prototype = {
+  save: function TSSQL_save(url, description, data, preview) {
+    var title = data.entries[data.index - 1].title;
 
+    var updated = Date.now();
+    var created = updated;
+
+    var stmt = this._fetchData;
+    stmt.reset();
+    stmt.params.url = url;
+
+    var md5;
+    if (stmt.step()) {
+      created = stmt.row.created;
+
+      if (description == null)
+        description = stmt.row.description;
+
+      md5 = stmt.row.md5;
+
+      this.delete(url);
+    } else {
+      md5 = hex_md5(url);
+    }
+
+    stmt.reset();
+
+    var pp = this._insertURL.params;
+    pp.url = url;
+    pp.title = title;
+    pp.description = description;
+    pp.md5 = md5;
+    pp.created = created;
+    pp.updated = updated;
+    pp.full = data.toSource();
+
+    this._insertURL.step();
+    this._insertURL.reset();
+ 
     try {
-      var file = this._getPreviewFile(url);
+      var file = this._getPreviewFile(md5);
 
       var ostream = Cc['@mozilla.org/network/file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
@@ -171,96 +239,52 @@ TabooStorageFS.prototype = {
       ostream.write(preview, preview.length);
       ostream.close();
     }
-    catch (e) { }
+    catch (e) { } 
   },
-  delete: function TSFS_delete(url) {
-    try {
-      var file = this._getPreviewFile(url);
-      file.remove(false);
-    }
-    catch (e) { }
+  delete: function TSSQL_delete(url) {
+    this._removeURL.params.url = url;
+    this._removeURL.step();
+    this._removeURL.reset();
+  },
+  retrieve: function TSSQL_retrieve(url) {
+    var stmt = this._fetchData;
+    stmt.reset();
+    stmt.params.url = url;
 
-    delete this._data[url];
-    this._saveState();
-  },
-  retrieve: function TSFS_retrieve(url) {
-    var file = this._getPreviewFile(url);
+    if (!stmt.step())
+      return null;
 
     var ios = Cc['@mozilla.org/network/io-service;1']
       .getService(Ci.nsIIOService);
     var fileHandler = ios.getProtocolHandler('file')
       .QueryInterface(Ci.nsIFileProtocolHandler);
-    var previewURL = fileHandler.getURLSpecFromFile(file);
+    var imageFile = this._getPreviewFile(stmt.row.md5);
+    var imageURL = fileHandler.getURLSpecFromFile(imageFile);
 
-    return [this._data[url], previewURL];
+    var data = stmt.row.full.replace(/\r\n?/g, '\n');
+    var sandbox = new Cu.Sandbox('about:blank');
+    var state = Cu.evalInSandbox(data, sandbox);
+
+    var ret = new TabooInfo(url, stmt.row.title, stmt.row.description,
+                            imageURL, stmt.row.created, stmt.row.updated,
+                            state);
+    stmt.reset();
+
+    return ret;
   },
-  getURLs: function TSFS_getURLs() {
+  getURLs: function TSSQL_getURLs() {
     var urls = [];
-    for (var url in this._data)
-      urls.push(url);
+    while (this._fetchURLs.step())
+      urls.push(this._fetchURLs.row.url);
+
+    this._fetchURLs.reset();
     return urls;
   },
-  _getPreviewFile: function TSFS__getPreviewFile(url) {
-    var id = hex_md5(url);
+  _getPreviewFile: function TSSQL__getPreviewFile(id) {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
     return file;
-  },
-  _saveState: function TSFS__saveState() {
-    try {
-      var file = this._tabooFile;
-
-      var ostream = Cc['@mozilla.org/network/safe-file-output-stream;1']
-        .createInstance(Ci.nsIFileOutputStream);
-      ostream.init(file, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 0600, 0);
-
-      var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter']
-        .createInstance(Ci.nsIScriptableUnicodeConverter);
-      converter.charset = 'UTF-8';
-
-      var data = this._data.toSource();
-      var convdata = converter.ConvertFromUnicode(data) + converter.Finish();
-
-      ostream.write(convdata, convdata.length);
-
-      if (ostream instanceof Ci.nsISafeOutputStream) {
-        ostream.finish();
-      } else {
-        ostream.close();
-      }
-    }
-    catch (e) { }
-  },
-  _loadState: function TSFS__loadState() {
-    try { 
-      var file = this._tabooFile;
- 
-      var stream = Cc['@mozilla.org/network/file-input-stream;1']
-          .createInstance(Ci.nsIFileInputStream);
-      stream.init(file, PR_RDONLY, 0, 0);
-
-      var cvstream = Cc['@mozilla.org/intl/converter-input-stream;1']
-        .createInstance(Ci.nsIConverterInputStream);
-      cvstream.init(stream, 'UTF-8', 1024,
-                    Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);
-
-      var content = '';
-      var data = {};
-      while (cvstream.readString(4096, data)) {
-        content += data.value;
-      }
-
-      cvstream.close();
-
-      content = content.replace(/\r\n?/g, '\n');
-
-      var sandbox = new Cu.Sandbox('about:blank');
-      this._data = Cu.evalInSandbox(content, sandbox);
-    }
-    catch (e) {
-      this._data = {};
-    }
-  },
+  }
 }
 
 
@@ -271,7 +295,7 @@ function TabooService() {
 
 TabooService.prototype = {
   _init: function TB__init() {
-    this._storage = new TabooStorageFS();
+    this._storage = new TabooStorageSQL();
   },
   observe: function TB_observe(subject, topic, state) {
     var obs = getObserverService();
@@ -315,25 +339,7 @@ TabooService.prototype = {
 
     var url = selectedBrowser.currentURI.spec;
 
-    var oldData, oldPreview;
-    [oldData, oldPreview] = this._storage.retrieve(url);
-
-    if (oldData && oldData.taboo) {
-      var tabooState = oldData.taboo;
-      tabooState.updated = new Date();
-      if (aDescription != null)
-        tabooState.description = aDescription;
-    } else {
-      var now = new Date();
-      var tabooState = { description: aDescription,
-                         created:     now,
-                         updated:     now
-                       };
-    }
-
-    state.taboo = tabooState;
-
-    this._storage.save(url, state, preview);
+    this._storage.save(url, aDescription, state, preview);
 
     return true;
   },
@@ -348,17 +354,7 @@ TabooService.prototype = {
       _storage: this._storage,
       getNext: function() {
         var url = this._urls.shift();
-
-        var data, imageURL;
-        [data, imageURL] = this._storage.retrieve(url);
-
-        var tab = new TabooInfo();
-        tab.url = url;
-        tab.title = data.entries[data.index - 1].title;
-        tab.imageURL = imageURL;
-        tab.created = data.taboo.created;
-        tab.updated = data.taboo.updated;
-        return tab;
+        return this._storage.retrieve(url);
       },
       hasMoreElements: function() {
         return this._urls.length > 0;
@@ -372,8 +368,8 @@ TabooService.prototype = {
    * a bunch of code here
    */
   open: function TB_open(aURL, aWhere) {
-    var tabData, imageURL;
-    [tabData, imageURL] = this._storage.retrieve(aURL);
+    var info = this._storage.retrieve(aURL);
+    var tabData = info.data;
 
     // helper hash for ensuring unique frame IDs
     var idMap = { used: {} };
