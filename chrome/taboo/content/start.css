@@ -1,7 +1,18 @@
+body {
+  background: #eee;
+  font: Verdana, "Lucida Grande", Lucida, sans-serif;
+}
 
 ul {
   padding: 0;
   list-style: none;
+}
+
+li {
+  float: left;
+  display: block;
+  height: 150px;
+  margin-top: 20px;
 }
 
 li span {
@@ -13,21 +24,18 @@ li span.title {
   overflow: hidden;
   font-size: 12px;
   padding-top: 4px;
+  font-weight: bold;
+  color: #777;
 }
 
 li span.url {
   width: 125px;
   overflow: hidden;
-  font-size: 10px;
+  font-size: 11px;
   color: #08f;
   text-decoration: underline;
   padding-bottom: 2px;
-}
-
-li {
-  float: left;
-  display: block;
-  height: 150px;
+  padding-top: 5px;
 }
 
 li div {
@@ -79,8 +87,8 @@ li:hover span.url {
   color: #f80;
 }
 
-body {
-  background: #eee;
+html {
+  margin-top:-20px;
 }
 
 #search {
