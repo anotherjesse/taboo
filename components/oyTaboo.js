@@ -201,7 +201,7 @@ TabooStorageSQL.prototype = {
     stmt.reset();
     stmt.params.url = url;
 
-    var md5;
+    var md5 = null;
     if (stmt.step()) {
       created = stmt.row.created;
 
@@ -209,13 +209,14 @@ TabooStorageSQL.prototype = {
         description = stmt.row.description;
 
       md5 = stmt.row.md5;
-
-      this.delete(url);
-    } else {
-      md5 = hex_md5(url);
     }
 
     stmt.reset();
+
+    if (md5)
+      this.delete(url);
+    else
+      md5 = hex_md5(url);
 
     var pp = this._insertURL.params;
     pp.url = url;
