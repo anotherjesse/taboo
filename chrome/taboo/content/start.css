@@ -1,3 +1,4 @@
+
 ul {
   padding: 0;
   list-style: none;
@@ -11,6 +12,7 @@ li span.title {
   width: 125px;
   overflow: hidden;
   font-size: 12px;
+  padding-top: 4px;
 }
 
 li span.url {
@@ -25,6 +27,10 @@ li span.url {
 li {
   float: left;
   display: block;
+  height: 150px;
+}
+
+li div {
   margin: 5px;
   padding: 5px;
   -moz-border-radius: 10px;
@@ -40,7 +46,12 @@ li img.preview {
   border: 1px solid #888;
 }
 
+li:hover .delete {
+  display: inline;
+}
+
 li .delete {
+  display: none;
   background: transparent url("close.png") top no-repeat;
   width: 14px !important;
   height: 14px !important;
@@ -54,7 +65,7 @@ li .delete:hover {
   background: transparent url("close.png") bottom no-repeat;
 }
 
-li:hover {
+li div:hover {
   border-color: #ddd;
   background: #fff;
   color: black;

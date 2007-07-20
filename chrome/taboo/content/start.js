@@ -12,10 +12,9 @@ while (enum.hasMoreElements()) {
   // this should be a custom xbl:
   (function (tab){ 
     var box = document.createElement('li');
-    box.setAttribute('title', tab.title);
-    box.innerHTML = '<span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
+    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
       tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" />';
+      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" /></div>';
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
