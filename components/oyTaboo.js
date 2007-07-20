@@ -185,9 +185,6 @@ function TabooStorageSQL() {
     'INSERT INTO taboo_data ' +
     '(url, title, description, md5, created, updated, full) ' +
     'VALUES (:url, :title, :description, :md5, :created, :updated, :full)');
-
-  this._fetchURLs = createStatement(this._DBConn,
-    'SELECT url FROM taboo_data');
 }
 
 TabooStorageSQL.prototype = {
@@ -273,12 +270,21 @@ TabooStorageSQL.prototype = {
 
     return ret;
   },
-  getURLs: function TSSQL_getURLs() {
-    var urls = [];
-    while (this._fetchURLs.step())
-      urls.push(this._fetchURLs.row.url);
+  getURLs: function TSSQL_getURLs(filter) {
+    var sql = 'SELECT url FROM taboo_data';
+    if (filter) {
+      var where = ' WHERE url LIKE "%FILTER%" or title LIKE "%FILTER%" or ' +
+                  'description LIKE "%FILTER%"';
+      sql += where.replace(/FILTER/g, filter);
+    }
 
-    this._fetchURLs.reset();
+    var stmt = createStatement(this._DBConn, sql);
+
+    var urls = [];
+    while (stmt.step())
+      urls.push(stmt.row.url);
+
+    stmt.reset();
     return urls;
   },
   _getPreviewFile: function TSSQL__getPreviewFile(id) {
@@ -348,7 +354,7 @@ TabooService.prototype = {
     this._storage.delete(aURL);
   },
   get: function TB_get(filter) {
-    var urls = this._storage.getURLs();
+    var urls = this._storage.getURLs(filter);
 
     var enumerator = {
       _urls: urls,
