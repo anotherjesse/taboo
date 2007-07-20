@@ -168,8 +168,8 @@ function TabooStorageSQL() {
     .getService(Ci.mozIStorageService);
   this._DBConn = storageService.openDatabase(dbfile);
 
-  var schema = 'url TEXT PRIMARY KEY, title TEXT, description TEXT, md5 TEXT' +
-               'created INTEGER, updated INTEGER, full TEXT';
+  var schema = 'url TEXT PRIMARY KEY, title TEXT, description TEXT, ' +
+               'md5 TEXT, created INTEGER, updated INTEGER, full TEXT';
 
   try {
     this._DBConn.createTable('taboo_data', schema);
@@ -177,8 +177,7 @@ function TabooStorageSQL() {
   catch (e) { }
 
   this._fetchData = createStatement(this._DBConn,
-    'SELECT title, description, md5, created, updated, full FROM taboo_data ' +
-    'WHERE url = :url');
+    'SELECT * FROM taboo_data WHERE url = :url');
 
   this._removeURL = createStatement(this._DBConn,
     'DELETE FROM taboo_data WHERE url = :url');
