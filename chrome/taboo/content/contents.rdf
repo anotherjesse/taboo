@@ -4,6 +4,7 @@
   <RDF:Seq RDF:about="urn:mozilla:package:root">
     <RDF:li RDF:resource="urn:mozilla:package:taboo"></RDF:li>
   </RDF:Seq>
+  <RDF:Description chrome:extension="true" chrome:name="taboo" RDF:about="urn:mozilla:package:taboo" />
   <RDF:Seq RDF:about="urn:mozilla:overlays">
     <RDF:li RDF:resource="chrome://browser/content/browser.xul"></RDF:li>
   </RDF:Seq>
