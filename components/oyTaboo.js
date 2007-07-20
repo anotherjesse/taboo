@@ -278,6 +278,8 @@ TabooStorageSQL.prototype = {
       sql += where.replace(/FILTER/g, filter);
     }
 
+    sql += " order by updated desc";
+
     var stmt = createStatement(this._DBConn, sql);
 
     var urls = [];
