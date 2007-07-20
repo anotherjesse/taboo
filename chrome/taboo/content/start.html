@@ -18,7 +18,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
     <script type="text/javascript">
-
+	var $ = function(x) { return document.getElementById(x); }
     document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />');
 
     function loadJS() {
@@ -32,11 +32,27 @@
       for (var i = 0; i < scripts.length; i++) {
         loader.loadSubScript(scripts[i], window);
       }
+      loadTaboos();
     }
 
     window.addEventListener("load", loadJS, false);
+    
+    document.onkeypress = function(event) {
+    	if (event.charCode == 0) {
+    		searchText = null;
+       		$('search').className = "hidden";
+    		return;
+    	}
+    	document.body.removeChild($('taboos'));
+    	searchText = searchText ? searchText : "";
+    	loadTaboos();
+    	$('search').className = '';
+    	searchText += String.fromCharCode(event.charCode);
+    	$('search').innerHTML = searchText;
+    }
+    
     </script>
   </head>
-  <body></body>
+  <body><div class="hidden" id="search"></div></body>
 </html>
 
