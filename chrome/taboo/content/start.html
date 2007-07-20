@@ -47,9 +47,9 @@
     	}
     	document.body.removeChild($('taboos'));
     	searchText = searchText ? searchText : "";
+    	searchText += String.fromCharCode(event.charCode);
     	loadTaboos();
     	$('search').className = '';
-    	searchText += String.fromCharCode(event.charCode);
     	$('search').innerHTML = searchText;
     }
     
