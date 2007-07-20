@@ -1,9 +1,17 @@
-#taboo-toolbarbutton {
+#taboo-toolbarbutton-add {
     list-style-image: url("assets/hourglass.png");
     -moz-image-region: rect( 0px 24px 24px  0px);
 }
 
-#taboo-toolbarbutton:hover {
+#taboo-toolbarbutton-add:hover {
     -moz-image-region: rect(24px 24px 48px  0px);
 }
 
+#taboo-toolbarbutton-view {
+    list-style-image: url("assets/hourglass.png");
+    -moz-image-region: rect(24px 24px 48px  0px);
+}
+
+#taboo-toolbarbutton-view:hover {
+    -moz-image-region: rect( 0px 24px 24px  0px);
+}

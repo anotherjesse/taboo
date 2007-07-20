@@ -22,10 +22,15 @@
 
   <toolbox id="navigator-toolbox">
     <toolbarpalette id="BrowserToolbarPalette">
-      <toolbarbutton id="taboo-toolbarbutton"
-        label="Taboo"
+      <toolbarbutton id="taboo-toolbarbutton-add"
+        label="Add to Taboo"
         tooltiptext="save this tab to read later"
-        oncommand="taboo.onclick(event)"
+        command="cmd_addTaboo"
+        class="toolbarbutton-1 chromeclass-toolbar-additional" />
+      <toolbarbutton id="taboo-toolbarbutton-view"
+        label="View Taboos"
+        tooltiptext="View your Taboos in a new tab"
+        command="cmd_showTaboos"
         class="toolbarbutton-1 chromeclass-toolbar-additional" />
     </toolbarpalette>
   </toolbox>
@@ -33,12 +38,13 @@
   <keyset id="mainKeyset">
       <key id="key_showFolds"
           key="F"
-          command="cmd_showFolds"
+          command="cmd_showTaboos"
           modifiers="accel shift"/>
   </keyset>
   
   <commandset id="mainCommandSet">
-    <command id="cmd_showFolds" oncommand="taboo.show()" />
+    <command id="cmd_showTaboos" oncommand="taboo.show()" />
+    <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
   </commandset>
 
 </overlay>
