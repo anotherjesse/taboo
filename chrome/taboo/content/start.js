@@ -1,13 +1,13 @@
 const CC = Components.classes;
 const CI = Components.interfaces;
-const SVC = CC['@oy/tablets;1'].getService(CI.oyITablets);
+const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
 var ul = document.createElement('ul');
 
-var enum = SVC.getTablets();
+var enum = SVC.get(null);
 while (enum.hasMoreElements()) {
   var tab = enum.getNext();
-  tab.QueryInterface(CI.oyITabletInfo);
+  tab.QueryInterface(CI.oyITabooInfo);
 
   // this should be a custom xbl:
   (function (tab){ 

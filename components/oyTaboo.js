@@ -83,13 +83,13 @@ function hex_md5(s) {
 
 
 /*
- * Tablet Info Instance
+ * Taboo Info Instance
  */
 
-function TabletInfo() {
+function TabooInfo() {
 }
 
-TabletInfo.prototype = {
+TabooInfo.prototype = {
   title: "",
   url: "",
   description: null,
@@ -98,7 +98,7 @@ TabletInfo.prototype = {
   updated: null,
   QueryInterface: function(iid) {
     if (!iid.equals(Ci.nsISupports) &&
-        !iid.equals(Ci.oyITabletInfo)) {
+        !iid.equals(Ci.oyITabooInfo)) {
       throw Cr.NS_ERROR_NO_INTERFACE;
     }
     return this;
@@ -106,7 +106,7 @@ TabletInfo.prototype = {
 }
 
 /*
- * Tablets Service Component
+ * Taboo Service Component
  */
 
 
@@ -142,21 +142,21 @@ function snapshot() {
   return [win, canvas];
 }
 
-function TabletStorageFS() {
-  this._tabletsDir = Cc['@mozilla.org/file/directory_service;1']
+function TabooStorageFS() {
+  this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
     .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
-  this._tabletsDir.append('tablets');
+  this._tabooDir.append('taboo');
 
-  if (!this._tabletsDir.exists())
-    this._tabletsDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
+  if (!this._tabooDir.exists())
+    this._tabooDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
 
-  this._tabletsFile = this._tabletsDir.clone();
-  this._tabletsFile.append('tablets.js');
+  this._tabooFile = this._tabooDir.clone();
+  this._tabooFile.append('taboo.js');
 
   this._loadState();
 }
 
-TabletStorageFS.prototype = {
+TabooStorageFS.prototype = {
   save: function TSFS_save(url, data, preview) {
     this._data[url] = data;
     this._saveState();
@@ -202,13 +202,13 @@ TabletStorageFS.prototype = {
   },
   _getPreviewFile: function TSFS__getPreviewFile(url) {
     var id = hex_md5(url);
-    var file = this._tabletsDir.clone();
+    var file = this._tabooDir.clone();
     file.append(id + '.png');
     return file;
   },
   _saveState: function TSFS__saveState() {
     try {
-      var file = this._tabletsFile;
+      var file = this._tabooFile;
 
       var ostream = Cc['@mozilla.org/network/safe-file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
@@ -233,7 +233,7 @@ TabletStorageFS.prototype = {
   },
   _loadState: function TSFS__loadState() {
     try { 
-      var file = this._tabletsFile;
+      var file = this._tabooFile;
  
       var stream = Cc['@mozilla.org/network/file-input-stream;1']
           .createInstance(Ci.nsIFileInputStream);
@@ -264,14 +264,14 @@ TabletStorageFS.prototype = {
 }
 
 
-function TabletsService() {
+function TabooService() {
   var obs = getObserverService();
   obs.addObserver(this, 'profile-after-change', false);
 }
 
-TabletsService.prototype = {
+TabooService.prototype = {
   _init: function TB__init() {
-    this._storage = new TabletStorageFS();
+    this._storage = new TabooStorageFS();
   },
   observe: function TB_observe(subject, topic, state) {
     var obs = getObserverService();
@@ -318,20 +318,20 @@ TabletsService.prototype = {
     var oldData, oldPreview;
     [oldData, oldPreview] = this._storage.retrieve(url);
 
-    if (oldData && oldData.tablet) {
-      var tabletState = oldData.tablet;
-      tabletState.updated = new Date();
+    if (oldData && oldData.taboo) {
+      var tabooState = oldData.taboo;
+      tabooState.updated = new Date();
       if (aDescription != null)
-        tabletState.description = aDescription;
+        tabooState.description = aDescription;
     } else {
       var now = new Date();
-      var tabletState = { description: aDescription,
-                          created:     now,
-                          updated:     now
-                        };
+      var tabooState = { description: aDescription,
+                         created:     now,
+                         updated:     now
+                       };
     }
 
-    state.tablet = tabletState;
+    state.taboo = tabooState;
 
     this._storage.save(url, state, preview);
 
@@ -340,7 +340,7 @@ TabletsService.prototype = {
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
   },
-  getTablets: function TB_getTablets() {
+  get: function TB_get(filter) {
     var urls = this._storage.getURLs();
 
     var enumerator = {
@@ -352,12 +352,12 @@ TabletsService.prototype = {
         var data, imageURL;
         [data, imageURL] = this._storage.retrieve(url);
 
-        var tab = new TabletInfo();
+        var tab = new TabooInfo();
         tab.url = url;
         tab.title = data.entries[data.index - 1].title;
         tab.imageURL = imageURL;
-        tab.created = data.tablet.created;
-        tab.updated = data.tablet.updated;
+        tab.created = data.taboo.created;
+        tab.updated = data.taboo.updated;
         return tab;
       },
       hasMoreElements: function() {
@@ -561,7 +561,7 @@ TabletsService.prototype = {
   xulAttributes: [],
 
   getInterfaces: function TB_getInterfaces(countRef) {
-    var interfaces = [Ci.oyITablets, Ci.nsIObserver, Ci.nsISupports];
+    var interfaces = [Ci.oyITaboo, Ci.nsIObserver, Ci.nsISupports];
     countRef.value = interfaces.length;
     return interfaces;
   },
@@ -575,7 +575,7 @@ TabletsService.prototype = {
   flags: Ci.nsIClassInfo.SINGLETON,
 
   QueryInterface: function TB_QueryInterface(iid) {
-    if (iid.equals(Ci.oyITablets) ||
+    if (iid.equals(Ci.oyITaboo) ||
         iid.equals(Ci.nsIObserver) ||
         iid.equals(Ci.nsISupports))
       return this;
@@ -621,7 +621,7 @@ var Module = {
       throw Cr.NS_ERROR_NOT_IMPLEMENTED;
 
     if (cid.equals(TB_CLASSID))
-      return new GenericComponentFactory(TabletsService)
+      return new GenericComponentFactory(TabooService)
 
     throw Cr.NS_ERROR_NO_INTERFACE;
   },

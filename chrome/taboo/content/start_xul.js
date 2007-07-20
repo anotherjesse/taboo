@@ -2,9 +2,9 @@ const CC = Components.classes;
 const CI = Components.interfaces;
 const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
-var groupbox = document.getElementById('tablets');
+var groupbox = document.getElementById('taboo');
 
-var enum = SVC.getTaboo();
+var enum = SVC.get(null);
 while (enum.hasMoreElements()) {
   var tab = enum.getNext();
   tab.QueryInterface(CI.oyITabooInfo);
@@ -13,7 +13,7 @@ while (enum.hasMoreElements()) {
   (function (tab){
     
     var box = document.createElement('vbox');
-    box.setAttribute('class', 'tablet')
+    box.setAttribute('class', 'taboo')
     
     var node = document.createElement('image');
     node.setAttribute('class', 'delete')

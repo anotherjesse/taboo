@@ -1,4 +1,4 @@
-#tablets {
+#taboo {
   background: #eee;
   padding: 10px;
 }
@@ -16,7 +16,7 @@ label.url {
   padding-bottom: 2px;
 }
 
-.tablet {
+.taboo {
   margin: 5px;
   padding: 5px;
   -moz-border-radius: 10px;
@@ -26,22 +26,22 @@ label.url {
   color: #333;
 }
 
-.tablet image.preview {
+.taboo image.preview {
   margin: 5px 0 0 0;
   border: 1px solid #888;
 }
 
-.tablet:hover {
+.taboo:hover {
   border-color: #ddd;
   background: #fff;
   color: black;
 }
 
-.tablet:hover image.preview {
+.taboo:hover image.preview {
   border-color: black;
 }
 
-.tablet:hover label.url {
+.taboo:hover label.url {
   color: #f80;
 }
 
