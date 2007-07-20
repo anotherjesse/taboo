@@ -8,10 +8,14 @@ li span {
 }
 
 li span.title {
+  width: 125px;
+  overflow: hidden;
   font-size: 12px;
 }
 
 li span.url {
+  width: 125px;
+  overflow: hidden;
   font-size: 10px;
   color: #08f;
   text-decoration: underline;
@@ -26,7 +30,6 @@ li {
   -moz-border-radius: 10px;
   border: 1px solid #e8e8e8;
   background: #f8f8f8;
-  height: 120px;
   width: 140px;
   cursor: pointer;
   color: #333;
