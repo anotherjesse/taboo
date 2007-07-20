@@ -17,7 +17,7 @@ function Taboo() {
     }
   }
   this.show = function() {
-    openUILinkIn('chrome://taboo/content/start.xul', 'tab');
+    openUILinkIn('chrome://taboo/content/start.html', 'tab');
   }
   
   tboInstallInToolbar();
