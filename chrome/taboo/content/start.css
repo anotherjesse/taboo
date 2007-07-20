@@ -83,4 +83,12 @@ body {
   background: #eee;
 }
 
+#search {
+  width: 100px; 
+  height: 75px;
+  background: #fff;
+}
 
+.hidden {
+  display: none;
+}
