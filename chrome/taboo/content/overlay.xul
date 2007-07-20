@@ -13,19 +13,19 @@
  License.
 -->
 
-<?xml-stylesheet type="text/css" href="chrome://tablets/content/overlay.css"?>
+<?xml-stylesheet type="text/css" href="chrome://taboo/content/overlay.css"?>
 
-<overlay id="tabletOverlay"
+<overlay id="tabooOverlay"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://tablets/content/overlay.js"/>
+  <script type="application/x-javascript" src="chrome://taboo/content/overlay.js"/>
 
   <toolbox id="navigator-toolbox">
     <toolbarpalette id="BrowserToolbarPalette">
-      <toolbarbutton id="tablets-toolbarbutton"
-        label="Tablets"
+      <toolbarbutton id="taboo-toolbarbutton"
+        label="Taboo"
         tooltiptext="save this tab to read later"
-        oncommand="tablets.onclick(event)"
+        oncommand="taboo.onclick(event)"
         class="toolbarbutton-1 chromeclass-toolbar-additional" />
     </toolbarpalette>
   </toolbox>
@@ -38,7 +38,7 @@
   </keyset>
   
   <commandset id="mainCommandSet">
-    <command id="cmd_showFolds" oncommand="tablets.show()" />
+    <command id="cmd_showFolds" oncommand="taboo.show()" />
   </commandset>
 
 </overlay>

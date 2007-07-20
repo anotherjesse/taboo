@@ -1,13 +1,13 @@
 const CC = Components.classes;
 const CI = Components.interfaces;
-const SVC = CC['@oy/tablets;1'].getService(CI.oyITablets);
+const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
 var groupbox = document.getElementById('tablets');
 
-var enum = SVC.getTablets();
+var enum = SVC.getTaboo();
 while (enum.hasMoreElements()) {
   var tab = enum.getNext();
-  tab.QueryInterface(CI.oyITabletInfo);
+  tab.QueryInterface(CI.oyITabooInfo);
 
   // this should be a custom xbl:
   (function (tab){

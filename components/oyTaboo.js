@@ -11,9 +11,9 @@
  * License.
  */
 
-const TB_CONTRACTID = '@oy/tablets;1';
+const TB_CONTRACTID = '@oy/taboo;1';
 const TB_CLASSID    = Components.ID('{962a9516-b177-4083-bbe8-e10f47cf8570}');
-const TB_CLASSNAME  = 'Tablets Service';
+const TB_CLASSNAME  = 'Taboo Service';
 
 
 const Cc = Components.classes;

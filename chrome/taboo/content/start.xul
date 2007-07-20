@@ -14,10 +14,10 @@
 -->
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
-<?xml-stylesheet href="chrome://tablets/content/start_xul.css" type="text/css"?>
+<?xml-stylesheet href="chrome://taboo/content/start_xul.css" type="text/css"?>
 
 <page xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  title="Tablets">
+  title="Taboo">
   <script type="application/x-javascript" src="chrome://browser/content/utilityOverlay.js"/>
   
   <script type="text/javascript"><![CDATA[ 
@@ -27,7 +27,7 @@
                                .getService(Components.interfaces.mozIJSSubScriptLoader);
 
       var scripts = [
-          'chrome://tablets/content/start_xul.js', 
+          'chrome://taboo/content/start_xul.js', 
         ];
 
       for (var i = 0; i < scripts.length; i++) {

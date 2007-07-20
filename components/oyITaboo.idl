@@ -16,16 +16,16 @@
 interface nsISimpleEnumerator;
 
 [scriptable, uuid(8d5388b0-7490-47b0-a7e2-e92beadbb0db)]
-interface oyITablets : nsISupports {
+interface oyITaboo : nsISupports {
   boolean save(in AUTF8String aDescription);
   void delete(in AUTF8String aURL);
   void open(in AUTF8String aURL, in AUTF8String aWhere);
 
-  nsISimpleEnumerator getTablets();
+  nsISimpleEnumerator get(in AUTF8String filter);
 };
 
 [scriptable, uuid(446637e1-e732-4f21-9b30-175d2773768a)]
-interface oyITabletInfo : nsISupports {
+interface oyITabooInfo : nsISupports {
   attribute AUTF8String title;
   attribute AUTF8String url;
   attribute AUTF8String description;
