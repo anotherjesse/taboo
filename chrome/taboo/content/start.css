@@ -3,6 +3,29 @@ body {
   font: Verdana, "Lucida Grande", Lucida, sans-serif;
 }
 
+#styles {
+  float: right;
+}
+
+#styles a {
+  border: 1px solid #ccc;
+  text-decoration: none;
+  color: #08f;
+  background: white;
+  padding: 4px;
+}
+
+#styles a:hover {
+  border-color: #888;
+  color: #f80;
+}
+
+#search {
+  border: 1px solid #ccc; 
+  padding: 2px 2px 2px 24px;
+  background: white url("assets/search.gif") left no-repeat;
+}
+
 ul {
   padding: 0;
   list-style: none;
@@ -93,13 +116,6 @@ li:hover img {
 
 li:hover span.url {
   color: #f80;
-}
-
-#search {
-  width: 100px; 
-  height: 75px;
-  background: #fff;
-  color: black;
 }
 
 .hidden {

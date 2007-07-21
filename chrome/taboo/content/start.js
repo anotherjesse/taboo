@@ -7,7 +7,6 @@ var searchText = null;
 
 function loadTaboos() {
 	var ul = document.createElement('ul');
-	ul.setAttribute('id', 'taboos');
 	
 	var enum = SVC.get(searchText, false);
   while (enum.hasMoreElements()) {
@@ -34,7 +33,7 @@ function loadTaboos() {
       ul.appendChild(box);
     })(tab);
   }
-	
-	document.body.appendChild(ul);
+  
+	document.getElementById('content').appendChild(ul);
 }
 
