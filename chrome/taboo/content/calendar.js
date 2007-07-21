@@ -41,12 +41,17 @@ function Calendar(container) {
   this.finish = function() {
     var year = 2007;
     var month = 6;
-    var monthDB = db[year][month]; // FIX ME
+    try {
+      var monthDB = db[year][month];
+    }
+    catch (e) {
+      var monthDB = [];
+    }
     
-    var curDate = new Date(2007, 7, 1);
+    var curDate = new Date(year, month, 1);
     table.innerHTML = "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>"
     var tr = null;
-    while (curDate.getMonth() == 7) {
+    while (curDate.getMonth() == month) {
       
       if (!tr) {
         tr = document.createElement('tr');
