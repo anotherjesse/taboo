@@ -198,6 +198,20 @@ TabooStorageSQL.prototype = {
   save: function TSSQL_save(url, description, data, preview) {
     var title = data.entries[data.index - 1].title;
 
+    if (!title) {
+      var ios = Cc['@mozilla.org/network/io-service;1']
+        .getService(Ci.nsIIOService);
+      var uri = ios.newURI(url, null, null);
+
+      if (uri.path.length > 1) {
+        var parts = uri.path.split('/');
+        title = parts.pop();
+      }
+        
+      if (!title)
+        title = uri.host;
+    }
+
     var updated = Date.now();
     var created = updated;
 
