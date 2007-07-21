@@ -18,10 +18,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
     <script type="text/javascript">
-	var $ = function(x) { return document.getElementById(x); }
-    document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />');
+    // for debugging - get around chrome caching
+    document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />'); 
 
-    function loadJS() {
+    var $ = function(x) { return document.getElementById(x); }
+
+    function init() {
       const loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
                                .getService(Components.interfaces.mozIJSSubScriptLoader);
 
@@ -32,27 +34,16 @@
       for (var i = 0; i < scripts.length; i++) {
         loader.loadSubScript(scripts[i], window);
       }
-      loadTaboos(normalStartPage);
+
+      controller.display();
+
+      $('search').onkeyup = function(event) {
+        controller.filter($('search').value);
+      }
     }
 
-    window.addEventListener("load", loadJS, false);
-    
-    document.onkeypress = function(event) {
-    	if (event.charCode == 0) {
-    		searchText = null;
-       		$('search').className = "hidden";
-        	$('content').removeChild($('taboos'));
-			loadTaboos(normalStartPage);
-    		return;
-    	}
-    	document.body.removeChild($('taboos'));
-    	searchText = searchText ? searchText : "";
-    	searchText += String.fromCharCode(event.charCode);
-    	$('search').className = '';
-    	$('search').innerHTML = searchText;
-    	loadTaboos(normalStartPage);
-    }
-    
+    window.addEventListener("load", init, false);
+
     </script>
   </head>
   <body>
