@@ -215,7 +215,8 @@ TabooStorageSQL.prototype = {
 
       if (uri.path.length > 1) {
         var parts = uri.path.split('/');
-        title = parts.pop();
+        while (!title && parts.length)
+          title = parts.pop();
       }
         
       if (!title)
@@ -332,7 +333,11 @@ TabooStorageSQL.prototype = {
       sql += where.replace(/FILTER/g, filter);
     }
 
-    sql += " order by updated desc";
+    if (deleted)
+      sql += " order by deleted desc";
+    else
+      sql += " order by updated desc";
+
     debug("SQL: " + sql + "\n");
 
     var stmt = createStatement(this._DBConn, sql);
@@ -408,6 +413,7 @@ TabooService.prototype = {
     var preview = win.atob(previewData.substr('data:image/png;base64,'.length));
 
     var url = selectedBrowser.currentURI.spec;
+    url = url.replace(/#.*$/, '');
 
     this._storage.save(url, aDescription, state, preview);
 
