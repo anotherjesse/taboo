@@ -47,10 +47,12 @@ function Calendar(container) {
     table.innerHTML = "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>"
     var tr = null;
     while (curDate.getMonth() == 7) {
+      
       if (!tr) {
         tr = document.createElement('tr');
         for (var i=0; i<curDate.getDay(); i++) {
           var td = document.createElement('td');
+          td.setAttribute('class', 'blank')
           tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -63,6 +65,7 @@ function Calendar(container) {
         td.appendChild(img);
       }
       else {
+        td.setAttribute('class', 'empty')
         td.appendChild(document.createTextNode(curDate.getDate()));        
       }
       tr.appendChild(td);

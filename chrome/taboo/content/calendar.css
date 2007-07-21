@@ -1,9 +1,18 @@
 .calendar td {
     width: 100px;
     height: 100px;
+    border: 1px solid black;
 }
 
 .calendar td img {
     max-width: 100px;
     max-height: 100px;
+}
+
+.calendar td.empty {
+    color: #ccc;
+}
+
+.calendar td.blank {
+    border: none;
 }
