@@ -332,7 +332,11 @@ TabooStorageSQL.prototype = {
       sql += where.replace(/FILTER/g, filter);
     }
 
-    sql += " order by updated desc";
+    if (deleted)
+      sql += " order by deleted desc";
+    else
+      sql += " order by updated desc";
+
     debug("SQL: " + sql + "\n");
 
     var stmt = createStatement(this._DBConn, sql);
