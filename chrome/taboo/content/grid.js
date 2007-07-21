@@ -12,15 +12,17 @@
  */
 
 function Grid(container) {
+  container.className = 'grid';
+
   var ul = document.createElement('ul');
   container.appendChild(ul);
-  
+
   this.start = function() {
     ul.innerHTML = '';
   }
-  
+
   this.finish = function() {}
-  
+
   this.add = function(tab) {
     var box = document.createElement('li');
     box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +

@@ -1,4 +1,3 @@
-bug - race condition: while page is still loading, if you taboo it, it will have some data from the last page and some from the new page....
 bug - proper scaling (with anti-aliasing)
 
 feature - undo
