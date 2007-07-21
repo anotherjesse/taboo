@@ -7,16 +7,15 @@ var searchText = null;
 
 function loadTaboos(display) {
   display.container.setAttribute('id', 'taboos');
-
-  var enum = SVC.get(searchText);
+  var enum = SVC.get(searchText, false);
   while (enum.hasMoreElements()) {
     var tab = enum.getNext();
     tab.QueryInterface(CI.oyITabooInfo);
 
-    displayFunc(tab);
+    display.display(tab);
   }
-	
-  document.body.appendChild(display.container);
+
+  document.getElementById('content').appendChild(display.container);
 }
 
 

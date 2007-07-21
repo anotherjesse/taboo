@@ -9,6 +9,13 @@
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
+ * 
+ * Portions are derived from the Mozilla nsSessionStore component:
+ *
+ * Copyright (C) 2006 Simon Bünzli <zeniko@gmail.com>
+ *
+ * Contributor(s):
+ * Dietrich Ayala <autonome@gmail.com>
  */
 
 const TB_CONTRACTID = '@oy/taboo;1';
@@ -118,11 +125,11 @@ function snapshot() {
 
   var canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
 
-  var realW = content.innerWidth;
+  var realW = content.document.body.clientWidth;
   var realH = content.innerHeight;
 
-  var pW = 125.0/realW;
-  var pH = 125.0/realH;
+  var pW = 500.0/realW;
+  var pH = 500.0/realH;
 
   var p = pW;
 
@@ -138,7 +145,7 @@ function snapshot() {
   
   var ctx = canvas.getContext("2d");
   ctx.scale(p, p);
-  ctx.drawWindow(content, content.scrollX, content.scrollY, content.innerWidth, content.innerHeight, "rgb(0,0,0)");
+  ctx.drawWindow(content, content.scrollX, content.scrollY, realW, realH, "rgb(0,0,0)");
 
   return [win, canvas];
 }
@@ -169,7 +176,8 @@ function TabooStorageSQL() {
   this._DBConn = storageService.openDatabase(dbfile);
 
   var schema = 'url TEXT PRIMARY KEY, title TEXT, description TEXT, ' +
-               'md5 TEXT, created INTEGER, updated INTEGER, full TEXT';
+               'md5 TEXT, favicon TEXT, full TEXT, ' +
+               'created INTEGER, updated INTEGER, deleted INTEGER';
 
   try {
     this._DBConn.createTable('taboo_data', schema);
@@ -179,53 +187,89 @@ function TabooStorageSQL() {
   this._fetchData = createStatement(this._DBConn,
     'SELECT * FROM taboo_data WHERE url = :url');
 
+  this._markDelete = createStatement(this._DBConn,
+    'UPDATE taboo_data SET deleted = :deleted WHERE url = :url');
   this._removeURL = createStatement(this._DBConn,
     'DELETE FROM taboo_data WHERE url = :url');
+
   this._insertURL = createStatement(this._DBConn,
     'INSERT INTO taboo_data ' +
-    '(url, title, description, md5, created, updated, full) ' +
-    'VALUES (:url, :title, :description, :md5, :created, :updated, :full)');
+    '(url, title, description, md5, favicon, full, created, updated) ' +
+    'VALUES ' +
+    '(:url, :title, :description, :md5, :favicon, :full, :created, :updated)');
+  this._updateURL = createStatement(this._DBConn,
+    'UPDATE taboo_data SET title = :title, favicon = :favicon, ' +
+    'full = :full, updated = :updated WHERE url = :url');
+  this._updateDesc = createStatement(this._DBConn,
+    'UPDATE taboo_data SET description = :description WHERE url = :url');
 }
 
 TabooStorageSQL.prototype = {
   save: function TSSQL_save(url, description, data, preview) {
     var title = data.entries[data.index - 1].title;
 
+    if (!title) {
+      var ios = Cc['@mozilla.org/network/io-service;1']
+        .getService(Ci.nsIIOService);
+      var uri = ios.newURI(url, null, null);
+
+      if (uri.path.length > 1) {
+        var parts = uri.path.split('/');
+        while (!title && parts.length)
+          title = parts.pop();
+      }
+        
+      if (!title)
+        title = uri.host;
+    }
+
     var updated = Date.now();
-    var created = updated;
 
     var stmt = this._fetchData;
     stmt.reset();
     stmt.params.url = url;
 
-    var md5 = null;
-    if (stmt.step()) {
-      created = stmt.row.created;
+    var exists = stmt.step();
 
-      if (description == null)
-        description = stmt.row.description;
-
+    var md5;
+    if (exists)
       md5 = stmt.row.md5;
-    }
-
-    stmt.reset();
-
-    if (md5)
-      this.delete(url);
     else
       md5 = hex_md5(url);
 
-    var pp = this._insertURL.params;
-    pp.url = url;
-    pp.title = title;
-    pp.description = description;
-    pp.md5 = md5;
-    pp.created = created;
-    pp.updated = updated;
-    pp.full = data.toSource();
+    stmt.reset();
 
-    this._insertURL.step();
-    this._insertURL.reset();
+    if (exists) {
+      var pp = this._updateURL.params;
+      pp.url = url;
+      pp.title = title;
+      pp.updated = updated;
+      pp.full = data.toSource();
+
+      this._updateURL.step();
+      this._updateURL.reset();
+
+      if (description) {
+        pp = this._updateDesc.params;
+        pp.url = url;
+        pp.description = description;
+
+        this._updateDesc.step();
+        this._updateDesc.reset();
+      } 
+    } else {
+      var pp = this._insertURL.params;
+      pp.url = url;
+      pp.title = title;
+      pp.description = description;
+      pp.md5 = hex_md5(url);
+      pp.full = data.toSource();
+      pp.created = updated;
+      pp.updated = updated;
+
+      this._insertURL.step();
+      this._insertURL.reset();
+    }
  
     try {
       var file = this._getPreviewFile(md5);
@@ -240,6 +284,12 @@ TabooStorageSQL.prototype = {
     catch (e) { } 
   },
   delete: function TSSQL_delete(url) {
+    this._deleteOp(url, Date.now());
+  },
+  undelete: function TSSQL_undelete(url) {
+    this._deleteOp(url, null);
+  },
+  reallyDelete: function TSSQL_reallyDelete(url) {
     this._removeURL.params.url = url;
     this._removeURL.step();
     this._removeURL.reset();
@@ -270,15 +320,25 @@ TabooStorageSQL.prototype = {
 
     return ret;
   },
-  getURLs: function TSSQL_getURLs(filter) {
-    var sql = 'SELECT url FROM taboo_data';
+  getURLs: function TSSQL_getURLs(filter, deleted) {
+    var sql = 'SELECT url FROM taboo_data WHERE ';
+    if (deleted)
+      sql += 'deleted IS NOT NULL';
+    else
+      sql += 'deleted IS NULL';
+
     if (filter) {
-      var where = ' WHERE url LIKE "%FILTER%" or title LIKE "%FILTER%" or ' +
-                  'description LIKE "%FILTER%"';
+      var where = ' and (url LIKE "%FILTER%" or title LIKE "%FILTER%" or ' +
+                  'description LIKE "%FILTER%")';
       sql += where.replace(/FILTER/g, filter);
     }
 
-    sql += " order by updated desc";
+    if (deleted)
+      sql += " order by deleted desc";
+    else
+      sql += " order by updated desc";
+
+    debug("SQL: " + sql + "\n");
 
     var stmt = createStatement(this._DBConn, sql);
 
@@ -293,6 +353,12 @@ TabooStorageSQL.prototype = {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
     return file;
+  },
+  _deleteOp: function TSSQL__deleteOp(url, deleted) {
+    this._markDelete.params.url = url;
+    this._markDelete.params.deleted = deleted;
+    this._markDelete.step();
+    this._markDelete.reset();
   }
 }
 
@@ -347,6 +413,7 @@ TabooService.prototype = {
     var preview = win.atob(previewData.substr('data:image/png;base64,'.length));
 
     var url = selectedBrowser.currentURI.spec;
+    url = url.replace(/#.*$/, '');
 
     this._storage.save(url, aDescription, state, preview);
 
@@ -355,8 +422,14 @@ TabooService.prototype = {
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
   },
-  get: function TB_get(filter) {
-    var urls = this._storage.getURLs(filter);
+  undelete: function TB_undelete(aURL) {
+    this._storage.undelete(aURL);
+  },
+  reallyDelete: function TB_reallyDelete(aURL) {
+    this._storage.reallyDelete(aURL);
+  },
+  get: function TB_get(filter, deleted) {
+    var urls = this._storage.getURLs(filter, deleted);
 
     var enumerator = {
       _urls: urls,
