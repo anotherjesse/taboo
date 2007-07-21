@@ -215,7 +215,8 @@ TabooStorageSQL.prototype = {
 
       if (uri.path.length > 1) {
         var parts = uri.path.split('/');
-        title = parts.pop();
+        while (!title && parts.length)
+          title = parts.pop();
       }
         
       if (!title)
