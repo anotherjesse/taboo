@@ -9,6 +9,13 @@
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
+ * 
+ * Portions are derived from the Mozilla nsSessionStore component:
+ *
+ * Copyright (C) 2006 Simon Bünzli <zeniko@gmail.com>
+ *
+ * Contributor(s):
+ * Dietrich Ayala <autonome@gmail.com>
  */
 
 const TB_CONTRACTID = '@oy/taboo;1';
@@ -279,12 +286,15 @@ TabooStorageSQL.prototype = {
     }
 
     sql += " order by updated desc";
+    dump("SQL: " + sql + "\n");
 
     var stmt = createStatement(this._DBConn, sql);
 
     var urls = [];
-    while (stmt.step())
+    while (stmt.step()) {
       urls.push(stmt.row.url);
+      dump("URLY: " + stmt.row.url + "\n");
+    }
 
     stmt.reset();
     return urls;
