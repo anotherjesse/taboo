@@ -2,19 +2,8 @@ const CC = Components.classes;
 const CI = Components.interfaces;
 const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
-function loadTaboos(display, searchText) {
-  var enum = SVC.get(searchText, false);
-  while (enum.hasMoreElements()) {
-    var tab = enum.getNext();
-    tab.QueryInterface(CI.oyITabooInfo);
 
-    display.display(tab);
-  }
-  document.getElementById('content').appendChild(display.getContainer());
-}
-
-
-var normalStartPage = {
+var grid = {
   container: null,
   getContainer: function() {
     return (this.container = this.container ? this.container : document.createElement('ul'));
@@ -25,7 +14,7 @@ var normalStartPage = {
       this.container = null;
     }
   },
-  display: function(tab) {
+  add: function(tab) {
     var box = document.createElement('li');
     box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
       tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
@@ -42,4 +31,35 @@ var normalStartPage = {
     }
     this.getContainer().appendChild(box);
   }
-}
+};
+
+var controller = {
+  view: grid,
+  load: function(view) {
+    this.view.removeContainer();
+    this.view = view;
+    this.display();
+  },
+  filter: function(str) {
+    if (this._filterStr && this._filterStr == str) {
+      return;
+    }
+
+    this.display(str);
+    this._filterStr = str;
+  },
+  display: function(searchText) {
+    console.log(this)
+    this.view.removeContainer();
+
+    var enum = SVC.get(searchText, false);
+    while (enum.hasMoreElements()) {
+      var tab = enum.getNext();
+      tab.QueryInterface(CI.oyITabooInfo);
+
+      this.view.add(tab);
+    }
+
+    $('content').appendChild(this.view.getContainer());
+  }
+};
