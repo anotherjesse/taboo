@@ -40,6 +40,8 @@
       $('search').onkeyup = function(event) {
         controller.filter($('search').value);
       }
+      $('search').value = '';
+      $('search').focus();
     }
 
     window.addEventListener("load", init, false);

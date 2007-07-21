@@ -2,17 +2,20 @@ const CC = Components.classes;
 const CI = Components.interfaces;
 const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
-
 var grid = {
   container: null,
-  getContainer: function() {
-    return (this.container = this.container ? this.container : document.createElement('ul'));
-  },
-  removeContainer: function() {
-    if (this.container) {
-      this.container.parentNode.removeChild(this.container);
-      this.container = null;
+  getContainer: function(node) {
+    if (!this.container) {
+      this.container = document.createElement('ul');
+      node.appendChild(this.container);
     }
+    return this.container;
+  },
+  start: function(node) {
+    this.getContainer(node);
+    this.container.innerHTML = '';
+  },
+  finish: function() {
   },
   add: function(tab) {
     var box = document.createElement('li');
@@ -36,7 +39,7 @@ var grid = {
 var controller = {
   view: grid,
   load: function(view) {
-    this.view.removeContainer();
+    $('content').innerHTML = '';
     this.view = view;
     this.display();
   },
@@ -49,8 +52,7 @@ var controller = {
     this._filterStr = str;
   },
   display: function(searchText) {
-    console.log(this)
-    this.view.removeContainer();
+    this.view.start($('content'));
 
     var enum = SVC.get(searchText, false);
     while (enum.hasMoreElements()) {
@@ -60,6 +62,6 @@ var controller = {
       this.view.add(tab);
     }
 
-    $('content').appendChild(this.view.getContainer());
+    this.view.finish();
   }
 };
