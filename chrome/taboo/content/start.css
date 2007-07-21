@@ -3,11 +3,11 @@ body {
   font: Verdana, "Lucida Grande", Lucida, sans-serif;
 }
 
-#styles {
+#views {
   float: right;
 }
 
-#styles a {
+#views a {
   border: 1px solid #ccc;
   text-decoration: none;
   color: #08f;
@@ -15,7 +15,7 @@ body {
   padding: 4px;
 }
 
-#styles a:hover {
+#views a:hover {
   border-color: #888;
   color: #f80;
 }
