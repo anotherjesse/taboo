@@ -12,10 +12,12 @@ li {
   float: left;
   display: block;
   height: 150px;
-  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
 li span {
+  width: 125px;
+  margin: 0 auto;
   display: block;
 }
 
@@ -26,6 +28,11 @@ li span.title {
   padding-top: 4px;
   font-weight: bold;
   color: #777;
+}
+
+li img.preview {
+  max-width: 125px;
+  max-height: 125px;
 }
 
 li span.url {
@@ -49,13 +56,10 @@ li div {
   color: #333;
 }
 
-li img.preview {
-  margin: 5px 0 0 0;
-  border: 1px solid #888;
-}
-
-li:hover .delete {
-  display: inline;
+li div:hover {
+  border-color: #ddd;
+  background: #fff;
+  color: black;
 }
 
 li .delete {
@@ -69,14 +73,18 @@ li .delete {
   position: relative;
 }
 
+li:hover .delete {
+  display: inline;
+}
+
 li .delete:hover {
   background: transparent url("close.png") bottom no-repeat;
 }
 
-li div:hover {
-  border-color: #ddd;
-  background: #fff;
-  color: black;
+li img.preview {
+  margin-top: 5px;
+  margin-left: 6px;
+  border: 1px solid #888;
 }
 
 li:hover img {
@@ -87,14 +95,11 @@ li:hover span.url {
   color: #f80;
 }
 
-html {
-  margin-top:-20px;
-}
-
 #search {
   width: 100px; 
   height: 75px;
   background: #fff;
+  color: black;
 }
 
 .hidden {
