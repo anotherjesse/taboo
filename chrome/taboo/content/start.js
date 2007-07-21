@@ -22,10 +22,10 @@ function Controller() {
   }
 
   this.filter = function(str) {
-    if (this._filterStr && this._filterStr == str) {
+    if (this._filterStr == str) {
       return;
     }
-
+    
     this.display(str);
     this._filterStr = str;
   }
@@ -45,4 +45,4 @@ function Controller() {
 }
 
 var controller = new Controller();
-controller.load(Grid);
+controller.load(Calendar);
