@@ -32,26 +32,15 @@
       for (var i = 0; i < scripts.length; i++) {
         loader.loadSubScript(scripts[i], window);
       }
-      loadTaboos(normalStartPage);
+      loadTaboos(normalStartPage, null);
+      
+      $('search').onkeyup = function(event) {
+        normalStartPage.removeContainer();
+        loadTaboos(normalStartPage, $('search').value);
+      }
     }
 
     window.addEventListener("load", loadJS, false);
-    
-    document.onkeypress = function(event) {
-    	if (event.charCode == 0) {
-    		searchText = null;
-       		$('search').className = "hidden";
-        	$('content').removeChild($('taboos'));
-			loadTaboos(normalStartPage);
-    		return;
-    	}
-    	document.body.removeChild($('taboos'));
-    	searchText = searchText ? searchText : "";
-    	searchText += String.fromCharCode(event.charCode);
-    	$('search').className = '';
-    	$('search').innerHTML = searchText;
-    	loadTaboos(normalStartPage);
-    }
     
     </script>
   </head>
