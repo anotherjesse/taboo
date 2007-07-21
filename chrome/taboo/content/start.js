@@ -1,41 +1,19 @@
-const CC = Components.classes;
-const CI = Components.interfaces;
-const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
-
-function Grid(container) {
-  var ul = document.createElement('ul');
-  container.appendChild(ul);
-  
-  this.start = function() {
-    ul.innerHTML = '';
-  }
-  
-  this.finish = function() {}
-  
-  this.add = function(tab) {
-    var box = document.createElement('li');
-    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
-      tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" /></div>';
-
-    box.onclick = function(event) {
-      if (event.originalTarget.className == 'delete') {
-        SVC.delete(tab.url);
-        box.parentNode.removeChild(box);
-      }
-      else {
-        SVC.open(tab.url, whereToOpenLink(event));
-      }
-    }
-    ul.appendChild(box);
-  }
-}
+/*
+ * Copyright 2007 Jesse Andrews, Manish Singh, Ian Fischer
+ *
+ * This file may be used under the terms of of the
+ * GNU General Public License Version 2 or later (the "GPL"),
+ * http://www.gnu.org/licenses/gpl.html
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ */
 
 function Controller() {
-  var inst = this;
-  
   var content = $('content');
-  var view = null
+  var view = null;
     
   this.load = function(ViewClass) {
     content.innerHTML = '';
@@ -58,8 +36,7 @@ function Controller() {
     var enum = SVC.get(searchTxt, false);
     while (enum.hasMoreElements()) {
       var tab = enum.getNext();
-      tab.QueryInterface(CI.oyITabooInfo);
-
+      tab.QueryInterface(Components.interfaces.oyITabooInfo);
       view.add(tab);
     }
 

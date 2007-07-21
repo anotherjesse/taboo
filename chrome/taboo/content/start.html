@@ -21,6 +21,9 @@
     // for debugging - get around chrome caching
     document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />'); 
 
+    const SVC = Components.classes['@oy/taboo;1']
+                          .getService(Components.interfaces.oyITaboo);
+
     var $ = function(x) { return document.getElementById(x); }
 
     function init() {
@@ -28,14 +31,13 @@
                                .getService(Components.interfaces.mozIJSSubScriptLoader);
 
       var scripts = [
-          'chrome://taboo/content/start.js', 
+          'chrome://taboo/content/grid.js',
+          'chrome://taboo/content/start.js',
         ];
 
-      for (var i = 0; i < scripts.length; i++) {
-        loader.loadSubScript(scripts[i], window);
-      }
-
-      controller.display();
+      scripts.forEach(function(script) {
+        loader.loadSubScript(script);
+      });
 
       $('search').onkeyup = function(event) {
         controller.filter($('search').value);
