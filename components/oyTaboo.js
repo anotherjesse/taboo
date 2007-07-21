@@ -118,11 +118,11 @@ function snapshot() {
 
   var canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
 
-  var realW = content.innerWidth;
+  var realW = content.document.body.clientWidth;
   var realH = content.innerHeight;
 
-  var pW = 125.0/realW;
-  var pH = 125.0/realH;
+  var pW = 500.0/realW;
+  var pH = 500.0/realH;
 
   var p = pW;
 
@@ -138,7 +138,7 @@ function snapshot() {
   
   var ctx = canvas.getContext("2d");
   ctx.scale(p, p);
-  ctx.drawWindow(content, content.scrollX, content.scrollY, content.innerWidth, content.innerHeight, "rgb(0,0,0)");
+  ctx.drawWindow(content, content.scrollX, content.scrollY, realW, realH, "rgb(0,0,0)");
 
   return [win, canvas];
 }
