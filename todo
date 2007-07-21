@@ -1,15 +1,11 @@
 
-  bug - issue with non-html pages - http://www.canonical.org/~kragen/sw/js-calc.js
   bug - race condition: while page is still loading, if you taboo it, it will have some data from the last page and some from the new page....
   bug - proper scaling (with anti-aliasing)
   bug - where is the black bar coming from????  is it the scroll bar?
 
-  feature - deleteness in db model
   feature - undoness 
 
   ui - search ui
-
-  model - add favicon
 
   visualization - calendar view - http://flickr.com/explore/interesting/2007/07/
   visualization - mosaic view   - http://www.coverpop.com/pop/indie/
