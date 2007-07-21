@@ -412,7 +412,7 @@ TabooService.prototype = {
     var previewData = canvas.toDataURL();
     var preview = win.atob(previewData.substr('data:image/png;base64,'.length));
 
-    var url = selectedBrowser.currentURI.spec;
+    var url = state.entries[state.index - 1].url;
     url = url.replace(/#.*$/, '');
 
     this._storage.save(url, aDescription, state, preview);
