@@ -32,7 +32,7 @@
       for (var i = 0; i < scripts.length; i++) {
         loader.loadSubScript(scripts[i], window);
       }
-      loadTaboos();
+      loadTaboos(normalStartPage);
     }
 
     window.addEventListener("load", loadJS, false);
@@ -42,15 +42,15 @@
     		searchText = null;
        		$('search').className = "hidden";
         	document.body.removeChild($('taboos'));
-          loadTaboos();
+			loadTaboos(normalStartPage);
     		return;
     	}
     	document.body.removeChild($('taboos'));
     	searchText = searchText ? searchText : "";
     	searchText += String.fromCharCode(event.charCode);
-    	loadTaboos();
     	$('search').className = '';
     	$('search').innerHTML = searchText;
+    	loadTaboos(normalStartPage);
     }
     
     </script>
