@@ -176,7 +176,8 @@ function TabooStorageSQL() {
   this._DBConn = storageService.openDatabase(dbfile);
 
   var schema = 'url TEXT PRIMARY KEY, title TEXT, description TEXT, ' +
-               'md5 TEXT, created INTEGER, updated INTEGER, full TEXT';
+               'md5 TEXT, favicon TEXT, full TEXT, ' +
+               'created INTEGER, updated INTEGER, deleted INTEGER';
 
   try {
     this._DBConn.createTable('taboo_data', schema);
@@ -186,12 +187,21 @@ function TabooStorageSQL() {
   this._fetchData = createStatement(this._DBConn,
     'SELECT * FROM taboo_data WHERE url = :url');
 
+  this._markDelete = createStatement(this._DBConn,
+    'UPDATE taboo_data SET deleted = :deleted WHERE url = :url');
   this._removeURL = createStatement(this._DBConn,
     'DELETE FROM taboo_data WHERE url = :url');
+
   this._insertURL = createStatement(this._DBConn,
     'INSERT INTO taboo_data ' +
-    '(url, title, description, md5, created, updated, full) ' +
-    'VALUES (:url, :title, :description, :md5, :created, :updated, :full)');
+    '(url, title, description, md5, favicon, full, created, updated) ' +
+    'VALUES ' +
+    '(:url, :title, :description, :md5, :favicon, :full, :created, :updated)');
+  this._updateURL = createStatement(this._DBConn,
+    'UPDATE taboo_data SET title = :title, favicon = :favicon, ' +
+    'full = :full, updated = :updated WHERE url = :url');
+  this._updateDesc = createStatement(this._DBConn,
+    'UPDATE taboo_data SET description = :description WHERE url = :url');
 }
 
 TabooStorageSQL.prototype = {
@@ -213,40 +223,52 @@ TabooStorageSQL.prototype = {
     }
 
     var updated = Date.now();
-    var created = updated;
 
     var stmt = this._fetchData;
     stmt.reset();
     stmt.params.url = url;
 
-    var md5 = null;
-    if (stmt.step()) {
-      created = stmt.row.created;
+    var exists = stmt.step();
 
-      if (description == null)
-        description = stmt.row.description;
-
+    var md5;
+    if (exists)
       md5 = stmt.row.md5;
-    }
-
-    stmt.reset();
-
-    if (md5)
-      this.delete(url);
     else
       md5 = hex_md5(url);
 
-    var pp = this._insertURL.params;
-    pp.url = url;
-    pp.title = title;
-    pp.description = description;
-    pp.md5 = md5;
-    pp.created = created;
-    pp.updated = updated;
-    pp.full = data.toSource();
+    stmt.reset();
 
-    this._insertURL.step();
-    this._insertURL.reset();
+    if (exists) {
+      var pp = this._updateURL.params;
+      pp.url = url;
+      pp.title = title;
+      pp.updated = updated;
+      pp.full = data.toSource();
+
+      this._updateURL.step();
+      this._updateURL.reset();
+
+      if (description) {
+        pp = this._updateDesc.params;
+        pp.url = url;
+        pp.description = description;
+
+        this._updateDesc.step();
+        this._updateDesc.reset();
+      } 
+    } else {
+      var pp = this._insertURL.params;
+      pp.url = url;
+      pp.title = title;
+      pp.description = description;
+      pp.md5 = hex_md5(url);
+      pp.full = data.toSource();
+      pp.created = updated;
+      pp.updated = updated;
+
+      this._insertURL.step();
+      this._insertURL.reset();
+    }
  
     try {
       var file = this._getPreviewFile(md5);
@@ -261,6 +283,12 @@ TabooStorageSQL.prototype = {
     catch (e) { } 
   },
   delete: function TSSQL_delete(url) {
+    this._markDelete.params.url = url;
+    this._markDelete.params.deleted = Date.now();
+    this._markDelete.step();
+    this._markDelete.reset();
+  },
+  reallyDelete: function TSSQL_reallyDelete(url) {
     this._removeURL.params.url = url;
     this._removeURL.step();
     this._removeURL.reset();
