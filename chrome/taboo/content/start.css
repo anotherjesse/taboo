@@ -92,9 +92,11 @@ html {
 }
 
 #search {
+  margin-top: 20px;
   width: 100px; 
   height: 75px;
   background: #fff;
+  color: #000
 }
 
 .hidden {
