@@ -3,7 +3,6 @@ const CI = Components.interfaces;
 const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
 function loadTaboos(display, searchText) {
-  console.log(searchText);
   var enum = SVC.get(searchText, false);
   while (enum.hasMoreElements()) {
     var tab = enum.getNext();
