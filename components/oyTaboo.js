@@ -283,10 +283,10 @@ TabooStorageSQL.prototype = {
     catch (e) { } 
   },
   delete: function TSSQL_delete(url) {
-    this._markDelete.params.url = url;
-    this._markDelete.params.deleted = Date.now();
-    this._markDelete.step();
-    this._markDelete.reset();
+    this._deleteOp(url, Date.now());
+  },
+  undelete: function TSSQL_undelete(url) {
+    this._deleteOp(url, null);
   },
   reallyDelete: function TSSQL_reallyDelete(url) {
     this._removeURL.params.url = url;
@@ -319,24 +319,27 @@ TabooStorageSQL.prototype = {
 
     return ret;
   },
-  getURLs: function TSSQL_getURLs(filter) {
-    var sql = 'SELECT url FROM taboo_data';
+  getURLs: function TSSQL_getURLs(filter, deleted) {
+    var sql = 'SELECT url FROM taboo_data WHERE ';
+    if (deleted)
+      sql += 'deleted IS NOT NULL';
+    else
+      sql += 'deleted IS NULL';
+
     if (filter) {
-      var where = ' WHERE url LIKE "%FILTER%" or title LIKE "%FILTER%" or ' +
-                  'description LIKE "%FILTER%"';
+      var where = ' and (url LIKE "%FILTER%" or title LIKE "%FILTER%" or ' +
+                  'description LIKE "%FILTER%")';
       sql += where.replace(/FILTER/g, filter);
     }
 
     sql += " order by updated desc";
-    dump("SQL: " + sql + "\n");
+    debug("SQL: " + sql + "\n");
 
     var stmt = createStatement(this._DBConn, sql);
 
     var urls = [];
-    while (stmt.step()) {
+    while (stmt.step())
       urls.push(stmt.row.url);
-      dump("URLY: " + stmt.row.url + "\n");
-    }
 
     stmt.reset();
     return urls;
@@ -345,6 +348,12 @@ TabooStorageSQL.prototype = {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
     return file;
+  },
+  _deleteOp: function TSSQL__deleteOp(url, deleted) {
+    this._markDelete.params.url = url;
+    this._markDelete.params.deleted = deleted;
+    this._markDelete.step();
+    this._markDelete.reset();
   }
 }
 
@@ -407,8 +416,14 @@ TabooService.prototype = {
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
   },
-  get: function TB_get(filter) {
-    var urls = this._storage.getURLs(filter);
+  undelete: function TB_undelete(aURL) {
+    this._storage.undelete(aURL);
+  },
+  reallyDelete: function TB_reallyDelete(aURL) {
+    this._storage.reallyDelete(aURL);
+  },
+  get: function TB_get(filter, deleted) {
+    var urls = this._storage.getURLs(filter, deleted);
 
     var enumerator = {
       _urls: urls,

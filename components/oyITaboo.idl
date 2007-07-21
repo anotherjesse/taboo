@@ -17,11 +17,14 @@ interface nsISimpleEnumerator;
 
 [scriptable, uuid(8d5388b0-7490-47b0-a7e2-e92beadbb0db)]
 interface oyITaboo : nsISupports {
-  boolean save(in AUTF8String aDescription);
-  void delete(in AUTF8String aURL);
   void open(in AUTF8String aURL, in AUTF8String aWhere);
+  boolean save(in AUTF8String aDescription);
 
-  nsISimpleEnumerator get(in AUTF8String filter);
+  void delete(in AUTF8String aURL);
+  void undelete(in AUTF8String aURL);
+  void reallyDelete(in AUTF8String aURL);
+
+  nsISimpleEnumerator get(in AUTF8String filter, in boolean deleted);
 };
 
 [scriptable, uuid(446637e1-e732-4f21-9b30-175d2773768a)]

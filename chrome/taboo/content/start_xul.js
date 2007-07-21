@@ -4,7 +4,7 @@ const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
 
 var groupbox = document.getElementById('taboo');
 
-var enum = SVC.get(null);
+var enum = SVC.get(null, false);
 while (enum.hasMoreElements()) {
   var tab = enum.getNext();
   tab.QueryInterface(CI.oyITabooInfo);

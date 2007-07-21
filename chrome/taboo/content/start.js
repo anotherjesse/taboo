@@ -9,7 +9,7 @@ function loadTaboos() {
 	var ul = document.createElement('ul');
 	ul.setAttribute('id', 'taboos');
 	
-	var enum = SVC.get(searchText);
+	var enum = SVC.get(searchText, false);
   while (enum.hasMoreElements()) {
     var tab = enum.getNext();
     tab.QueryInterface(CI.oyITabooInfo);
