@@ -45,4 +45,4 @@ function Controller() {
 }
 
 var controller = new Controller();
-controller.load(Calendar);
+controller.load(Grid);
