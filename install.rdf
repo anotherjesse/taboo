@@ -4,8 +4,9 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest">
     <em:name>Taboo</em:name>
     <em:id>taboo@overstimulate.com</em:id>
-    <em:version>0.02</em:version>
+    <em:version>0.03</em:version>
     <em:description>Will It Blend? Tabs, Sessions and Bookmarks</em:description>
+		<em:iconURL>chrome://taboo/content/assets/logo.png</em:iconURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
     <em:contributor>Manish Singh; http://yosh.org</em:contributor>
     <em:contributor>Ian Fischer; itfische@gmail.com</em:contributor>
