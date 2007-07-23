@@ -403,6 +403,7 @@ TabooService.prototype = {
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
     var winJSON = "(" + ss.getWindowState(win) + ")";
+    dump(winJSON);
 
     var sandbox = new Cu.Sandbox('about:blank');
     var winState = Cu.evalInSandbox(winJSON, sandbox);
