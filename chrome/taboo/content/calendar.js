@@ -35,7 +35,9 @@ function Calendar(container) {
 
   this.start = function() {
     db = {};
-    table.innerHTML = '';
+    container.removeChild(table);
+    table = document.createElement('table');
+    container.appendChild(table);
   }
 
   this.finish = function() {
