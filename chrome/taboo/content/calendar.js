@@ -34,9 +34,9 @@ function Calendar(container) {
       var Y = date.getFullYear();
       var M = date.getMonth();
       var D = date.getDate();
-      if (!_db[Y]) { _db[Y]       = {}; }
-      if (!_db[M]) { _db[Y][M]    = {}; }
-      if (!_db[D]) { _db[Y][M][D] = []; }
+      if (!_db[Y])       { _db[Y]       = {}; }
+      if (!_db[Y][M])    { _db[Y][M]    = {}; }
+      if (!_db[Y][M][D]) { _db[Y][M][D] = []; }
       _db[Y][M][D].push(tab);
     }
 
@@ -44,7 +44,7 @@ function Calendar(container) {
       _db = {};
     }
 
-    this.get = function(Y,M,D) {
+    this.getTabs = function(Y,M,D) {
       try {
         return _db[Y][M][D];
       }
@@ -53,6 +53,41 @@ function Calendar(container) {
   }
   
   var db = new calDB();
+
+  function addTabsToTD(year, month, date, td) {
+    var tabs = db.getTabs(year, month, date);
+    if (tabs && tabs.length > 0) {
+      var img = document.createElement('img');
+      img.setAttribute('src', tabs[0].imageURL);
+      td.appendChild(img);
+      td.onclick = function() {
+        var div = document.createElement('div');
+        div.setAttribute('class', 'tabs');
+        console.log(tabs)
+        tabs.forEach(function(tab) { 
+          var img = document.createElement('img');
+          img.setAttribute('src', tab.imageURL);
+          img.setAttribute('title', tab.title); 
+          img.onclick = function(event) { 
+            SVC.open(tab.url, whereToOpenLink(event));
+          }
+          div.appendChild(img);
+        });
+        container.appendChild(div);
+        var remover = function(event) {
+          if (event.target != div) {
+            container.removeChild(div);
+            document.removeEventListener('click', remover, true);
+          }
+        }
+        document.addEventListener('click', remover, true);
+      }
+    }
+    else {
+      td.setAttribute('class', 'empty')
+      td.appendChild(document.createTextNode(date));        
+    }
+  }
 
   this.start = function() {
     db.clear();
@@ -84,17 +119,7 @@ function Calendar(container) {
         
       var td = document.createElement('td');
 
-      var tabs = db.get(year, month, date);
-
-      if (tabs && tabs.length > 0) {
-        var img = document.createElement('img');
-        img.setAttribute('src', tabs[0].imageURL);
-        td.appendChild(img);
-      }
-      else {
-        td.setAttribute('class', 'empty')
-        td.appendChild(document.createTextNode(curDate.getDate()));        
-      }
+      addTabsToTD(year, month, date, td);
 
       tr.appendChild(td);
       if (curDate.getDay() == 6) {
