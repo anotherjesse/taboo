@@ -11,49 +11,66 @@
  * License.
  */
 
+function daysOf(year, month) {
+  // determine number of days in month
+  // by adding 1 month, then subtracting 1 second
+  // and looking at the current date
+
+  var date = new Date(year, month+1, 1);
+  return new Date(date - 1).getDate();
+}
+
 function Calendar(container) {
   container.className = 'calendar';
 
   var table = document.createElement('table');
   container.appendChild(table);
-  
-  var db;
-  
-  function dbDate(time) {
-    var date = new Date(time);
-    var Y = date.getFullYear()
-    var M = date.getMonth()
-    var D = date.getDate()
 
-    var rval = db;
-    if (!rval[Y])       { rval[Y] = {}; }
-    if (!rval[Y][M])    { rval[Y][M] = {}; }
-    if (!rval[Y][M][D]) { rval[Y][M][D] = []; }
+  function calDB() {
+    var _db = {};
     
-    return rval[Y][M][D];
+    this.add = function(tab) {
+      var date = new Date(tab.updated);
+      var Y = date.getFullYear();
+      var M = date.getMonth();
+      var D = date.getDate();
+      if (!_db[Y]) { _db[Y]       = {}; }
+      if (!_db[M]) { _db[Y][M]    = {}; }
+      if (!_db[D]) { _db[Y][M][D] = []; }
+      _db[Y][M][D].push(tab);
+    }
+
+    this.clear = function() { 
+      _db = {};
+    }
+
+    this.get = function(Y,M,D) {
+      try {
+        return _db[Y][M][D];
+      }
+      catch (e) {}
+    }
   }
+  
+  var db = new calDB();
 
   this.start = function() {
-    db = {};
+    db.clear();
     container.removeChild(table);
     table = document.createElement('table');
     container.appendChild(table);
   }
 
   this.finish = function() {
-    var year = 2007;
-    var month = 6;
-    try {
-      var monthDB = db[year][month];
-    }
-    catch (e) {
-      var monthDB = [];
-    }
+    var year = new Date().getFullYear();   // default to current year
+    var month = new Date().getMonth();     // default to current month
+    var days = daysOf(year, month);
     
-    var curDate = new Date(year, month, 1);
     table.innerHTML = "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>"
     var tr = null;
-    while (curDate.getMonth() == month) {
+
+    for (var date=1; date<=days; date++) {
+      var curDate = new Date(year, month, date);
       
       if (!tr) {
         tr = document.createElement('tr');
@@ -66,27 +83,27 @@ function Calendar(container) {
       }
         
       var td = document.createElement('td');
-      if (monthDB[curDate.getDate()]) {
+
+      var tabs = db.get(year, month, date);
+
+      if (tabs && tabs.length > 0) {
         var img = document.createElement('img');
-        img.setAttribute('src', monthDB[curDate.getDate()][0].imageURL);
+        img.setAttribute('src', tabs[0].imageURL);
         td.appendChild(img);
       }
       else {
         td.setAttribute('class', 'empty')
         td.appendChild(document.createTextNode(curDate.getDate()));        
       }
+
       tr.appendChild(td);
       if (curDate.getDay() == 6) {
         tr = null;
       }
-
-      curDate = new Date(curDate.setDate(curDate.getDate() + 1)); // add one day
     }
   }
 
   this.add = function(tab) {
-    var foo = dbDate(tab.created - 5000000);
-    foo.push(tab)
+    db.add(tab);
   }
 }
-
