@@ -16,3 +16,26 @@
 .calendar td.blank {
     border: none;
 }
+
+.calendar .tabs {
+    position: fixed;
+    top: 100px;
+    left: 100px;
+    right: 100px;
+    bottom: 100px;
+    background: white;
+    padding: 5px;
+    margin: auto;
+    border: 1px solid #888;
+}
+
+.calendar .tabs img {
+    max-width: 125px;
+    max-height: 125px;
+    border: 1px solid #ccc;
+    margin: 5px;
+}
+
+.calendar .tabs img:hover {
+    border-color: #888;
+}

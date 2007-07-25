@@ -4,7 +4,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest">
     <em:name>Taboo</em:name>
     <em:id>taboo@overstimulate.com</em:id>
-    <em:version>0.03</em:version>
+    <em:version>0.04</em:version>
     <em:description>Will It Blend? Tabs, Sessions and Bookmarks</em:description>
 		<em:iconURL>chrome://taboo/content/assets/logo.png</em:iconURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
@@ -15,7 +15,7 @@
     <em:targetApplication>
       <RDF:Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>2.0</em:minVersion>
+        <em:minVersion>1.5</em:minVersion>
         <em:maxVersion>3.0a7</em:maxVersion>
       </RDF:Description>
     </em:targetApplication>
