@@ -63,7 +63,6 @@ function Calendar(container) {
       td.onclick = function() {
         var div = document.createElement('div');
         div.setAttribute('class', 'tabs');
-        console.log(tabs)
         tabs.forEach(function(tab) { 
           var img = document.createElement('img');
           img.setAttribute('src', tab.imageURL);
