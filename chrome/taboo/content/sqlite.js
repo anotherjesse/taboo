@@ -1,34 +1,34 @@
 /*
  * Copyright 2007 Jesse Andrews, and CommerceNet
- *  
+ *
  * This file may be used under the terms of of the
  * GNU General Public License Version 2 or later (the "GPL"),
  * http://www.gnu.org/licenses/gpl.html
- *  
+ *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
- * 
+ *
  */
 
 
-/* 
+/*
  * DB: a better mozstorage wrapper (for some definition of better)
  *
  *
  * Initializing the Database:
  *
  *   Creating an in-memory database:
- * 
+ *
  *     var db = new DB();
- * 
+ *
  *   Loading/Creating a file-based database:
- * 
+ *
  *     var file = Cc['@mozilla.org/file/directory_service;1']
  *                  .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
  *     file.append('mydb.sqlite');
- * 
+ *
  *     var db = new DB(file);
  *
  * Creating/Using a table:
@@ -37,47 +37,47 @@
  *
  *     Pass in the name of the table, and the schema as a object.
  *     Make sure to include the primary key explicitly.
- * 
- *     db.Table('urls', {url: 'PRIMARY KEY TEXT', 
+ *
+ *     db.Table('urls', {url: 'TEXT PRIMARY KEY',
  *                       name: 'TEXT'});
  *
  *     You need to include the schema even if the table already exists.
  *     It will not overwrite the existing schema, but is needed to construct
  *     the javascript object versions of the table data.
- * 
+ *
  *   Using a table:
- * 
+ *
  *     Creating a new row:
- * 
- *       var bookmark = db.urls.new();        
+ *
+ *       var bookmark = db.urls.new();
  *       bookmark.url = 'http://commerce.net';
- *       bookmark.name = 'CommerceNet';       
- *                                        
- *       bookmark.save()                      
- * 
+ *       bookmark.name = 'CommerceNet';
+ *
+ *       bookmark.save()
+ *
  *     Finding an existing row:
- * 
+ *
  *       db.urls.find('http://commerce.net');
  *        // select * from urls where url = 'http://commerce.net'
- * 
+ *
  *       db.urls.find('http://commerce.net').name
  *        => 'CommerceNet'
- * 
- *       db.urls.find({url: 'http://commerce.net'}); 
+ *
+ *       db.urls.find({url: 'http://commerce.net'});
  *        // select * from urls where url = 'http://commerce.net'
- * 
+ *
  *       db.urls.find({url: 'http://commerce.net', name: 'CommerceNet'})
  *        // select * from urls where url = 'http://commerce.net' and
  *        // name = 'CommerceNet'
- * 
+ *
  *     Updating a record:
- * 
+ *
  *       var bookmark = db.urls.find('http://commerce.net');
  *       bookmark.name = 'Commerce.Net';
  *       bookmark.save();
- * 
+ *
  *     Deleting a record:
- * 
+ *
  *       var bookmark = db.urls.find('http://commerce.net')
  *       bookmark.destroy();
  *
@@ -87,7 +87,7 @@ function DB(dbFile) {
   var self = this;
 
   const Cc = Components.classes;
-  const Ci = Components.interfaces; 
+  const Ci = Components.interfaces;
 
   // Create the sqlite database
 
@@ -150,6 +150,10 @@ function DB(dbFile) {
         }
       }
 
+      this.toString = function() {
+        return inst[_PK] + ' (' + table_name + ')';
+      }
+
       this.destroy = function() {
         sql_destroy.params[_PK] = inst[_PK];
         try {
@@ -185,22 +189,35 @@ function DB(dbFile) {
       new: function() {
         return new Record();
       },
-      find: function(query) {
+      find: function(conditions, order) {
 
         // todo - cache the following
         var sql = 'SELECT * from ' + table_name;
         var params = {};
+        var return_one = false;
 
-        if (typeof(query) == 'string') {
+        if (typeof(conditions) == 'string' || typeof(conditions) == 'number') {
           sql += ' WHERE ' + _PK + ' = :' + _PK;
-          params[_PK] = query;
+          params[_PK] = conditions;
+          return_one = true;
         }
 
-        if (typeof(query) == 'object') {
+        if (conditions instanceof Array) {
+          // SECURITY HOLE: this is the incorrect way to do this...
+          // the params need escaped
+
+          var query = conditions[0];
+          for (var i=1; i<conditions.length; i++) {
+            query = query.replace(new RegExp('\\?'+i, 'g'), '"'+conditions[i]+'"')
+          }
+          sql += ' WHERE ' + query;
+          console.log(sql)
+        }
+        else if (typeof(conditions) == 'object') {
           sql += ' WHERE ' +
-             [col + ' = :' + col for (col in query)].join(' and ');
-          for (var k in query) {
-            params[k] = query[k];
+             [col + ' = :' + col for (col in conditions)].join(' and ');
+          for (var k in conditions) {
+            params[k] = conditions[k];
           }
         }
 
@@ -217,7 +234,14 @@ function DB(dbFile) {
         }
 
         select.reset();
+
+        if (return_one) {
+          return records[0];
+        }
         return records;
+      },
+      toString: function() {
+        return 'Table: ' + table_name;
       }
     }
   }
