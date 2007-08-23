@@ -89,14 +89,14 @@ function DB(dbFile) {
   const Cc = Components.classes;
   const Ci = Components.interfaces; 
 
-  /* Create the sqlite database */
+  // Create the sqlite database
 
   var storageService = Cc['@mozilla.org/storage/service;1']
     .getService(Ci.mozIStorageService);
 
   var conn = storageService.openDatabase(dbFile);
 
-  /* convert sql into a convenience wrapper */
+  // convert sql into a convenience wrapper
 
   function wrap_sql(query) {
     var stmt = conn.createStatement(query);
@@ -115,22 +115,22 @@ function DB(dbFile) {
     for (var k in schema) {
       if (schema[k].match(/PRIMARY KEY/i)) { _PK = k; }
     }
-    
+
     try {
      conn.createTable(table_name, _COLS.map(
        function(col) {return col + ' ' + schema[col]}).join(', ')
      );
     } catch(e) {
-      /* table already exists - hopefully */ 
+      // table already exists - hopefully
     }
 
     var sql_insert = wrap_sql(
-      'INSERT INTO ' + table_name + ' (' + _COLS.join(', ') + ')'
+      'INSERT INTO ' + table_name + ' (' + _COLS.join(', ') + ')' +
       ' VALUES (' + _COLS.map(function(x) { return ':' + x }).join(', ') + ')'
     );
 
     var sql_update = wrap_sql(
-      'UPDATE ' + table_name + 
+      'UPDATE ' + table_name +
       ' SET ' + _COLS.map(function(x) { return x + ' = :' + x }).join(', ') +
       ' WHERE ' + _PK + ' = :' + _PK
     );
@@ -143,7 +143,7 @@ function DB(dbFile) {
       var inst = this;
       var new_record = true;
 
-      if (row) { 
+      if (row) {
         new_record = false;
         for (var k in schema) {
           this[k] = row[k];
@@ -187,7 +187,7 @@ function DB(dbFile) {
       },
       find: function(query) {
 
-        /* todo - cache the following */
+        // todo - cache the following
         var sql = 'SELECT * from ' + table_name;
         var params = {};
 
