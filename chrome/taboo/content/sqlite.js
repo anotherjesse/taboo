@@ -14,12 +14,73 @@
 
 
 /* 
- * DB: a better sqlite wrapper (for some definition of better)
+ * DB: a better mozstorage wrapper (for some definition of better)
  *
- * params - dbFile should be a nsIFile or null
- *          if you pass null, it will create an in-memory 
- *          database, otherwise it sqlite will use the 
- *          file you pass in.
+ *
+ * Initializing the Database:
+ *
+ *   Creating an in-memory database:
+ * 
+ *     var db = new DB();
+ * 
+ *   Loading/Creating a file-based database:
+ * 
+ *     var file = Cc['@mozilla.org/file/directory_service;1']
+ *                  .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
+ *     file.append('mydb.sqlite');
+ * 
+ *     var db = new DB(file);
+ *
+ * Creating/Using a table:
+ *
+ *   Creating a table:
+ *
+ *     Pass in the name of the table, and the schema as a object.
+ *     Make sure to include the primary key explicitly.
+ * 
+ *     db.Table('urls', {url: 'PRIMARY KEY TEXT', 
+ *                       name: 'TEXT'});
+ *
+ *     You need to include the schema even if the table already exists.
+ *     It will not overwrite the existing schema, but is needed to construct
+ *     the javascript object versions of the table data.
+ * 
+ *   Using a table:
+ * 
+ *     Creating a new row:
+ * 
+ *       var bookmark = db.urls.new();        
+ *       bookmark.url = 'http://commerce.net';
+ *       bookmark.name = 'CommerceNet';       
+ *                                        
+ *       bookmark.save()                      
+ * 
+ *     Finding an existing row:
+ * 
+ *       db.urls.find('http://commerce.net');
+ *        // select * from urls where url = 'http://commerce.net'
+ * 
+ *       db.urls.find('http://commerce.net').name
+ *        => 'CommerceNet'
+ * 
+ *       db.urls.find({url: 'http://commerce.net'}); 
+ *        // select * from urls where url = 'http://commerce.net'
+ * 
+ *       db.urls.find({url: 'http://commerce.net', name: 'CommerceNet'})
+ *        // select * from urls where url = 'http://commerce.net' and
+ *        // name = 'CommerceNet'
+ * 
+ *     Updating a record:
+ * 
+ *       var bookmark = db.urls.find('http://commerce.net');
+ *       bookmark.name = 'Commerce.Net';
+ *       bookmark.save();
+ * 
+ *     Deleting a record:
+ * 
+ *       var bookmark = db.urls.find('http://commerce.net')
+ *       bookmark.destroy();
+ *
  */
 
 function DB(dbFile) {
@@ -28,14 +89,14 @@ function DB(dbFile) {
   const Cc = Components.classes;
   const Ci = Components.interfaces; 
 
-  /* Create the sqlite database */
+  // Create the sqlite database
 
   var storageService = Cc['@mozilla.org/storage/service;1']
     .getService(Ci.mozIStorageService);
 
   var conn = storageService.openDatabase(dbFile);
 
-  /* convert sql into a convenience wrapper */
+  // convert sql into a convenience wrapper
 
   function wrap_sql(query) {
     var stmt = conn.createStatement(query);
@@ -47,52 +108,6 @@ function DB(dbFile) {
     return wrapper;
   }
 
-  /* Table - create a table for a given schema, returning an object 
-   *         you can use to find, or create rows.
-   *
-   * Creating a table:
-   *
-   * db.Table('urls', {url: 'PRIMARY KEY TEXT', 
-   *                   name: 'TEXT'});
-   *
-   * Using a table:
-   *
-   *   Creating a new row:
-   *
-   *     var bookmark = db.urls.new();        
-   *     bookmark.url = 'http://commerce.net';
-   *     bookmark.name = 'CommerceNet';       
-   *                                        
-   *     bookmark.save()                      
-   *
-   *   Finding an existing row:
-   *
-   *     db.urls.find('http://commerce.net');
-   *      // select * from urls where url = 'http://commerce.net'
-   *
-   *     db.urls.find('http://commerce.net').name
-   *      => 'CommerceNet'
-   *
-   *     db.urls.find({url: 'http://commerce.net'}); 
-   *      // select * from urls where url = 'http://commerce.net'
-   *
-   *     db.urls.find({url: 'http://commerce.net', name: 'CommerceNet'})
-   *      // select * from urls where url = 'http://commerce.net' and
-   *      // name = 'CommerceNet'
-   *
-   *   Updating a record:
-   *
-   *     var bookmark = db.urls.find('http://commerce.net');
-   *     bookmark.name = 'Commerce.Net';
-   *     bookmark.save();
-   *
-   *   Deleting a record:
-   *
-   *     var bookmark = db.urls.find('http://commerce.net')
-   *     bookmark.destroy();
-   *
-   */
-
   this.Table = function(table_name, schema) {
     var _PK;
     var _COLS = [k for (k in schema)];
@@ -100,22 +115,22 @@ function DB(dbFile) {
     for (var k in schema) {
       if (schema[k].match(/PRIMARY KEY/i)) { _PK = k; }
     }
-    
+
     try {
      conn.createTable(table_name, _COLS.map(
        function(col) {return col + ' ' + schema[col]}).join(', ')
      );
     } catch(e) {
-      /* table already exists - hopefully */ 
+      // table already exists - hopefully
     }
 
     var sql_insert = wrap_sql(
-      'INSERT INTO ' + table_name + ' (' + _COLS.join(', ') + ')'
+      'INSERT INTO ' + table_name + ' (' + _COLS.join(', ') + ')' +
       ' VALUES (' + _COLS.map(function(x) { return ':' + x }).join(', ') + ')'
     );
 
     var sql_update = wrap_sql(
-      'UPDATE ' + table_name + 
+      'UPDATE ' + table_name +
       ' SET ' + _COLS.map(function(x) { return x + ' = :' + x }).join(', ') +
       ' WHERE ' + _PK + ' = :' + _PK
     );
@@ -128,7 +143,7 @@ function DB(dbFile) {
       var inst = this;
       var new_record = true;
 
-      if (row) { 
+      if (row) {
         new_record = false;
         for (var k in schema) {
           this[k] = row[k];
@@ -172,7 +187,7 @@ function DB(dbFile) {
       },
       find: function(query) {
 
-        /* todo - cache the following */
+        // todo - cache the following
         var sql = 'SELECT * from ' + table_name;
         var params = {};
 
