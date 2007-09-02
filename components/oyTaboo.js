@@ -93,10 +93,12 @@ function hex_md5(s) {
  * Taboo Info Instance
  */
 
-function TabooInfo(url, title, description, imageURL, created, updated, data) {
+function TabooInfo(url, title, description, favicon, imageURL,
+                   created, updated, data) {
   this.url = url;
   this.title = title;
   this.description = description;
+  this.favicon = favicon;
   this.imageURL = imageURL;
   this.created = new Date(created);
   this.updated = new Date(updated);
@@ -181,7 +183,7 @@ function TabooStorageSQL() {
 }
 
 TabooStorageSQL.prototype = {
-  save: function TSSQL_save(url, description, data, preview) {
+  save: function TSSQL_save(url, description, data, favicon, preview) {
     var title = data.entries[data.index - 1].title;
 
     if (!title) {
@@ -213,6 +215,12 @@ TabooStorageSQL.prototype = {
     if (description) {
       entry.description = description;
     } 
+
+    if (favicon) {
+      entry.favicon = favicon;
+    } else {
+      entry.favicon = null;
+    }
 
     entry.title = title;
     entry.updated = updated;
@@ -267,8 +275,8 @@ TabooStorageSQL.prototype = {
     var sandbox = new Cu.Sandbox('about:blank');
     var state = Cu.evalInSandbox(data, sandbox);
 
-    return new TabooInfo(url, entry.title, entry.description, imageURL,
-                         entry.created, entry.updated, state);
+    return new TabooInfo(url, entry.title, entry.description, entry.favicon,
+                         imageURL, entry.created, entry.updated, state);
   },
   getURLs: function TSSQL_getURLs(filter, deleted) {
     var condition = [];
@@ -335,6 +343,7 @@ TabooService.prototype = {
 
     var tabbrowser = win.getBrowser();
     var selectedBrowser = tabbrowser.selectedBrowser;
+    var selectedTab = tabbrowser.selectedTab;
 
     var currentTab = -1;
     var browsers = tabbrowser.browsers;
@@ -345,6 +354,8 @@ TabooService.prototype = {
 
     if (currentTab == -1)
       return false;
+
+    var favicon = selectedTab.getAttribute('image');
 
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
@@ -364,7 +375,7 @@ TabooService.prototype = {
     var url = state.entries[state.index - 1].url;
     url = url.replace(/#.*$/, '');
 
-    this._storage.save(url, aDescription, state, preview);
+    this._storage.save(url, aDescription, state, favicon, preview);
 
     return true;
   },
