@@ -1,0 +1,2 @@
+overlay	chrome://browser/content/browser.xul	chrome://taboo/content/overlay.xul
+content	taboo	chrome/content/
