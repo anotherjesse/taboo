@@ -23,5 +23,5 @@ body {
 #search {
   border: 1px solid #ccc; 
   padding: 2px 2px 2px 24px;
-  background: white url("assets/search.gif") left no-repeat;
+  background: white url("search.gif") left no-repeat;
 }

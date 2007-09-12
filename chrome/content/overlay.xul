@@ -13,7 +13,7 @@
  License.
 -->
 
-<?xml-stylesheet type="text/css" href="chrome://taboo/content/overlay.css"?>
+<?xml-stylesheet type="text/css" href="chrome://taboo/skin/overlay.css"?>
 
 <overlay id="tabooOverlay"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
