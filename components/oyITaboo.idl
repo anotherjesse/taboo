@@ -31,6 +31,7 @@ interface oyITaboo : nsISupports {
 interface oyITabooInfo : nsISupports {
   attribute AUTF8String title;
   attribute AUTF8String url;
+  attribute AUTF8String favicon;
   attribute AUTF8String description;
   attribute AUTF8String imageURL;
   attribute PRTime created;

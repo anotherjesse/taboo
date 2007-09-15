@@ -293,6 +293,13 @@ TabooStorageSQL.prototype = {
     this._removeURL.params.url = url;
     this._removeURL.step();
     this._removeURL.reset();
+
+    try {
+      var md5 = hex_md5(url);
+      var file = this._getPreviewFile(md5);
+      file.remove(false);
+    }
+    catch (e) { } 
   },
   retrieve: function TSSQL_retrieve(url) {
     var stmt = this._fetchData;
@@ -403,7 +410,9 @@ TabooService.prototype = {
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
     var winJSON = "(" + ss.getWindowState(win) + ")";
-    dump(winJSON);
+
+    if (getBoolPref('extensions.taboo.debug', false))
+      dump(winJSON + "\n");
 
     var sandbox = new Cu.Sandbox('about:blank');
     var winState = Cu.evalInSandbox(winJSON, sandbox);

@@ -1,0 +1,109 @@
+<html>
+<head>
+  <title>DB TEST</title>
+  <script type="text/javascript" src="sqlite.js"></script>
+  <style type="text/css">
+    pre {
+      border-left: 3px solid #333;
+      padding: 5px;
+    }
+    pre.complete {
+      border-left: 3px solid #0f0;
+    }
+    pre.exception {
+      border-left: 3px solid #f00;
+    }
+    span.exception {
+      font-size: 10px;
+    }
+    span.fail {
+      color: red;
+    }
+    span.pass {
+      color: green;
+    }
+    pre code {
+      border-left: 1px dotted #08f;
+      padding: 5px;
+      margin: 5px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<pre>
+var db = new DB();
+db.Table('urls', {url: 'TEXT PRIMARY KEY', name: 'TEXT'});
+
+var url = db.urls.new();
+url.url = 'http://commerce.net';
+url.name = 'CommerceNet Home';
+assert(url.save())
+</pre>
+<pre>
+log(db.urls.find())
+</pre>
+<pre>
+var url = db.urls.new();
+url.url = 'http://overstimulate.com';
+url.name = 'Jesse';
+assert(url.save())
+</pre>
+<pre>
+var res = db.urls.find();
+assert(res instanceof Array);
+</pre>
+<pre>
+var res = db.urls.find('http://overstimulate.com');
+assert(!(res instanceof Array))
+</pre>
+<pre>
+var res = db.urls.find(['name like ?1', '%e%'], 'name asc')
+assert(res.length == 2)
+</pre>
+<pre>
+var res = db.urls.find(['name like ?1 and url like ?1', '%s%'], 'name asc')
+assert(res.length == 1)
+</pre>
+<pre>
+var res = db.urls.find({name: 'Jesse', url: 'http://overstimulate.com'})
+assert(res.length == 1)
+</pre>
+
+<script type="text/javascript">
+  window.onload = function() { setTimeout(run, 100)}
+  
+  function run() {
+    var env = {};
+    
+    var pres = document.getElementsByTagName('pre');
+    for (var i=0; i<pres.length; i++) {
+      var out = [];
+      env.log = function(str) {
+        out.push(str);
+      }
+      env.assert = function(truthiness) {
+        if (truthiness)
+          out.push('<span class="pass">PASS</span>')
+        else
+          out.push('<span class="fail">FAIL</span>')
+      }
+      var pre = pres[i];
+      try {
+        eval(pre.innerHTML, env)
+        pre.setAttribute('class', 'complete')
+      } catch(e) {
+        pre.setAttribute('class', 'exception');
+        pre.innerHTML += '\n<span class="exception">'+e+'</span>'
+      }
+      
+      if (out.length > 0) {
+        var res = document.createElement('code')
+        res.setAttribute('class', 'response');
+        res.innerHTML = out.join('\n');
+        pre.appendChild(res)
+      }
+    }
+  }
+</script>
+</body>
