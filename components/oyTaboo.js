@@ -230,6 +230,7 @@ TabooStorageSQL.prototype = {
 
     entry.title = title;
     entry.updated = updated;
+    entry.deleted = null;
     entry.full = data.toSource();
 
     entry.save();
