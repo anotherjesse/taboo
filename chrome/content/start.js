@@ -98,7 +98,7 @@ function Controller() {
 
     var enum = SVC.get(searchTxt, view.trash);
     
-    if (!view.trash && !view.info && !enum.hasMoreElements()) {
+    if (!searchTxt && !view.trash && !view.info && !enum.hasMoreElements()) {
       controller.load(DisplayInfo);
       return;
     }
