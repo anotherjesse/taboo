@@ -16,6 +16,18 @@
  *
  * Contributor(s):
  * Dietrich Ayala <autonome@gmail.com>
+ *
+ * Other portions derived from Firefox bookmarks code.
+ *
+ * Copyright (C) 1998 Netscape Communications Corporation.
+ *
+ * Contributor(s):
+ *   Ben Goodger <ben@netscape.com> (Original Author)
+ *   Joey Minta <jminta@gmail.com>
+ *
+ * Other portions derived from Flock favorites code.
+ *
+ * Copyright (C) 2005-2007 Flock Inc.
  */
 
 const TB_CONTRACTID = '@oy/taboo;1';
@@ -93,10 +105,12 @@ function hex_md5(s) {
  * Taboo Info Instance
  */
 
-function TabooInfo(url, title, description, imageURL, created, updated, data) {
+function TabooInfo(url, title, description, favicon, imageURL,
+                   created, updated, data) {
   this.url = url;
   this.title = title;
   this.description = description;
+  this.favicon = favicon;
   this.imageURL = imageURL;
   this.created = new Date(created);
   this.updated = new Date(updated);
@@ -151,15 +165,6 @@ function snapshot() {
 }
 
 
-function createStatement(dbconn, sql) {
-  var stmt = dbconn.createStatement(sql);
-  var wrapper = Cc["@mozilla.org/storage/statement-wrapper;1"]
-    .createInstance(Ci.mozIStorageStatementWrapper);
-
-  wrapper.initialize(stmt);
-  return wrapper;
-}
-
 function TabooStorageSQL() {
   this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
     .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
@@ -171,37 +176,22 @@ function TabooStorageSQL() {
   var dbfile = this._tabooDir.clone();
   dbfile.append('taboo.sqlite');
 
-  var storageService = Cc['@mozilla.org/storage/service;1']
-    .getService(Ci.mozIStorageService);
-  this._DBConn = storageService.openDatabase(dbfile);
+  var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
+  this._db = new DB(dbfile);
 
-  var schema = 'url TEXT PRIMARY KEY, title TEXT, description TEXT, ' +
-               'md5 TEXT, favicon TEXT, full TEXT, ' +
-               'created INTEGER, updated INTEGER, deleted INTEGER';
+  this._db.Table('taboo_data', {
+    url         : 'TEXT PRIMARY KEY',
+    title       : 'TEXT',
+    description : 'TEXT',
+    md5         : 'TEXT',
+    favicon     : 'TEXT',
+    full        : 'TEXT',
+    created     : 'INTEGER',
+    updated     : 'INTEGER',
+    deleted     : 'INTEGER'
+  });
 
-  try {
-    this._DBConn.createTable('taboo_data', schema);
-  }
-  catch (e) { }
-
-  this._fetchData = createStatement(this._DBConn,
-    'SELECT * FROM taboo_data WHERE url = :url');
-
-  this._markDelete = createStatement(this._DBConn,
-    'UPDATE taboo_data SET deleted = :deleted WHERE url = :url');
-  this._removeURL = createStatement(this._DBConn,
-    'DELETE FROM taboo_data WHERE url = :url');
-
-  this._insertURL = createStatement(this._DBConn,
-    'INSERT INTO taboo_data ' +
-    '(url, title, description, md5, favicon, full, created, updated) ' +
-    'VALUES ' +
-    '(:url, :title, :description, :md5, :favicon, :full, :created, :updated)');
-  this._updateURL = createStatement(this._DBConn,
-    'UPDATE taboo_data SET title = :title, favicon = :favicon, ' +
-    'full = :full, updated = :updated WHERE url = :url');
-  this._updateDesc = createStatement(this._DBConn,
-    'UPDATE taboo_data SET description = :description WHERE url = :url');
+  this._store = this._db.taboo_data;
 }
 
 TabooStorageSQL.prototype = {
@@ -225,54 +215,28 @@ TabooStorageSQL.prototype = {
 
     var updated = Date.now();
 
-    var stmt = this._fetchData;
-    stmt.reset();
-    stmt.params.url = url;
+    var entry = this._store.find(url);
 
-    var exists = stmt.step();
-
-    var md5;
-    if (exists)
-      md5 = stmt.row.md5;
-    else
-      md5 = hex_md5(url);
-
-    stmt.reset();
-
-    if (exists) {
-      var pp = this._updateURL.params;
-      pp.url = url;
-      pp.title = title;
-      pp.updated = updated;
-      pp.full = data.toSource();
-
-      this._updateURL.step();
-      this._updateURL.reset();
-
-      if (description) {
-        pp = this._updateDesc.params;
-        pp.url = url;
-        pp.description = description;
-
-        this._updateDesc.step();
-        this._updateDesc.reset();
-      } 
-    } else {
-      var pp = this._insertURL.params;
-      pp.url = url;
-      pp.title = title;
-      pp.description = description;
-      pp.md5 = hex_md5(url);
-      pp.full = data.toSource();
-      pp.created = updated;
-      pp.updated = updated;
-
-      this._insertURL.step();
-      this._insertURL.reset();
+    if (!entry) {
+      entry = this._store.new();
+      entry.url = url;
+      entry.md5 = hex_md5(url);
+      entry.created = updated;
     }
+
+    if (description) {
+      entry.description = description;
+    } 
+
+    entry.title = title;
+    entry.updated = updated;
+    entry.deleted = null;
+    entry.full = data.toSource();
+
+    entry.save();
  
     try {
-      var file = this._getPreviewFile(md5);
+      var file = this._getPreviewFile(entry.md5);
 
       var ostream = Cc['@mozilla.org/network/file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
@@ -283,6 +247,13 @@ TabooStorageSQL.prototype = {
     }
     catch (e) { } 
   },
+  saveFavicon: function TSSQL_saveFavicon(url, favicon) {
+    var entry = this._store.find(url);
+    if (entry) {
+      entry.favicon = favicon;
+      entry.save();
+    }
+  },
   delete: function TSSQL_delete(url) {
     this._deleteOp(url, Date.now());
   },
@@ -290,9 +261,10 @@ TabooStorageSQL.prototype = {
     this._deleteOp(url, null);
   },
   reallyDelete: function TSSQL_reallyDelete(url) {
-    this._removeURL.params.url = url;
-    this._removeURL.step();
-    this._removeURL.reset();
+    var entry = this._store.find(url);
+    if (entry) {
+      entry.destroy();
+    }
 
     try {
       var md5 = hex_md5(url);
@@ -302,59 +274,47 @@ TabooStorageSQL.prototype = {
     catch (e) { } 
   },
   retrieve: function TSSQL_retrieve(url) {
-    var stmt = this._fetchData;
-    stmt.reset();
-    stmt.params.url = url;
-
-    if (!stmt.step())
+    var entry = this._store.find(url);
+    if (!entry)
       return null;
 
     var ios = Cc['@mozilla.org/network/io-service;1']
       .getService(Ci.nsIIOService);
     var fileHandler = ios.getProtocolHandler('file')
       .QueryInterface(Ci.nsIFileProtocolHandler);
-    var imageFile = this._getPreviewFile(stmt.row.md5);
+    var imageFile = this._getPreviewFile(entry.md5);
     var imageURL = fileHandler.getURLSpecFromFile(imageFile);
 
-    var data = stmt.row.full.replace(/\r\n?/g, '\n');
+    var data = entry.full.replace(/\r\n?/g, '\n');
     var sandbox = new Cu.Sandbox('about:blank');
     var state = Cu.evalInSandbox(data, sandbox);
 
-    var ret = new TabooInfo(url, stmt.row.title, stmt.row.description,
-                            imageURL, stmt.row.created, stmt.row.updated,
-                            state);
-    stmt.reset();
-
-    return ret;
+    return new TabooInfo(url, entry.title, entry.description, entry.favicon,
+                         imageURL, entry.created, entry.updated, state);
   },
   getURLs: function TSSQL_getURLs(filter, deleted) {
-    var sql = 'SELECT url FROM taboo_data WHERE ';
-    if (deleted)
-      sql += 'deleted IS NOT NULL';
-    else
-      sql += 'deleted IS NULL';
+    var condition = [];
+
+    var sortkey, sql = '';
 
     if (filter) {
-      var where = ' and (url LIKE "%FILTER%" or title LIKE "%FILTER%" or ' +
-                  'description LIKE "%FILTER%")';
-      sql += where.replace(/FILTER/g, filter);
+      sql += '(url LIKE ?1 or title LIKE ?1 or description LIKE ?1) and ';
+      // TODO: escape %'s before passing in
+      condition.push('%' + filter + '%');
     }
 
-    if (deleted)
-      sql += " order by deleted desc";
-    else
-      sql += " order by updated desc";
+    if (deleted) {
+      sql += 'deleted IS NOT NULL';
+      sortkey = 'deleted DESC';
+    } else {
+      sql += 'deleted IS NULL';
+      sortkey = 'updated DESC';
+    }
 
-    debug("SQL: " + sql + "\n");
+    condition.unshift(sql);
 
-    var stmt = createStatement(this._DBConn, sql);
-
-    var urls = [];
-    while (stmt.step())
-      urls.push(stmt.row.url);
-
-    stmt.reset();
-    return urls;
+    var results = this._store.find(condition, sortkey);
+    return results.map(function(entry) { return entry.url });
   },
   _getPreviewFile: function TSSQL__getPreviewFile(id) {
     var file = this._tabooDir.clone();
@@ -362,10 +322,11 @@ TabooStorageSQL.prototype = {
     return file;
   },
   _deleteOp: function TSSQL__deleteOp(url, deleted) {
-    this._markDelete.params.url = url;
-    this._markDelete.params.deleted = deleted;
-    this._markDelete.step();
-    this._markDelete.reset();
+    var entry = this._store.find(url);
+    if (entry) {
+      entry.deleted = deleted;
+      entry.save();
+    }
   }
 }
 
@@ -396,6 +357,7 @@ TabooService.prototype = {
 
     var tabbrowser = win.getBrowser();
     var selectedBrowser = tabbrowser.selectedBrowser;
+    var selectedTab = tabbrowser.selectedTab;
 
     var currentTab = -1;
     var browsers = tabbrowser.browsers;
@@ -426,6 +388,17 @@ TabooService.prototype = {
     url = url.replace(/#.*$/, '');
 
     this._storage.save(url, aDescription, state, preview);
+
+    var faviconURL = selectedTab.getAttribute('image');
+    if (faviconURL) {
+      var ios = Cc['@mozilla.org/network/io-service;1']
+        .getService(Ci.nsIIOService);
+      var chan = ios.newChannel(faviconURL, null, null);
+      var listener = new tabooFavIconLoadListener(url, faviconURL, chan,
+                                                  this._storage);
+      chan.notificationCallbacks = listener;
+      chan.asyncOpen(listener, null);
+    }
 
     return true;
   },
@@ -671,6 +644,147 @@ TabooService.prototype = {
   }
 }
 
+
+/* This is swiped from bookmarks.js in Firefox. In Firefox 3, this *should*
+ * be easier, and not require cut'n'pasting
+ */
+function tabooFavIconLoadListener(url, faviconurl, channel, storage) {
+  this.mURL = url;
+  this.mFavIconURL = faviconurl;
+  this.mCountRead = 0;
+  this.mChannel = channel;
+  this.mStorage = storage;
+}
+
+tabooFavIconLoadListener.prototype = {
+  mURL : null,
+  mFavIconURL : null,
+  mCountRead : null,
+  mChannel : null,
+  mBytes : Array(),
+  mStream : null,
+
+  QueryInterface: function (iid) {
+    if (!iid.equals(Components.interfaces.nsISupports) &&
+        !iid.equals(Components.interfaces.nsIInterfaceRequestor) &&
+        !iid.equals(Components.interfaces.nsIRequestObserver) &&
+        !iid.equals(Components.interfaces.nsIChannelEventSink) &&
+        !iid.equals(Components.interfaces.nsIProgressEventSink) && // see below
+        !iid.equals(Components.interfaces.nsIStreamListener)) {
+      throw Components.results.NS_ERROR_NO_INTERFACE;
+    }
+    return this;
+  },
+
+  // nsIInterfaceRequestor
+  getInterface: function (iid) {
+    try {
+      return this.QueryInterface(iid);
+    } catch (e) {
+      throw Components.results.NS_NOINTERFACE;
+    }
+  },
+
+  // nsIRequestObserver
+  onStartRequest : function (aRequest, aContext) {
+    this.mStream = Components.classes['@mozilla.org/binaryinputstream;1'].createInstance(Components.interfaces.nsIBinaryInputStream);
+  },
+
+  onStopRequest : function (aRequest, aContext, aStatusCode) {
+    var httpChannel = this.mChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
+    if ((httpChannel && httpChannel.requestSucceeded) &&
+        Components.isSuccessCode(aStatusCode) &&
+        this.mCountRead > 0)
+    {
+      var dataurl;
+      // XXX - arbitrary size beyond which we won't store a favicon.  This is /extremely/
+      // generous, and is probably too high.
+      if (this.mCountRead > 16384) {
+        dataurl = "data:";      // hack meaning "pretend this doesn't exist"
+      } else {
+        // get us a mime type for this
+        var mimeType = null;
+
+        const nsICategoryManager = Components.interfaces.nsICategoryManager;
+        const nsIContentSniffer = Components.interfaces.nsIContentSniffer;
+
+        var catMgr = Components.classes["@mozilla.org/categorymanager;1"].getService(nsICategoryManager);
+        var sniffers = catMgr.enumerateCategory("content-sniffing-services");
+        while (mimeType == null && sniffers.hasMoreElements()) {
+          var snifferCID = sniffers.getNext().QueryInterface(Components.interfaces.nsISupportsCString).toString();
+          var sniffer = Components.classes[snifferCID].getService(nsIContentSniffer);
+
+          try {
+            mimeType = sniffer.getMIMETypeFromContent (this.mBytes, this.mCountRead);
+          } catch (e) {
+            mimeType = null;
+            // ignore
+          }
+        }
+      }
+
+      if (this.mBytes && this.mCountRead > 0 && mimeType != null) {
+        var data = 'data:';
+        data += mimeType;
+        data += ';base64;';
+
+        var iconData = String.fromCharCode.apply(null, this.mBytes);
+        data += base64Encode(iconData);
+
+        this.mStorage.saveFavicon(this.mURL, data);
+      }
+    }
+
+    this.mChannel = null;
+  },
+
+  // nsIStreamObserver
+  onDataAvailable : function (aRequest, aContext, aInputStream, aOffset, aCount) {
+    // we could get a different aInputStream, so we don't save this;
+    // it's unlikely we'll get more than one onDataAvailable for a
+    // favicon anyway
+    this.mStream.setInputStream(aInputStream);
+
+    var chunk = this.mStream.readByteArray(aCount);
+    this.mBytes = this.mBytes.concat(chunk);
+    this.mCountRead += aCount;
+  },
+
+  // nsIChannelEventSink
+  onChannelRedirect : function (aOldChannel, aNewChannel, aFlags) {
+    this.mChannel = aNewChannel;
+  },
+
+  // nsIProgressEventSink: the only reason we support
+  // nsIProgressEventSink is to shut up a whole slew of xpconnect
+  // warnings in debug builds.  (see bug #253127)
+  onProgress : function (aRequest, aContext, aProgress, aProgressMax) { },
+  onStatus : function (aRequest, aContext, aStatus, aStatusArg) { }
+}
+
+// From flockFavoritesService.js
+function base64Encode(aInput) {
+  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var output = "";
+  while (aInput.length > 0) {
+    output += chars[aInput.charCodeAt(0) >> 2];
+    output += chars[((aInput.charCodeAt(0) & 0x03) << 4) |
+      (aInput.length > 1 ? ((aInput.charCodeAt(1) & 0xF0) >> 4) : 0)];
+    output += chars[aInput.length > 1 ?
+      ((aInput.charCodeAt(1) & 0x0F) << 2) |
+      (aInput.length > 2 ? ((aInput.charCodeAt(2) & 0xC0) >> 6) : 0) : 64];
+    output += chars[aInput.length > 2 ?
+      (aInput.charCodeAt(2) & 0x3F) : 64];
+    if (aInput.length > 3) {
+      aInput = aInput.substr(3);
+    } else {
+      break;
+    }
+  }
+  return output;
+}
+
+
 function GenericComponentFactory(ctor) {
   this._ctor = ctor;
 }
@@ -739,4 +853,13 @@ var Module = {
 function NSGetModule(compMgr, fileSpec)
 {
   return Module;
+}
+
+
+function loadSubScript(spec) {
+  var loader = Cc['@mozilla.org/moz/jssubscript-loader;1']
+    .getService(Ci.mozIJSSubScriptLoader);
+  var context = {};
+  loader.loadSubScript(spec, context);
+  return context;
 }

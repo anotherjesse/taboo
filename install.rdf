@@ -6,17 +6,17 @@
     <em:id>taboo@overstimulate.com</em:id>
     <em:version>0.04</em:version>
     <em:description>Will It Blend? Tabs, Sessions and Bookmarks</em:description>
-    <em:iconURL>chrome://taboo/content/assets/logo.png</em:iconURL>
+    <em:iconURL>chrome://taboo/skin/logo.png</em:iconURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
     <em:contributor>Manish Singh; http://yosh.org</em:contributor>
-    <em:contributor>Ian Fischer; itfische@gmail.com</em:contributor>
+    <em:contributor>Ian Fischer; http://iantriesagain.com</em:contributor>
 
     <!-- firefox -->
     <em:targetApplication>
       <RDF:Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>1.5</em:minVersion>
-        <em:maxVersion>3.0a7</em:maxVersion>
+        <em:minVersion>2.0b1</em:minVersion>
+        <em:maxVersion>3.0a8</em:maxVersion>
       </RDF:Description>
     </em:targetApplication>
 
