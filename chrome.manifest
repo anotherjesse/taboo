@@ -1,0 +1,5 @@
+content	taboo	chrome/content/
+skin	taboo	classic/1.0	chrome/skin/
+
+overlay	chrome://browser/content/browser.xul	chrome://taboo/content/browserOverlay.xul
+overlay chrome://global/content/customizeToolbar.xul         chrome://taboo/content/customizeToolbarOverlay.xul

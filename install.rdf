@@ -6,7 +6,7 @@
     <em:id>taboo@overstimulate.com</em:id>
     <em:version>0.04</em:version>
     <em:description>Will It Blend? Tabs, Sessions and Bookmarks</em:description>
-		<em:iconURL>chrome://taboo/content/assets/logo.png</em:iconURL>
+    <em:iconURL>chrome://taboo/content/assets/logo.png</em:iconURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
     <em:contributor>Manish Singh; http://yosh.org</em:contributor>
     <em:contributor>Ian Fischer; itfische@gmail.com</em:contributor>

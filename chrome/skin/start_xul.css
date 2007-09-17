@@ -46,7 +46,7 @@ label.url {
 }
 
 .delete {
-  background: transparent url("chrome://taboo/content/close.png") top no-repeat;
+  background: transparent url("chrome://taboo/skin/close.png") top no-repeat;
   width: 14px !important;
   height: 14px !important;
   top: -10px;

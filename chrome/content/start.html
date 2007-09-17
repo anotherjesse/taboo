@@ -19,9 +19,9 @@
     <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
     <script type="text/javascript">
     // for debugging - get around chrome caching
-    document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="calendar.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="grid.css?' + Math.random() + '" />');
+    document.write('<link rel="stylesheet" href="chrome://taboo/skin/start.css?' + Math.random() + '" />');
+    document.write('<link rel="stylesheet" href="chrome://taboo/skin/calendar.css?' + Math.random() + '" />');
+    document.write('<link rel="stylesheet" href="chrome://taboo/skin/grid.css?' + Math.random() + '" />');
 
     const SVC = Components.classes['@oy/taboo;1']
                           .getService(Components.interfaces.oyITaboo);
