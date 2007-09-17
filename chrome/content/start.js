@@ -97,6 +97,12 @@ function Controller() {
     view.start();
 
     var enum = SVC.get(searchTxt, view.trash);
+    
+    if (!view.trash && !view.info && !enum.hasMoreElements()) {
+      controller.load(DisplayInfo);
+      return;
+    }
+    
     while (enum.hasMoreElements()) {
       var tab = enum.getNext();
       tab.QueryInterface(Components.interfaces.oyITabooInfo);
@@ -105,16 +111,17 @@ function Controller() {
 
     view.finish();
   }
-  
+
 }
 
 var controller = new Controller();
 try {
   var view = tboPrefs.getCharPref("extensions.taboo.view");
-  if (view.match(/GridTrash/)) throw 'We don\'t reload trash';
+  if (view.match(/GridTrash|DisplayInfo/)) throw 'We don\'t reload trash';
   var ViewClass = eval('(' + view + ')');
   controller.load(ViewClass);
 }
 catch (e) {
   controller.load(Grid);
 }
+
