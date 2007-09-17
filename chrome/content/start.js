@@ -33,9 +33,7 @@ function Controller() {
   var self = this;
   this.tabDelete = function(tab, el) {
     el.style.display = "none";
-    console.log('before displayUndelete');
     self.displayUndelete(tab, el);
-    console.log('after displayUndelete');
     SVC.delete(tab.url);
   }
   
@@ -44,7 +42,6 @@ function Controller() {
   }
   
   this.displayUndelete = function(tab, el) {
-    console.log('here');
     var div = document.createElement('div');
     div.style.textAlign = 'center';
     div.style.marginLeft = 'auto';
