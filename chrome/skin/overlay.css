@@ -3,6 +3,10 @@
     -moz-image-region: rect( 0px 24px 24px 0px);
 }
 
+#taboo-toolbarbutton-add[saved="true"] {
+    list-style-image: url("chrome://taboo/skin/toolbar-added.png");
+}
+
 #taboo-toolbarbutton-add:hover {
     -moz-image-region: rect(24px 24px 48px 0px);
 }
