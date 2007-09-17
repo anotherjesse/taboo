@@ -17,9 +17,10 @@ function Taboo() {
     }
   }
 
-  this.show = function() {
+  this.show = function(event) {
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec;
-    if (url == 'about:blank' ||
+    if (event.shiftKey ||
+        url == 'about:blank' ||
         url == 'chrome://taboo/content/start.html') {
       openUILinkIn('chrome://taboo/content/start.html', 'current');
     }
