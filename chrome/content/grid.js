@@ -27,7 +27,7 @@ function Grid(container) {
     var box = document.createElement('li');
     box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
       tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" /></div>';
+      tab.url + '</span><img class="preview" src="' + tab.thumbURL + '" /></div>';
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {

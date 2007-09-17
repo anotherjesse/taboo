@@ -1,21 +1,22 @@
-var npDebug = true;
-var log = null;
+var tboDebug = false;
 var $ = function(x) { return document.getElementById(x); }
-var tboPrefs = null;
+var tboPrefs, tboLog;
 
 function Taboo() {
-  const CC = Components.classes;
-  const CI = Components.interfaces;
-  const SVC = CC['@oy/taboo;1'].getService(CI.oyITaboo);
+  const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
   this.addTaboo = function(event) {
     if (event.shiftKey) {
-      this.show();
+      var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+      SVC.delete(url);
+      $('taboo-toolbarbutton-add').removeAttribute('saved');
     }
     else {
       SVC.save(null);
+      $('taboo-toolbarbutton-add').setAttribute('saved', true);
     }
   }
+
   this.show = function() {
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec;
     if (url == 'about:blank' ||
@@ -26,41 +27,65 @@ function Taboo() {
       openUILinkIn('chrome://taboo/content/start.html', 'tab');
     }
   }
-  
-  tboInstallInToolbar();
+
+  this.updateButton = function(url) {
+    if (SVC.isSaved(url)) {
+      $('taboo-toolbarbutton-add').setAttribute('saved', true);
+    }
+    else {
+      $('taboo-toolbarbutton-add').removeAttribute('saved');
+    }
+  }
 }
 
 var taboo;
 
 function taboo_init() {
-  if (npDebug) {
+  if (tboDebug) {
     if (typeof(console)=="undefined") {
       var t = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService)
-      log = function(x) { t.logStringMessage(x); }
+      tboLog = function(x) { t.logStringMessage(x); }
     }
     else {
-      log = console.log;
+      tboLog = console.log;
     }
   }
   else {
-    log = function(x) {};
+    tboLog = function(x) {};
   }
   tboPrefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch);
   taboo = new Taboo();
+
+  tboInstallInToolbar();
+  gBrowser.addProgressListener(tboProgressListener, Components.interfaces.nsIWebProgress.NOTIFY_LOCATION);
 }
 
 window.addEventListener("load", taboo_init, true);
 
+var tboProgressListener = {
+  onLocationChange: function(aWebProgress, aRequest, aLocation) {
+    var url = aLocation.spec.replace(/#.*/, '');
+    if (url != this.last) {
+      taboo.updateButton(url);
+      this.last = url;
+    }
+  },
+  onStateChange: function() {},
+  onStatusChange: function() {},
+  onProgressChange: function() {},
+  onSecurityChange: function() {},
+};
+
 // Check whether we installed the toolbar button already and install if not
 function tboInstallInToolbar() {
 	// Make sure not to run this twice
-	if (!tboPrefs.getPrefType("extensions.taboo.setup")) {
+  if (!tboPrefs.getPrefType("extensions.taboo.setup")) {
 		if (!document.getElementById("taboo-toolbarbutton-add")) {
 			var insertBeforeBtn = "urlbar-container";
 			var toolbar = document.getElementById("nav-bar");
 			if (toolbar && "insertItem" in toolbar) {
 				var insertBefore = $(insertBeforeBtn);
-				log(insertBefore);
+
 				if (insertBefore && insertBefore.parentNode != toolbar)
 					insertBefore = null;
 	
@@ -72,5 +97,5 @@ function tboInstallInToolbar() {
 			}
 		}
 		tboPrefs.setBoolPref("extensions.taboo.setup", true);
-	}
+  }
 }
