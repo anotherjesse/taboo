@@ -252,6 +252,9 @@ TabooStorageSQL.prototype = {
       entry.save();
     }
   },
+  exists: function TSSQL_exists(url) {
+    return Boolean(this._store.find(url));
+  },
   delete: function TSSQL_delete(url) {
     this._deleteOp(url, Date.now());
   },
@@ -428,6 +431,9 @@ TabooService.prototype = {
     }
 
     return true;
+  },
+  isSaved: function TB_isSaved(aURL) {
+    return this._storage.exists(aURL);
   },
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
