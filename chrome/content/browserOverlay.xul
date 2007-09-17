@@ -18,7 +18,7 @@
 <overlay id="tabooOverlay"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://taboo/content/overlay.js"/>
+  <script type="application/x-javascript" src="chrome://taboo/content/browserOverlay.js"/>
 
   <toolbox id="navigator-toolbox">
     <toolbarpalette id="BrowserToolbarPalette">
