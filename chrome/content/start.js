@@ -14,7 +14,7 @@
 function Controller() {
   var content = $('content');
   var view = null;
-    
+
   this.load = function(ViewClass) {
     content.innerHTML = '';
     view = new ViewClass(content);
@@ -36,31 +36,56 @@ function Controller() {
     self.displayUndelete(tab, el);
     SVC.delete(tab.url);
   }
-  
-  this.tabUndelete = function() {
-    
+
+  this.tabFinalDelete = function(tab, el) {
+    el.style.display = "none";
+    SVC.reallyDelete(tab.url);
   }
-  
+
+  this.tabUndelete = function(tab) {
+    var div = document.createElement('div');
+    div.style.textAlign = 'center';
+    div.style.marginLeft = 'auto';
+    div.style.marginRight = 'auto';
+    div.style.width = '400px';
+
+    var text = document.createElement('div');
+    text.style.background = '#ee2';
+    text.style.width = '400px';
+    text.innerHTML = 'This taboo has been undeleted.  Click another view to see it.'
+    div.appendChild(text);
+
+    div.appendChild(document.createElement('br'));
+
+    setTimeout(function() { div.style.display = 'none'; }, 30000);
+    document.body.insertBefore(div, document.getElementById('content'));
+    SVC.undelete(tab.url);
+  }
+
   this.displayUndelete = function(tab, el) {
     var div = document.createElement('div');
     div.style.textAlign = 'center';
     div.style.marginLeft = 'auto';
     div.style.marginRight = 'auto';
     div.style.width = '250px';
-    
+
     var text = document.createElement('div');
     text.style.background = '#ee2';
     text.style.width = '250px';
     div.appendChild(text);
-    
+
     var a = document.createElement('a');
     a.innerHTML = 'Click here to undelete your taboo.';
     a.href = '#';
     a.onclick = function() { 
       el.style.display = '';
+      div.style.display = 'none';
       SVC.undelete(tab.url);
     };
     text.appendChild(a);
+
+    div.appendChild(document.createElement('br'));
+
     setTimeout(function() { div.style.display = 'none'; }, 30000);
     document.body.insertBefore(div, document.getElementById('content'));
   }
@@ -68,7 +93,7 @@ function Controller() {
   this.display = function(searchTxt) {
     view.start();
 
-    var enum = SVC.get(searchTxt, false);
+    var enum = SVC.get(searchTxt, view.trash);
     while (enum.hasMoreElements()) {
       var tab = enum.getNext();
       tab.QueryInterface(Components.interfaces.oyITabooInfo);
