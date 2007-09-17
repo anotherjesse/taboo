@@ -23,8 +23,11 @@
     document.write('<link rel="stylesheet" href="chrome://taboo/skin/calendar.css?' + Math.random() + '" />');
     document.write('<link rel="stylesheet" href="chrome://taboo/skin/grid.css?' + Math.random() + '" />');
 
+		const CC = Components.classes;
+		const CI = Components.interfaces;
     const SVC = Components.classes['@oy/taboo;1']
                           .getService(Components.interfaces.oyITaboo);
+    tboPrefs = CC['@mozilla.org/preferences-service;1'].getService(CI.nsIPrefBranch);
 
     var $ = function(x) { return document.getElementById(x); }
 

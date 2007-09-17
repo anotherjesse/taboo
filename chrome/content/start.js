@@ -18,6 +18,9 @@ function Controller() {
   this.load = function(ViewClass) {
     content.innerHTML = '';
     view = new ViewClass(content);
+
+		tboPrefs.setCharPref("extensions.taboo.view", ViewClass + '');
+
     this.display();
   }
 
@@ -25,7 +28,7 @@ function Controller() {
     if (this._filterStr == str) {
       return;
     }
-    
+
     this.display(str);
     this._filterStr = str;
   }
@@ -106,4 +109,12 @@ function Controller() {
 }
 
 var controller = new Controller();
-controller.load(Grid);
+try {
+  var view = tboPrefs.getCharPref("extensions.taboo.view");
+  if (view.match(/GridTrash/)) throw 'We don\'t reload trash';
+  var ViewClass = eval('(' + view + ')');
+  controller.load(ViewClass);
+}
+catch (e) {
+  controller.load(Grid);
+}
