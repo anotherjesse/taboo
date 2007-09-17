@@ -40,3 +40,60 @@ function Grid(container) {
     ul.appendChild(box);
   }
 }
+
+function GridTrash(container) {
+  this.trash = true;
+  container.className = 'grid';
+
+  var deleted = [];
+
+  var div = document.createElement('div');
+  div.style.textAlign = 'center';
+  div.style.marginLeft = 'auto';
+  div.style.marginRight = 'auto';
+  div.style.width = '255px';
+
+  var text = document.createElement('div');
+  text.style.background = '#ee2';
+  text.style.width = '255px';
+  div.appendChild(text);
+
+  var a = document.createElement('a');
+  a.innerHTML = 'Click here to delete all of these taboos.';
+  a.href = '#';
+  a.onclick = function() {
+    for (var i in deleted) {
+      controller.tabFinalDelete(deleted[i].tab, deleted[i].el);
+    }
+  };
+  text.appendChild(a);
+  document.getElementById('content').appendChild(div);
+
+  var ul = document.createElement('ul');
+  container.appendChild(ul);
+
+  this.start = function() {
+    ul.innerHTML = '';
+  }
+
+  this.finish = function() {}
+
+  this.add = function(tab) {
+    var box = document.createElement('li');
+    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
+      tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
+      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" /></div>';
+
+    box.onclick = function(event) {
+      if (event.originalTarget.className == 'delete') {
+        controller.tabFinalDelete(tab, box);
+      }
+      else {
+        controller.tabUndelete(tab);
+        box.style.display = 'none';
+      }
+    }
+    ul.appendChild(box);
+    deleted.push({'tab':tab, 'el':box});
+  }
+}
