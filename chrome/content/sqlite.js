@@ -220,6 +220,9 @@ function DB(dbFile) {
           }
         }
 
+        if (order)
+          sql += ' ORDER BY ' + order;
+
         var select = wrap_sql(sql);
 
         for (var k in params) {

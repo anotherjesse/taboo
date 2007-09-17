@@ -36,7 +36,7 @@ const TB_CLASSNAME  = 'Taboo Service';
 
 
 const Cc = Components.classes;
-const Ci = Components.interfaces; 
+const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
@@ -53,6 +53,12 @@ const PR_EXCL        = 0x80;
 const CAPABILITIES = [
   "Subframes", "Plugins", "Javascript", "MetaRedirects", "Images"
 ];
+
+const IMAGE_FULL_WIDTH = 500;
+const IMAGE_FULL_HEIGHT = 500;
+
+const IMAGE_THUMB_WIDTH = 125;
+const IMAGE_THUMB_HEIGHT = 125;
 
 
 function getObserverService() {
@@ -73,7 +79,7 @@ function getBoolPref(prefName, defaultValue) {
 
 
 /* MD5 wrapper */
-function hex_md5_stream(stream) {   
+function hex_md5_stream(stream) {
   var hasher = Components.classes["@mozilla.org/security/hash;1"]
     .createInstance(Components.interfaces.nsICryptoHash);
   hasher.init(hasher.MD5);
@@ -105,13 +111,14 @@ function hex_md5(s) {
  * Taboo Info Instance
  */
 
-function TabooInfo(url, title, description, favicon, imageURL,
+function TabooInfo(url, title, description, favicon, imageURL, thumbURL,
                    created, updated, data) {
   this.url = url;
   this.title = title;
   this.description = description;
   this.favicon = favicon;
   this.imageURL = imageURL;
+  this.thumbURL = thumbURL;
   this.created = new Date(created);
   this.updated = new Date(updated);
   this.data = data;
@@ -132,9 +139,7 @@ TabooInfo.prototype = {
  */
 
 
-function snapshot() {
-  var wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
-  var win = wm.getMostRecentWindow('navigator:browser');
+function snapshot(win, outputWidth, outputHeight) {
   var content = win.content;
 
   var canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
@@ -143,8 +148,8 @@ function snapshot() {
                                     : content.innerWidth;
   var realH = content.innerHeight;
 
-  var pW = 500.0/realW;
-  var pH = 500.0/realH;
+  var pW = outputWidth * 1.0 / realW;
+  var pH = outputHeight * 1.0 / realH;
 
   var p = pW;
 
@@ -157,12 +162,13 @@ function snapshot() {
 
   canvas.setAttribute("width", Math.floor(w));
   canvas.setAttribute("height", Math.floor(h));
-  
+
   var ctx = canvas.getContext("2d");
   ctx.scale(p, p);
   ctx.drawWindow(content, content.scrollX, content.scrollY, realW, realH, "rgb(0,0,0)");
 
-  return [win, canvas];
+  var imageData = canvas.toDataURL();
+  return win.atob(imageData.substr('data:image/png;base64,'.length));
 }
 
 
@@ -196,7 +202,7 @@ function TabooStorageSQL() {
 }
 
 TabooStorageSQL.prototype = {
-  save: function TSSQL_save(url, description, data, preview) {
+  save: function TSSQL_save(url, description, data, fullImage, thumbImage) {
     var title = data.entries[data.index - 1].title;
 
     if (!title) {
@@ -209,7 +215,7 @@ TabooStorageSQL.prototype = {
         while (!title && parts.length)
           title = parts.pop();
       }
-        
+
       if (!title)
         title = uri.host;
     }
@@ -227,7 +233,7 @@ TabooStorageSQL.prototype = {
 
     if (description) {
       entry.description = description;
-    } 
+    }
 
     entry.title = title;
     entry.updated = updated;
@@ -235,18 +241,9 @@ TabooStorageSQL.prototype = {
     entry.full = data.toSource();
 
     entry.save();
- 
-    try {
-      var file = this._getPreviewFile(entry.md5);
 
-      var ostream = Cc['@mozilla.org/network/file-output-stream;1']
-        .createInstance(Ci.nsIFileOutputStream);
-      ostream.init(file, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 0600, 0);
-
-      ostream.write(preview, preview.length);
-      ostream.close();
-    }
-    catch (e) { } 
+    this._saveImage(fullImage, this._getImageFile(entry.md5));
+    this._saveImage(thumbImage, this._getThumbFile(entry.md5));
   },
   saveFavicon: function TSSQL_saveFavicon(url, favicon) {
     var entry = this._store.find(url);
@@ -254,6 +251,9 @@ TabooStorageSQL.prototype = {
       entry.favicon = favicon;
       entry.save();
     }
+  },
+  exists: function TSSQL_exists(url) {
+    return Boolean(this._store.find(url));
   },
   delete: function TSSQL_delete(url) {
     this._deleteOp(url, Date.now());
@@ -268,11 +268,15 @@ TabooStorageSQL.prototype = {
     }
 
     try {
-      var md5 = hex_md5(url);
-      var file = this._getPreviewFile(md5);
+      var file, md5 = hex_md5(url);
+
+      file = this._getImageFile(md5);
+      file.remove(false);
+
+      file = this._getThumbFile(md5);
       file.remove(false);
     }
-    catch (e) { } 
+    catch (e) { }
   },
   retrieve: function TSSQL_retrieve(url) {
     var entry = this._store.find(url);
@@ -283,15 +287,23 @@ TabooStorageSQL.prototype = {
       .getService(Ci.nsIIOService);
     var fileHandler = ios.getProtocolHandler('file')
       .QueryInterface(Ci.nsIFileProtocolHandler);
-    var imageFile = this._getPreviewFile(entry.md5);
+
+    var imageFile = this._getImageFile(entry.md5);
     var imageURL = fileHandler.getURLSpecFromFile(imageFile);
+
+    var thumbFile = this._getThumbFile(entry.md5);
+    var thumbURL = null;
+    if (thumbFile.exists()) {
+      thumbURL = imageURL;
+    }
 
     var data = entry.full.replace(/\r\n?/g, '\n');
     var sandbox = new Cu.Sandbox('about:blank');
     var state = Cu.evalInSandbox(data, sandbox);
 
     return new TabooInfo(url, entry.title, entry.description, entry.favicon,
-                         imageURL, entry.created, entry.updated, state);
+                         imageURL, thumbURL, entry.created, entry.updated,
+                         state);
   },
   getURLs: function TSSQL_getURLs(filter, deleted) {
     var condition = [];
@@ -317,10 +329,26 @@ TabooStorageSQL.prototype = {
     var results = this._store.find(condition, sortkey);
     return results.map(function(entry) { return entry.url });
   },
-  _getPreviewFile: function TSSQL__getPreviewFile(id) {
+  _getImageFile: function TSSQL__getImageFile(id) {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
     return file;
+  },
+  _getThumbFile: function TSSQL__getPreviewFile(id) {
+    var file = this._tabooDir.clone();
+    file.append(id + '-' + IMAGE_THUMB_WIDTH + '.png');
+    return file;
+  },
+  _saveImage: function TSSQL__saveImage(imageData, file) {
+    try {
+      var ostream = Cc['@mozilla.org/network/file-output-stream;1']
+        .createInstance(Ci.nsIFileOutputStream);
+      ostream.init(file, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 0600, 0);
+
+      ostream.write(imageData, imageData.length);
+      ostream.close();
+    }
+    catch (e) { }
   },
   _deleteOp: function TSSQL__deleteOp(url, deleted) {
     var entry = this._store.find(url);
@@ -353,8 +381,9 @@ TabooService.prototype = {
   },
 
   save: function TB_save(aDescription) {
-    var win, canvas;
-    [win, canvas] = snapshot();
+    var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
+      .getService(Ci.nsIWindowMediator);
+    var win = wm.getMostRecentWindow('navigator:browser');
 
     var tabbrowser = win.getBrowser();
     var selectedBrowser = tabbrowser.selectedBrowser;
@@ -382,13 +411,13 @@ TabooService.prototype = {
 
     var state = winState.windows[0].tabs[currentTab];
 
-    var previewData = canvas.toDataURL();
-    var preview = win.atob(previewData.substr('data:image/png;base64,'.length));
-
     var url = state.entries[state.index - 1].url;
     url = url.replace(/#.*$/, '');
 
-    this._storage.save(url, aDescription, state, preview);
+    var fullImage = snapshot(win, IMAGE_FULL_WIDTH, IMAGE_FULL_HEIGHT);
+    var thumbImage = snapshot(win, IMAGE_THUMB_WIDTH, IMAGE_THUMB_HEIGHT);
+
+    this._storage.save(url, aDescription, state, fullImage, thumbImage);
 
     var faviconURL = selectedTab.getAttribute('image');
     if (faviconURL) {
@@ -402,6 +431,9 @@ TabooService.prototype = {
     }
 
     return true;
+  },
+  isSaved: function TB_isSaved(aURL) {
+    return this._storage.exists(aURL);
   },
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
