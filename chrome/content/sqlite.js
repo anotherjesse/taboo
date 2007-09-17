@@ -211,7 +211,6 @@ function DB(dbFile) {
             query = query.replace(new RegExp('\\?'+i, 'g'), '"'+conditions[i]+'"')
           }
           sql += ' WHERE ' + query;
-          console.log(sql)
         }
         else if (typeof(conditions) == 'object') {
           sql += ' WHERE ' +
