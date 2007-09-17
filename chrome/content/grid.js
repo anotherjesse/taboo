@@ -22,8 +22,6 @@ function Grid(container) {
   }
 
   this.finish = function() {}
-  
-  var self = this;
 
   this.add = function(tab) {
     var box = document.createElement('li');
@@ -33,7 +31,6 @@ function Grid(container) {
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
-        console.log('box.onclick');
         controller.tabDelete(tab, box);
       }
       else {
