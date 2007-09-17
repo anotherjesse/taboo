@@ -30,6 +30,44 @@ function Controller() {
     this._filterStr = str;
   }
 
+  var self = this;
+  this.tabDelete = function(tab, el) {
+    el.style.display = "none";
+    console.log('before displayUndelete');
+    self.displayUndelete(tab, el);
+    console.log('after displayUndelete');
+    SVC.delete(tab.url);
+  }
+  
+  this.tabUndelete = function() {
+    
+  }
+  
+  this.displayUndelete = function(tab, el) {
+    console.log('here');
+    var div = document.createElement('div');
+    div.style.textAlign = 'center';
+    div.style.marginLeft = 'auto';
+    div.style.marginRight = 'auto';
+    div.style.width = '250px';
+    
+    var text = document.createElement('div');
+    text.style.background = '#ee2';
+    text.style.width = '250px';
+    div.appendChild(text);
+    
+    var a = document.createElement('a');
+    a.innerHTML = 'Click here to undelete your taboo.';
+    a.href = '#';
+    a.onclick = function() { 
+      el.style.display = '';
+      SVC.undelete(tab.url);
+    };
+    text.appendChild(a);
+    setTimeout(function() { div.style.display = 'none'; }, 30000);
+    document.body.insertBefore(div, document.getElementById('content'));
+  }
+
   this.display = function(searchTxt) {
     view.start();
 
@@ -42,6 +80,7 @@ function Controller() {
 
     view.finish();
   }
+  
 }
 
 var controller = new Controller();
