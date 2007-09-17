@@ -1,5 +1,5 @@
 #taboo-toolbarbutton-add {
-    list-style-image: url("toolbar-add.png");
+    list-style-image: url("chrome://taboo/skin/toolbar-add.png");
     -moz-image-region: rect( 0px 24px 24px 0px);
 }
 
@@ -8,7 +8,7 @@
 }
 
 #taboo-toolbarbutton-view {
-    list-style-image: url("toolbar-view.png");
+    list-style-image: url("chrome://taboo/skin/toolbar-view.png");
     -moz-image-region: rect( 0px 24px 24px 0px);
 }
 
