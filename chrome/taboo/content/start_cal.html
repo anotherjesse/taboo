@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<!--
+ Copyright 2007 Jesse Andrews and Manish Singh
+ 
+ This file may be used under the terms of of the
+ GNU General Public License Version 2 or later (the "GPL"),
+ http://www.gnu.org/licenses/gpl.html
+ 
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the
+ License.
+-->
+<html>
+  <head>
+    <title>Taboo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
+    <script type="text/javascript">
+    // for debugging - get around chrome caching
+    document.write('<link rel="stylesheet" href="start.css?' + Math.random() + '" />'); 
+
+    var $ = function(x) { return document.getElementById(x); }
+
+    function init() {
+      const loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+                               .getService(Components.interfaces.mozIJSSubScriptLoader);
+
+      var scripts = [
+          'chrome://taboo/content/start.js', 
+        ];
+
+      for (var i = 0; i < scripts.length; i++) {
+        loader.loadSubScript(scripts[i], window);
+      }
+
+      controller.display();
+
+      $('search').onkeyup = function(event) {
+        controller.filter($('search').value);
+      }
+    }
+
+    window.addEventListener("load", init, false);
+
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <div id="styles">
+        <a href="#">grid</a>
+        <a href="#">calendar</a>
+        <a href="#">mosaic</a>
+      </div>
+      <input type="text" id="search" />
+    </div>
+    <div id="content"></div>
+  </body>
+</html>
+
