@@ -139,7 +139,8 @@ function snapshot() {
 
   var canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
 
-  var realW = content.document.body.clientWidth;
+  var realW = content.document.body ? content.document.body.clientWidth
+                                    : content.innerWidth;
   var realH = content.innerHeight;
 
   var pW = 500.0/realW;
