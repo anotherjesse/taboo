@@ -18,6 +18,9 @@ function Controller() {
   this.load = function(ViewClass) {
     content.innerHTML = '';
     view = new ViewClass(content);
+
+		tboPrefs.setCharPref("extensions.taboo.view", ViewClass + '');
+
     this.display();
   }
 
@@ -25,7 +28,7 @@ function Controller() {
     if (this._filterStr == str) {
       return;
     }
-    
+
     this.display(str);
     this._filterStr = str;
   }
@@ -94,6 +97,12 @@ function Controller() {
     view.start();
 
     var enum = SVC.get(searchTxt, view.trash);
+    
+    if (!view.trash && !view.info && !enum.hasMoreElements()) {
+      controller.load(DisplayInfo);
+      return;
+    }
+    
     while (enum.hasMoreElements()) {
       var tab = enum.getNext();
       tab.QueryInterface(Components.interfaces.oyITabooInfo);
@@ -102,8 +111,17 @@ function Controller() {
 
     view.finish();
   }
-  
+
 }
 
 var controller = new Controller();
-controller.load(Grid);
+try {
+  var view = tboPrefs.getCharPref("extensions.taboo.view");
+  if (view.match(/GridTrash|DisplayInfo/)) throw 'We don\'t reload trash';
+  var ViewClass = eval('(' + view + ')');
+  controller.load(ViewClass);
+}
+catch (e) {
+  controller.load(Grid);
+}
+
