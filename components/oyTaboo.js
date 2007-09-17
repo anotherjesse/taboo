@@ -292,8 +292,10 @@ TabooStorageSQL.prototype = {
     var imageURL = fileHandler.getURLSpecFromFile(imageFile);
 
     var thumbFile = this._getThumbFile(entry.md5);
-    var thumbURL = null;
-    if (!thumbFile.exists()) {
+    var thumbURL;
+    if (thumbFile.exists()) {
+      thumbURL = fileHandler.getURLSpecFromFile(thumbFile);
+    } else {
       thumbURL = imageURL;
     }
 
