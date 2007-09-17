@@ -17,7 +17,14 @@ function Taboo() {
     }
   }
   this.show = function() {
-    openUILinkIn('chrome://taboo/content/start.html', 'tab');
+    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec;
+    if (url == 'about:blank' ||
+        url == 'chrome://taboo/content/start.html') {
+      openUILinkIn('chrome://taboo/content/start.html', 'current');
+    }
+    else {
+      openUILinkIn('chrome://taboo/content/start.html', 'tab');
+    }
   }
   
   tboInstallInToolbar();
