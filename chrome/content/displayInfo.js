@@ -21,6 +21,7 @@ function DisplayInfo(container) {
   this.start = function() {
     div.innerHTML = '<br />To use Taboo, just click on the red "+" icon next to your address bar. This saves the tab for you.<br />' + 
                     'To view your saved taboos, click on the red "T".';
+    
   }
 
   this.finish = function() {}
