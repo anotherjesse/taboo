@@ -13,7 +13,7 @@
 
 function Trash(container) {
   this.trash = true;
-  container.className = 'grid';
+  document.body.className = 'trash';
 
   var deleted = [];
   

@@ -1,27 +1,27 @@
-.grid #grid {
+.about #about {
   border-color: #555;
   color: #e70;
 }
 
-.grid ul {
+.about ul {
   padding: 0;
   list-style: none;
 }
 
-.grid li {
+.about li {
   float: left;
   display: block;
   height: 150px;
   margin-bottom: 15px;
 }
 
-.grid li span {
+.about li span {
   width: 125px;
   margin: 0 auto;
   display: block;
 }
 
-.grid li span.title {
+.about li span.title {
   width: 125px;
   overflow: hidden;
   font-size: 12px;
@@ -30,12 +30,12 @@
   color: #777;
 }
 
-.grid li img.preview {
+.about li img.preview {
   max-width: 125px;
   max-height: 125px;
 }
 
-.grid li span.url {
+.about li span.url {
   width: 125px;
   overflow: hidden;
   font-size: 11px;
@@ -45,7 +45,7 @@
   padding-top: 5px;
 }
 
-.grid li div {
+.about li div {
   margin: 5px;
   padding: 5px;
   -moz-border-radius: 10px;
@@ -56,13 +56,13 @@
   color: #333;
 }
 
-.grid li div:hover {
+.about li div:hover {
   border-color: #ddd;
   background: #fff;
   color: black;
 }
 
-.grid li .delete {
+.about li .delete {
   display: none;
   background: transparent url("close.png") top no-repeat;
   width: 14px !important;
@@ -73,24 +73,24 @@
   position: relative;
 }
 
-.grid li:hover .delete {
+.about li:hover .delete {
   display: inline;
 }
 
-.grid li .delete:hover {
+.about li .delete:hover {
   background: transparent url("close.png") bottom no-repeat;
 }
 
-.grid li img.preview {
+.about li img.preview {
   margin-top: 5px;
   margin-left: 6px;
   border: 1px solid #888;
 }
 
-.grid li:hover img {
+.about li:hover img {
   border-color: black;
 }
 
-.grid li:hover span.url {
+.about li:hover span.url {
   color: #f80;
 }

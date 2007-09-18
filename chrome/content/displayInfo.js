@@ -12,7 +12,7 @@
  */
 
 function DisplayInfo(container) {
-  container.className = 'grid';
+  document.body.className = 'about';
   this.info = true;
 
   var div = document.createElement('div');

@@ -22,6 +22,8 @@
     document.write('<link rel="stylesheet" href="chrome://taboo/skin/start.css?' + Math.random() + '" />');
     document.write('<link rel="stylesheet" href="chrome://taboo/skin/calendar.css?' + Math.random() + '" />');
     document.write('<link rel="stylesheet" href="chrome://taboo/skin/grid.css?' + Math.random() + '" />');
+    document.write('<link rel="stylesheet" href="chrome://taboo/skin/trash.css?' + Math.random() + '" />');
+    document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + Math.random() + '" />');
 
 		const CC = Components.classes;
 		const CI = Components.interfaces;
@@ -61,10 +63,10 @@
   <body>
     <div id="header">
       <div id="views">
-        <a href="#" onclick="controller.load(Grid); return false;">grid</a>
-        <a href="#" onclick="controller.load(Calendar); return false;">calendar</a>
-        <a href="#" onclick="controller.load(Trash); return false;">trashcan</a>
-        <a href="#" onclick="controller.load(DisplayInfo); return false;">about</a>
+        <a href="#" onclick="controller.load(Grid); return false;" id="grid">grid</a>
+        <a href="#" onclick="controller.load(Calendar); return false;" id="calendar">calendar</a>
+        <a href="#" onclick="controller.load(Trash); return false;" id="trash">trashcan</a>
+        <a href="#" onclick="controller.load(DisplayInfo); return false;" id="about">about</a>
       </div>
       <input type="text" id="search" />
     </div>

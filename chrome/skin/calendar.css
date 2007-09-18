@@ -1,3 +1,8 @@
+.calendar #calendar {
+  border-color: #555;
+  color: #e70;
+}
+
 .calendar td {
     width: 100px;
     height: 100px;

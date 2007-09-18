@@ -22,7 +22,7 @@ function daysOf(year, month) {
 
 function Calendar(container) {
   var self=this;
-  container.className = 'calendar';
+  document.body.className = 'calendar';
 
   var table = document.createElement('table');
   container.appendChild(table);
