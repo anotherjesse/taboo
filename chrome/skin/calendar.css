@@ -39,3 +39,11 @@
 .calendar .tabs img:hover {
     border-color: #888;
 }
+
+.calendar table {
+    margin: 30px auto;
+}
+
+.calendar th#date_nav {
+    padding-bottom: 20px;
+}

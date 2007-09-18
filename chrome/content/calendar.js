@@ -58,14 +58,14 @@ function Calendar(container) {
     var tabs = db.getTabs(year, month, date);
     if (tabs && tabs.length > 0) {
       var img = document.createElement('img');
-      img.setAttribute('src', tabs[0].imageURL);
+      img.setAttribute('src', tabs[0].thumbURL);
       td.appendChild(img);
       td.onclick = function() {
         var div = document.createElement('div');
         div.setAttribute('class', 'tabs');
         tabs.forEach(function(tab) { 
           var img = document.createElement('img');
-          img.setAttribute('src', tab.imageURL);
+          img.setAttribute('src', tab.thumbURL);
           img.setAttribute('title', tab.title); 
           img.onclick = function(event) { 
             SVC.open(tab.url, whereToOpenLink(event));
@@ -99,8 +99,10 @@ function Calendar(container) {
     var year = new Date().getFullYear();   // default to current year
     var month = new Date().getMonth();     // default to current month
     var days = daysOf(year, month);
-    
-    table.innerHTML = "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>"
+
+    table.innerHTML = "<tr><th colspan='7' id='date_nav'>" + month + ' / ' + year + '</th></tr>' +   
+                      "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>";
+
     var tr = null;
 
     for (var date=1; date<=days; date++) {
