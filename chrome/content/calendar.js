@@ -21,6 +21,7 @@ function daysOf(year, month) {
 }
 
 function Calendar(container) {
+  var self=this;
   container.className = 'calendar';
 
   var table = document.createElement('table');
@@ -95,13 +96,35 @@ function Calendar(container) {
     container.appendChild(table);
   }
 
-  this.finish = function() {
-    var year = new Date().getFullYear();   // default to current year
-    var month = new Date().getMonth();     // default to current month
+  this.finish = function(year, month) {
+    var year = year || new Date().getFullYear();   // default to current year
+    var month = month || new Date().getMonth();     // default to current month
     var days = daysOf(year, month);
 
-    table.innerHTML = "<tr><th colspan='7' id='date_nav'>" + month + ' / ' + year + '</th></tr>' +   
+    table.innerHTML = "<tr><th colspan='7' id='date_nav'><span id='nav_left'>&larr;</span>" + (month+1) + ' / ' + year + '<span id="nav_right">&rarr;</span></th></tr>' +   
                       "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>";
+
+    var left = document.getElementById('nav_left');
+    left.onclick = function() {
+      var new_month = month - 1;
+      var new_year = year;
+      if (new_month < 0) {
+        new_month = 11;
+        new_year = year - 1;
+      }
+      self.finish(new_year, new_month);
+    }
+
+    var right = document.getElementById('nav_right');
+    right.onclick = function() {
+      var new_month = month + 1;
+      var new_year = year;
+      if (new_month > 11) {
+        new_month = 0;
+        new_year = year + 1;
+      }
+      self.finish(new_year, new_month);
+    }
 
     var tr = null;
 
