@@ -25,3 +25,24 @@ body {
   padding: 2px 2px 2px 24px;
   background: white url("search.gif") left no-repeat;
 }
+
+#undelete {
+  width: 250px;
+}
+
+#undelete div {
+  width: 250px;
+}
+
+.infoWrap {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  visibility: hidden;
+}
+
+.info {
+  padding: 3px 0 3px 0;
+  background: #ee2;
+  -moz-border-radius: 5px;
+}

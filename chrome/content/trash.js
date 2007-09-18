@@ -11,37 +11,7 @@
  * License.
  */
 
-function Grid(container) {
-  container.className = 'grid';
-
-  var ul = document.createElement('ul');
-  container.appendChild(ul);
-
-  this.start = function() {
-    ul.innerHTML = '';
-  }
-
-  this.finish = function() {}
-
-  this.add = function(tab) {
-    var box = document.createElement('li');
-    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
-      tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><img class="preview" src="' + tab.thumbURL + '" /></div>';
-
-    box.onclick = function(event) {
-      if (event.originalTarget.className == 'delete') {
-        controller.tabDelete(tab, box);
-      }
-      else {
-        SVC.open(tab.url, whereToOpenLink(event));
-      }
-    }
-    ul.appendChild(box);
-  }
-}
-
-function GridTrash(container) {
+function Trash(container) {
   this.trash = true;
   container.className = 'grid';
 

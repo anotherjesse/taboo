@@ -38,6 +38,7 @@
       var scripts = [
           'chrome://taboo/content/calendar.js',
           'chrome://taboo/content/grid.js',
+          'chrome://taboo/content/trash.js',
           'chrome://taboo/content/displayInfo.js',
           'chrome://taboo/content/start.js',
         ];
@@ -62,10 +63,17 @@
       <div id="views">
         <a href="#" onclick="controller.load(Grid); return false;">grid</a>
         <a href="#" onclick="controller.load(Calendar); return false;">calendar</a>
-        <a href="#" onclick="controller.load(GridTrash); return false;">trashcan</a>
+        <a href="#" onclick="controller.load(Trash); return false;">trashcan</a>
+        <a href="#" onclick="controller.load(DisplayInfo); return false;">about</a>
       </div>
       <input type="text" id="search" />
     </div>
+
+		<div id="undelete" class="infoWrap">
+			<div id="text" class="info">
+				<a id="undeleteLink" href="#">Click here to undelete your taboo</a>
+			</div>
+		</div>
     <div id="content"></div>
   </body>
 </html>

@@ -14,13 +14,12 @@
 function Controller() {
   var content = $('content');
   var view = null;
-
+  
   this.load = function(ViewClass) {
     content.innerHTML = '';
+
     view = new ViewClass(content);
-
 		tboPrefs.setCharPref("extensions.taboo.view", ViewClass + '');
-
     this.display();
   }
 
@@ -33,10 +32,9 @@ function Controller() {
     this._filterStr = str;
   }
 
-  var self = this;
   this.tabDelete = function(tab, el) {
     el.style.display = "none";
-    self.displayUndelete(tab, el);
+    this.displayUndelete(tab, el);
     SVC.delete(tab.url);
   }
 
@@ -46,65 +44,38 @@ function Controller() {
   }
 
   this.tabUndelete = function(tab) {
-    var div = document.createElement('div');
-    div.style.textAlign = 'center';
-    div.style.marginLeft = 'auto';
-    div.style.marginRight = 'auto';
-    div.style.width = '400px';
-
-    var text = document.createElement('div');
-    text.style.background = '#ee2';
-    text.style.width = '400px';
-    text.innerHTML = 'This taboo has been undeleted.  Click another view to see it.'
-    div.appendChild(text);
-
-    div.appendChild(document.createElement('br'));
-
-    setTimeout(function() { div.style.display = 'none'; }, 30000);
-    document.body.insertBefore(div, document.getElementById('content'));
     SVC.undelete(tab.url);
   }
 
   this.displayUndelete = function(tab, el) {
-    var div = document.createElement('div');
-    div.style.textAlign = 'center';
-    div.style.marginLeft = 'auto';
-    div.style.marginRight = 'auto';
-    div.style.width = '250px';
-
-    var text = document.createElement('div');
-    text.style.background = '#ee2';
-    text.style.width = '250px';
-    div.appendChild(text);
-
-    var a = document.createElement('a');
-    a.innerHTML = 'Click here to undelete your taboo.';
-    a.href = '#';
+    var a = document.getElementById('undeleteLink');
+    var div = document.getElementById('undelete');
     a.onclick = function() { 
       el.style.display = '';
-      div.style.display = 'none';
+      div.style.visibility = 'hidden';
       SVC.undelete(tab.url);
     };
-    text.appendChild(a);
-
-    div.appendChild(document.createElement('br'));
-
-    setTimeout(function() { div.style.display = 'none'; }, 30000);
-    document.body.insertBefore(div, document.getElementById('content'));
+    div.url = tab.url;
+    div.style.visibility = 'visible';    
+    setTimeout(function() { 
+      if (div.url == tab.url) {
+        div.style.visibility = 'hidden';
+      }
+    }, 30000);
   }
 
   this.display = function(searchTxt) {
     view.start();
 
-    var enum = SVC.get(searchTxt, view.trash);
+    var taboos = SVC.get(searchTxt, view.trash);
     
-    if (!searchTxt && !view.trash && !view.info && !enum.hasMoreElements()) {
+    if (!searchTxt && !view.trash && !view.info && !taboos.hasMoreElements()) {
       controller.load(DisplayInfo);
       return;
     }
     
-    while (enum.hasMoreElements()) {
-      var tab = enum.getNext();
+    while (taboos.hasMoreElements()) {
+      var tab = taboos.getNext();
       tab.QueryInterface(Components.interfaces.oyITabooInfo);
       view.add(tab);
     }
@@ -117,7 +88,7 @@ function Controller() {
 var controller = new Controller();
 try {
   var view = tboPrefs.getCharPref("extensions.taboo.view");
-  if (view.match(/GridTrash|DisplayInfo/)) throw 'We don\'t reload trash';
+  if (view.match(/Trash|DisplayInfo/)) throw 'We don\'t reload trash';
   var ViewClass = eval('(' + view + ')');
   controller.load(ViewClass);
 }
