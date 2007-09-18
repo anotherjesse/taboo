@@ -43,7 +43,7 @@
   </keyset>
   
   <commandset id="mainCommandSet">
-    <command id="cmd_showTaboos" oncommand="taboo.show()" />
+    <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
   </commandset>
 

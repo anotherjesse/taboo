@@ -21,6 +21,10 @@ function daysOf(year, month) {
 }
 
 function Calendar(container) {
+  var self=this;
+  self.year = new Date().getFullYear();   // default to current year
+  self.month = new Date().getMonth();     // default to current month
+
   container.className = 'calendar';
 
   var table = document.createElement('table');
@@ -58,14 +62,14 @@ function Calendar(container) {
     var tabs = db.getTabs(year, month, date);
     if (tabs && tabs.length > 0) {
       var img = document.createElement('img');
-      img.setAttribute('src', tabs[0].imageURL);
+      img.setAttribute('src', tabs[0].thumbURL);
       td.appendChild(img);
       td.onclick = function() {
         var div = document.createElement('div');
         div.setAttribute('class', 'tabs');
         tabs.forEach(function(tab) { 
           var img = document.createElement('img');
-          img.setAttribute('src', tab.imageURL);
+          img.setAttribute('src', tab.thumbURL);
           img.setAttribute('title', tab.title); 
           img.onclick = function(event) { 
             SVC.open(tab.url, whereToOpenLink(event));
@@ -90,21 +94,41 @@ function Calendar(container) {
 
   this.start = function() {
     db.clear();
-    container.removeChild(table);
-    table = document.createElement('table');
-    container.appendChild(table);
   }
 
   this.finish = function() {
-    var year = new Date().getFullYear();   // default to current year
-    var month = new Date().getMonth();     // default to current month
-    var days = daysOf(year, month);
-    
-    table.innerHTML = "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>"
+    container.removeChild(table);
+    table = document.createElement('table');
+    container.appendChild(table);
+    var days = daysOf(self.year, self.month);
+
+    table.innerHTML = "<tr><th colspan='7' id='date_nav'><span id='nav_left'>&larr;</span>" + (self.month+1) + ' / ' + self.year + '<span id="nav_right">&rarr;</span></th></tr>' +   
+                      "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>";
+
+    var left = document.getElementById('nav_left');
+    left.onclick = function() {
+      self.month--;
+      if (self.month < 0) {
+        self.month = 11;
+        self.year--;
+      }
+      self.finish();
+    }
+
+    var right = document.getElementById('nav_right');
+    right.onclick = function() {
+      self.month++;
+      if (self.month > 11) {
+        self.month = 0;
+        self.year++;
+      }
+      self.finish();
+    }
+
     var tr = null;
 
     for (var date=1; date<=days; date++) {
-      var curDate = new Date(year, month, date);
+      var curDate = new Date(self.year, self.month, date);
       
       if (!tr) {
         tr = document.createElement('tr');
@@ -118,7 +142,7 @@ function Calendar(container) {
         
       var td = document.createElement('td');
 
-      addTabsToTD(year, month, date, td);
+      addTabsToTD(self.year, self.month, date, td);
 
       tr.appendChild(td);
       if (curDate.getDay() == 6) {
