@@ -19,8 +19,11 @@ function DisplayInfo(container) {
   container.appendChild(div);
 
   this.start = function() {
-    div.innerHTML = '<br />To use Taboo, just click on the red "+" icon next to your address bar. This saves the tab for you.<br />' + 
-                    'To view your saved taboos, click on the red "T".';
+    div.innerHTML = '<h1>Using Taboo</h1>' +
+										'<ul><li>To use Taboo, just click on the <img src="chrome://taboo/skin/toolbar-add.png" id="taboo-toolbarbutton-add" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+										' icon next to your address bar. This saves the tab for you.</li>' + 
+										'<li>Saved Taboos display <img src="chrome://taboo/skin/toolbar-added.png" id="taboo-toolbarbutton-add-saved" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; instead.</li>' +
+                    '<li>To view your saved taboos, click on the <img src="chrome://taboo/skin/toolbar-view.png" id="taboo-toolbarbutton-view" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; icon.</li></ul>';
     
   }
 

@@ -1,96 +1,44 @@
+#taboo-toolbarbutton-add {
+	clip: rect(0px 24px 24px 0px);
+	position: absolute;
+}
+
+#taboo-toolbarbutton-add-hover {
+	clip: rect(24px 24px 48px 0px);
+}
+
+#taboo-toolbarbutton-add-saved {
+	clip: rect(0px 24px 24px 0px);
+	position: absolute;
+}
+
+#taboo-toolbarbutton-add-saved-hover {
+	clip: rect(24px 24px 48px 0px);
+}
+
+#taboo-toolbarbutton-view {
+	clip: rect( 0px 24px 24px 0px);
+	position: absolute;
+}
+
+#taboo-toolbarbutton-view-hover {
+	clip: rect(24px 24px 48px 0px);
+}
+
 .about #about {
   border-color: #555;
   color: #e70;
 }
 
+.about h1 {
+	text-align: center;
+}
+
 .about ul {
-  padding: 0;
-  list-style: none;
+  padding-left: 30px;
+  list-style: auto;
 }
 
 .about li {
-  float: left;
-  display: block;
-  height: 150px;
-  margin-bottom: 15px;
-}
-
-.about li span {
-  width: 125px;
-  margin: 0 auto;
-  display: block;
-}
-
-.about li span.title {
-  width: 125px;
-  overflow: hidden;
-  font-size: 12px;
-  padding-top: 4px;
-  font-weight: bold;
-  color: #777;
-}
-
-.about li img.preview {
-  max-width: 125px;
-  max-height: 125px;
-}
-
-.about li span.url {
-  width: 125px;
-  overflow: hidden;
-  font-size: 11px;
-  color: #08f;
-  text-decoration: underline;
-  padding-bottom: 2px;
-  padding-top: 5px;
-}
-
-.about li div {
-  margin: 5px;
-  padding: 5px;
-  -moz-border-radius: 10px;
-  border: 1px solid #e8e8e8;
-  background: #f8f8f8;
-  width: 140px;
-  cursor: pointer;
-  color: #333;
-}
-
-.about li div:hover {
-  border-color: #ddd;
-  background: #fff;
-  color: black;
-}
-
-.about li .delete {
-  display: none;
-  background: transparent url("close.png") top no-repeat;
-  width: 14px !important;
-  height: 14px !important;
-  float: right;
-  top: -10px;
-  right: -10px;
-  position: relative;
-}
-
-.about li:hover .delete {
-  display: inline;
-}
-
-.about li .delete:hover {
-  background: transparent url("close.png") bottom no-repeat;
-}
-
-.about li img.preview {
-  margin-top: 5px;
-  margin-left: 6px;
-  border: 1px solid #888;
-}
-
-.about li:hover img {
-  border-color: black;
-}
-
-.about li:hover span.url {
-  color: #f80;
+	padding: 5px;
 }
