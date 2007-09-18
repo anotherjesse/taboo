@@ -91,12 +91,12 @@ function Calendar(container) {
 
   this.start = function() {
     db.clear();
-    container.removeChild(table);
-    table = document.createElement('table');
-    container.appendChild(table);
   }
 
   this.finish = function(year, month) {
+    container.removeChild(table);
+    table = document.createElement('table');
+    container.appendChild(table);
     var year = year || new Date().getFullYear();   // default to current year
     var month = month || new Date().getMonth();     // default to current month
     var days = daysOf(year, month);
