@@ -88,7 +88,7 @@ function Controller() {
 var controller = new Controller();
 try {
   var view = tboPrefs.getCharPref("extensions.taboo.view");
-  if (view.match(/Trash|DisplayInfo/)) throw 'We don\'t reload trash';
+  if (view.match(/Trash|About/)) throw 'We don\'t reload trash';
   var ViewClass = eval('(' + view + ')');
   controller.load(ViewClass);
 }
