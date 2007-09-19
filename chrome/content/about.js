@@ -26,7 +26,7 @@ function About(container) {
   container.appendChild(div);
 
   this.start = function() {
-    div.innerHTML = '<iframe src="about.html" style="width: 100%; height: 310px; border: 0;" />';
+    div.innerHTML = '<iframe src="about.html" style="width: 100%; height: 500px; border: 0;" />';
   }
 
   this.finish = function() {}
