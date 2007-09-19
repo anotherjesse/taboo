@@ -11,8 +11,9 @@
 .grid li {
   float: left;
   display: block;
-  height: 150px;
-  margin-bottom: 15px;
+  height: 160px;
+  margin-bottom: 5px;
+  overflow: hidden;
 }
 
 .grid li span {
