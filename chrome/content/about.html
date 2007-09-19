@@ -6,18 +6,21 @@ document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + M
 </head>
 
 <body class="about">
+<h1>Saving Your Tabs</h1>
+<p>Taboo lets you save a tab for use at a later time.  After "tabooing" a tab, a screenshot, the current position on the page, and information you've typed into form elements are saved.</p>
+<p>When you reload that tab, you will be returned to the page, at the proper location, with the back button history in tact, and the form fields filled in.</p>
 <h1>Using Taboo</h1>
-<table style="width: 300px">
+<table>
 <tr>
 	<td style="width: 50px"><span id="taboo-toolbarbutton-add"></span></td>
 	<td>To use Taboo, just click on this icon, found next to your address bar. This saves the tab for you.</td>
 </tr>
 <tr>
-	<td style="width: 50px"><span id="taboo-toolbarbutton-add-saved"></span></td>
-	<td>Saved Taboos display this icon instead. Clicking this again will the taboo again, updating the screenshot and saved state.  (shift-clicking this will move the taboo to the trashcan)</td>
+	<td><span id="taboo-toolbarbutton-add-saved"></span></td>
+	<td>Saved Taboos display this icon instead. Clicking this again will resave the taboo.  (shift-clicking this will move the taboo to the trashcan)</td>
 </tr>
 <tr>
-	<td style="width: 50px"><span id="taboo-toolbarbutton-view"></span></td>
+	<td><span id="taboo-toolbarbutton-view"></span></td>
 	<td>To view your saved taboos, click on this icon.</td>
 </tr>
 </table>
