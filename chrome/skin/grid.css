@@ -13,7 +13,6 @@
   display: block;
   height: 160px;
   margin-bottom: 5px;
-  overflow: hidden;
 }
 
 .grid li span {
@@ -29,6 +28,11 @@
   padding-top: 4px;
   font-weight: bold;
   color: #777;
+}
+
+.grid li span.thumb {
+	overflow: hidden;
+	max-height: 105px;
 }
 
 .grid li img.preview {
@@ -84,7 +88,6 @@
 
 .grid li img.preview {
   margin-top: 5px;
-  margin-left: 6px;
   border: 1px solid #888;
 }
 
