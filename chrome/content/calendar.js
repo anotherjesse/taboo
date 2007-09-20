@@ -22,10 +22,9 @@ function daysOf(year, month) {
 
 function Calendar(container) {
   var self=this;
+  document.body.className = 'calendar';
   self.year = new Date().getFullYear();   // default to current year
   self.month = new Date().getMonth();     // default to current month
-
-  container.className = 'calendar';
 
   var table = document.createElement('table');
   container.appendChild(table);

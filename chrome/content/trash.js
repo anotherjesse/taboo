@@ -13,7 +13,7 @@
 
 function Trash(container) {
   this.trash = true;
-  container.className = 'grid';
+  document.body.className = 'trash';
 
   var deleted = [];
   
@@ -68,7 +68,7 @@ function Trash(container) {
     var box = document.createElement('li');
     box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
       tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><img class="preview" src="' + tab.imageURL + '" /></div>';
+      tab.url + '</span><img class="preview" src="' + tab.thumbURL + '" /></div>';
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {

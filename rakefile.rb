@@ -8,5 +8,5 @@ end
 
 task :xpi do
   rm_f 'taboo.xpi'
-  `find chrome components install.rdf defaults | xargs zip taboo.xpi`
+  `find chrome chrome.manifest components install.rdf defaults | xargs zip taboo.xpi`
 end 
