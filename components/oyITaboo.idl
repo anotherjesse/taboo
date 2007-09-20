@@ -15,6 +15,15 @@
 
 interface nsISimpleEnumerator;
 
+[scriptable, uuid(d08e3217-ea2d-4733-94ba-127ca07331b1)]
+interface oyITabooObserver : nsISupports {
+  void onSave(in AUTF8String aURL, in boolean aIsNew);
+
+  void onDelete(in AUTF8String aURL);
+  void onUndelete(in AUTF8String aURL);
+  void onReallyDelete(in AUTF8String aURL);
+};
+
 [scriptable, uuid(4d224890-6081-4631-8e20-157bbd338597)]
 interface oyITaboo : nsISupports {
   void open(in AUTF8String aURL, in AUTF8String aWhere);
@@ -26,7 +35,10 @@ interface oyITaboo : nsISupports {
   void undelete(in AUTF8String aURL);
   void reallyDelete(in AUTF8String aURL);
 
-  nsISimpleEnumerator get(in AUTF8String filter, in boolean deleted);
+  nsISimpleEnumerator get(in AUTF8String aFilter, in boolean aDeleted);
+
+  void addObserver(in oyITabooObserver aObserver);
+  void removeObserver(in oyITabooObserver aObserver);
 };
 
 [scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]

@@ -223,8 +223,9 @@ TabooStorageSQL.prototype = {
     var updated = Date.now();
 
     var entry = this._store.find(url);
+    var exists = Boolean(entry);
 
-    if (!entry) {
+    if (!exists) {
       entry = this._store.new();
       entry.url = url;
       entry.md5 = hex_md5(url);
@@ -244,6 +245,8 @@ TabooStorageSQL.prototype = {
 
     this._saveImage(fullImage, this._getImageFile(entry.md5));
     this._saveImage(thumbImage, this._getThumbFile(entry.md5));
+
+    return exists;
   },
   saveFavicon: function TSSQL_saveFavicon(url, favicon) {
     var entry = this._store.find(url);
@@ -363,6 +366,8 @@ TabooStorageSQL.prototype = {
 
 
 function TabooService() {
+  this._observers = [];
+
   var obs = getObserverService();
   obs.addObserver(this, 'profile-after-change', false);
 }
@@ -379,6 +384,18 @@ TabooService.prototype = {
         obs.removeObserver(this, 'profile-after-change');
         this._init();
         break;
+    }
+  },
+
+  addObserver: function TB_addObserver(aObserver) {
+    if (this._observers.indexOf(aObserver) == -1) {
+      this._observers.push(aObserver);
+    }
+  },
+  removeObserver: function TB_removeObserver(aObserver) {
+    var index = this._observers.indexOf(aObserver);
+    if (index != -1) {
+      this._observers.splice(index, 1);
     }
   },
 
@@ -419,7 +436,8 @@ TabooService.prototype = {
     var fullImage = snapshot(win, IMAGE_FULL_WIDTH, IMAGE_FULL_HEIGHT);
     var thumbImage = snapshot(win, IMAGE_THUMB_WIDTH, IMAGE_THUMB_HEIGHT);
 
-    this._storage.save(url, aDescription, state, fullImage, thumbImage);
+    var exists = this._storage.save(url, aDescription, state,
+                                    fullImage, thumbImage);
 
     var faviconURL = selectedTab.getAttribute('image');
     if (faviconURL) {
@@ -432,6 +450,10 @@ TabooService.prototype = {
       chan.asyncOpen(listener, null);
     }
 
+    for (var i = 0; i < this._observers.length; i++) {
+      this._observers[i].onSave(url, !exists);
+    }
+
     return true;
   },
   isSaved: function TB_isSaved(aURL) {
@@ -439,12 +461,24 @@ TabooService.prototype = {
   },
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
+
+    for (var i = 0; i < this._observers.length; i++) {
+      this._observers[i].onDelete(aURL);
+    }
   },
   undelete: function TB_undelete(aURL) {
     this._storage.undelete(aURL);
+
+    for (var i = 0; i < this._observers.length; i++) {
+      this._observers[i].onUndelete(aURL);
+    }
   },
   reallyDelete: function TB_reallyDelete(aURL) {
     this._storage.reallyDelete(aURL);
+
+    for (var i = 0; i < this._observers.length; i++) {
+      this._observers[i].onReallyDelete(aURL);
+    }
   },
   get: function TB_get(filter, deleted) {
     var urls = this._storage.getURLs(filter, deleted);
