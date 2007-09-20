@@ -58,10 +58,17 @@ function taboo_init() {
   taboo = new Taboo();
 
   tboInstallInToolbar();
-  gBrowser.addProgressListener(tboProgressListener, Components.interfaces.nsIWebProgress.NOTIFY_LOCATION);
+
+  gBrowser.addProgressListener(tboProgressListener,
+                               Ci.nsIWebProgress.NOTIFY_LOCATION);
 }
 
-window.addEventListener("load", taboo_init, true);
+function taboo_uninit() {
+  gBrowser.removeProgressListener(tboProgressListener);
+}
+
+window.addEventListener("load", taboo_init, false);
+window.addEventListener("unload", taboo_uninit, false);
 
 var tboProgressListener = {
   onLocationChange: function(aWebProgress, aRequest, aLocation) {
