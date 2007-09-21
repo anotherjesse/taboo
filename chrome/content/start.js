@@ -21,7 +21,9 @@ function Controller() {
     content.innerHTML = '';
 
     view = new ViewClass(content);
-    tboPrefs.setCharPref("extensions.taboo.view", view);
+    if (!view_name.match(/Trash|About/)) {
+      tboPrefs.setCharPref("extensions.taboo.view", view_name);
+    }
     this.display();
   }
 
@@ -90,7 +92,6 @@ function Controller() {
 var controller = new Controller();
 try {
   var view = tboPrefs.getCharPref("extensions.taboo.view");
-  if (view.match(/Trash|About/)) throw 'We don\'t reload trash';
   controller.load(view);
 }
 catch (e) {
