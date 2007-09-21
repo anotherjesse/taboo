@@ -15,11 +15,13 @@ function Controller() {
   var content = $('content');
   var view = null;
   
-  this.load = function(ViewClass) {
+  this.load = function(view_name) {
+    var ViewClass = top[view_name];
+
     content.innerHTML = '';
 
     view = new ViewClass(content);
-		tboPrefs.setCharPref("extensions.taboo.view", ViewClass + '');
+    tboPrefs.setCharPref("extensions.taboo.view", view);
     this.display();
   }
 
@@ -89,10 +91,9 @@ var controller = new Controller();
 try {
   var view = tboPrefs.getCharPref("extensions.taboo.view");
   if (view.match(/Trash|About/)) throw 'We don\'t reload trash';
-  var ViewClass = eval('(' + view + ')');
-  controller.load(ViewClass);
+  controller.load(view);
 }
 catch (e) {
-  controller.load(Grid);
+  controller.load('Grid');
 }
 
