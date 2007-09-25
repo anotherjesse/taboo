@@ -7,7 +7,7 @@
     <em:version>0.1</em:version>
     <em:description>The cure for tabitis</em:description>
     <em:iconURL>chrome://taboo/skin/logo.png</em:iconURL>
-    <em:homepageURL>http://www.runningfrombears.com/taboo</em:homepageURL>
+    <em:homepageURL>http://runningfrombears.com/taboo</em:homepageURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
     <em:contributor>Manish Singh; http://yosh.org</em:contributor>
     <em:contributor>Ian Fischer; http://iantriesagain.com</em:contributor>
@@ -26,7 +26,7 @@
       <Description>
         <em:id>{a463f10c-3994-11da-9945-000d60ca027b}</em:id>
         <em:minVersion>0.8</em:minVersion>
-        <em:maxVersion>1.0b1</em:maxVersion>
+        <em:maxVersion>1.0</em:maxVersion>
       </Description>
     </em:targetApplication>
 
