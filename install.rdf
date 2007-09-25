@@ -3,7 +3,7 @@
 <RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <RDF:Description RDF:about="urn:mozilla:install-manifest">
     <em:name>Taboo</em:name>
-    <em:id>taboo@overstimulate.com</em:id>
+    <em:id>taboo@runningfrombears.com</em:id>
     <em:version>0.1</em:version>
     <em:description>Will It Blend? Tabs, Sessions and Bookmarks</em:description>
     <em:iconURL>chrome://taboo/skin/logo.png</em:iconURL>
