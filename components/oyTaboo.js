@@ -256,7 +256,8 @@ TabooStorageSQL.prototype = {
     }
   },
   exists: function TSSQL_exists(url) {
-    return Boolean(this._store.find(url));
+    var entry = this._store.find(url);
+    return (entry && !entry.deleted);
   },
   delete: function TSSQL_delete(url) {
     this._deleteOp(url, Date.now());
