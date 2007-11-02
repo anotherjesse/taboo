@@ -624,6 +624,13 @@ TabooService.prototype = {
       stream.setData(aEntry.postdata, -1);
       shEntry.postData = stream;
     }
+
+    if (Ci.nsISHEntry_MOZILLA_1_8_BRANCH2 &&
+        shEntry instanceof Ci.nsISHEntry_MOZILLA_1_8_BRANCH2 &&
+        aEntry.ownerURI)
+    {
+      shEntry.ownerURI = ioService.newURI(aEntry.ownerURI, null, null);
+    }
     
     if (aEntry.children && shEntry instanceof Ci.nsISHContainer) {
       for (var i = 0; i < aEntry.children.length; i++) {
