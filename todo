@@ -1,8 +1,10 @@
 visualization - mosaic view   - http://www.coverpop.com/pop/indie/
+support drag and drop into bookmarkbar/... (dnd flavors)
 
 =======
-feature - support drag and drop into bookmarkbar/...
 
+
+Feedback:
 
 http://groups.google.com/group/taboo-extension/browse_thread/thread/8baa4ffb295697ee 
 - Right now there is 1 hotkey: Ctrl-Shift-F - "find a taboo" - which
@@ -17,3 +19,8 @@ http://groups.google.com/group/taboo-extension/browse_thread/thread/2f345e9114f5
 
 http://groups.google.com/group/taboo-extension/browse_thread/thread/7ee79de233ba9ffd
 - embed taboos within bookmarks...
+
+https://addons.mozilla.org/en-US/firefox/reviews/reply/13147
+- in grid mode, it would be nice to be able to edit the title of the taboo
+- calendar mode it would be nice if the thumbnails were a little bigger, so you can recognize your taboo faster
+
