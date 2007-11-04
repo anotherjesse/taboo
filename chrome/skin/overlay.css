@@ -3,11 +3,15 @@
     -moz-image-region: rect( 0px 24px 24px 0px);
 }
 
+#taboo-toolbarbutton-add:hover {
+    -moz-image-region: rect(24px 24px 48px 0px);
+}
+
 #taboo-toolbarbutton-add[saved="true"] {
     list-style-image: url("chrome://taboo/skin/toolbar-added.png");
 }
 
-#taboo-toolbarbutton-add:hover {
+#taboo-toolbarbutton-add[saved="true"]:hover {
     -moz-image-region: rect(24px 24px 48px 0px);
 }
 
@@ -18,4 +22,30 @@
 
 #taboo-toolbarbutton-view:hover {
     -moz-image-region: rect(24px 24px 48px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-add {
+    list-style-image: url("chrome://taboo/skin/toolbar-add-16.png");
+    -moz-image-region: rect(0px 16px 16px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-add:hover {
+    -moz-image-region: rect(16px 16px 32px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-add[saved="true"] {
+    list-style-image: url("chrome://taboo/skin/toolbar-added-16.png");
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-add[saved="true"]:hover {
+    -moz-image-region: rect(16px 16px 32px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-view {
+    list-style-image: url("chrome://taboo/skin/toolbar-view-16.png");
+    -moz-image-region: rect( 0px 16px 16px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-view:hover {
+    -moz-image-region: rect(16px 16px 32px 0px);
 }
