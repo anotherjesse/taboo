@@ -1,11 +1,19 @@
-bug - proper scaling (with anti-aliasing)
-
-feature - undo
-ui - search ui
-
-visualization - calendar view - http://flickr.com/explore/interesting/2007/07/
 visualization - mosaic view   - http://www.coverpop.com/pop/indie/
-visualization - calendar agenda view - eg like normal except add
 
 =======
 feature - support drag and drop into bookmarkbar/...
+
+
+http://groups.google.com/group/taboo-extension/browse_thread/thread/8baa4ffb295697ee 
+- Right now there is 1 hotkey: Ctrl-Shift-F - "find a taboo" - which
+  opens the page of tabs.  Add hotkey for tabooing the current page and 
+  then make both costomizable via prefs.
+- customized right click menu for thumbnails (delete thumbnail,refresh/reload 
+  maybe and open in foreground and background tab options)
+
+http://groups.google.com/group/taboo-extension/browse_thread/thread/2f345e9114f5cdda
+- add comments to taboos
+- searching full text
+
+http://groups.google.com/group/taboo-extension/browse_thread/thread/7ee79de233ba9ffd
+- embed taboos within bookmarks...
