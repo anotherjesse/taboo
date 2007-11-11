@@ -25,9 +25,32 @@ function Grid(container) {
 
   this.add = function(tab) {
     var box = document.createElement('li');
-    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
-      tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><span class="thumb"><img class="preview" src="' + tab.thumbURL + '" /></span></div>';
+    var div = document.createElement('div');
+    div.setAttribute('title', tab.title);
+    var span = document.createElement('span');
+    span.setAttribute('class', 'delete');
+    span.setAttribute('title', 'delete taboo');
+    div.appendChild(span);
+    var span = document.createElement('span');
+    span.setAttribute('class', 'title');
+    var nobr = document.createElement('nobr');
+    span.appendChild(nobr);
+    nobr.appendChild(document.createTextNode(tab.title));
+    div.appendChild(span);
+    var span = document.createElement('span');
+    span.setAttribute('class', 'url');
+    var nobr = document.createElement('nobr');
+    span.appendChild(nobr);
+    nobr.appendChild(document.createTextNode(tab.url));
+    div.appendChild(span);
+    var span = document.createElement('span');
+    span.setAttribute('class', 'thumb');
+    var img = document.createElement('img');
+    img.setAttribute('class', 'preview');
+    img.setAttribute('src', tab.thumbURL);
+    span.appendChild(img);
+    div.appendChild(span);
+    box.appendChild(div);
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <!--
@@ -12,18 +13,20 @@
  for the specific language governing rights and limitations under the
  License.
 -->
-<html xmlns:svg="http://www.w3.org/2000/svg">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svg="http://www.w3.org/2000/svg" xml:lang="en-US" lang="en-US">
   <head>
     <title>Taboo</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+    <link rel="stylesheet" href="chrome://taboo/skin/start.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/calendar.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/grid.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/trash.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
+    
     <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
     <script type="text/javascript">
+    <![CDATA[
     // for debugging - get around chrome caching
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/start.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/calendar.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/grid.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/trash.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + Math.random() + '" />');
 
 		const CC = Components.classes;
 		const CI = Components.interfaces;
@@ -53,12 +56,21 @@
       $('search').onkeyup = function(event) {
         controller.filter($('search').value);
       }
-      $('search').value = '';
+
+      $('search').setAttribute('value', '');
       $('search').focus();
+      
+      try {
+        var view = tboPrefs.getCharPref("extensions.taboo.view");
+        controller.load(view);
+      }
+      catch (e) {
+        controller.load('Grid');
+      }
     }
 
     window.addEventListener("load", init, false);
-
+    ]]>
     </script>
   </head>
   <body>

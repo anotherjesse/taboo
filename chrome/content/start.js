@@ -90,11 +90,26 @@ function Controller() {
 }
 
 var controller = new Controller();
-try {
-  var view = tboPrefs.getCharPref("extensions.taboo.view");
-  controller.load(view);
-}
-catch (e) {
-  controller.load('Grid');
-}
 
+
+
+
+
+
+
+
+
+function build(elementName, params) {
+  var node = document.createElement(elementName);
+  if (params) {
+    for (var i in params) {
+      if (typeof(params[i]) == 'function') {
+        node[i] = params[i];
+      }
+      else {
+        node.setAttribute(i, params[i]);
+      }
+    }
+  }
+  return node;
+}

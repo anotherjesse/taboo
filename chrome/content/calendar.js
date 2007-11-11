@@ -69,7 +69,7 @@ function Calendar(container) {
         tabs.forEach(function(tab) { 
           var img = document.createElement('img');
           img.setAttribute('src', tab.thumbURL);
-          img.setAttribute('title', tab.title); 
+          // img.setAttribute('title', tab.title); 
           img.onclick = function(event) { 
             SVC.open(tab.url, whereToOpenLink(event));
           }
@@ -101,8 +101,25 @@ function Calendar(container) {
     container.appendChild(table);
     var days = daysOf(self.year, self.month);
 
-    table.innerHTML = "<tr><th colspan='7' id='date_nav'><span id='nav_left'>&larr;</span>" + (self.month+1) + ' / ' + self.year + '<span id="nav_right">&rarr;</span></th></tr>' +   
-                      "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>";
+    var tr = build('tr');
+    var th = build('th', {colspan: 7, id: 'date_nav'});
+    var span = build('span', {id: 'nav_left'});
+    span.appendChild(document.createTextNode('<-'));
+    th.appendChild(span)
+    th.appendChild(document.createTextNode((self.month+1) + ' / ' + self.year))
+    var span = build('span', {id: 'nav_right'});
+    span.appendChild(document.createTextNode('->'));
+    th.appendChild(span)
+    tr.appendChild(th);
+    table.appendChild(tr);
+    
+    var tr = build('tr')
+    "SUN,MON,TUE,WED,THUR,FRI,SAT".split(",").forEach(function(day) {
+      var th = build('th');
+      th.appendChild(document.createTextNode(day))
+      tr.appendChild(th)
+    })
+    table.appendChild(tr)
 
     var left = document.getElementById('nav_left');
     left.onclick = function() {

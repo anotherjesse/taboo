@@ -22,10 +22,10 @@ function Taboo() {
     if (event.shiftKey ||
         url == 'about:blank' ||
         url == 'chrome://taboo/content/start.html') {
-      openUILinkIn('chrome://taboo/content/start.html', 'current');
+      openUILinkIn('chrome://taboo/content/start.xhtml', 'current');
     }
     else {
-      openUILinkIn('chrome://taboo/content/start.html', 'tab');
+      openUILinkIn('chrome://taboo/content/start.xhtml', 'tab');
     }
   }
 
