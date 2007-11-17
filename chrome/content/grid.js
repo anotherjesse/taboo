@@ -24,30 +24,22 @@ function Grid(container) {
   this.finish = function() {}
 
   this.add = function(tab) {
-    var box = document.createElement('li');
-    var div = document.createElement('div');
-    div.setAttribute('title', tab.title);
-    var span = document.createElement('span');
-    span.setAttribute('class', 'delete');
-    span.setAttribute('title', 'delete taboo');
+    var box = build('li');
+    var div = build('div', {title: tab.title});
+    var span = build('span', {class: 'delete', title: 'delete taboo'});
     div.appendChild(span);
-    var span = document.createElement('span');
-    span.setAttribute('class', 'title');
-    var nobr = document.createElement('nobr');
+    var span = build('span', {class: 'title'});
+    var nobr = build('nobr');
     span.appendChild(nobr);
     nobr.appendChild(document.createTextNode(tab.title));
     div.appendChild(span);
-    var span = document.createElement('span');
-    span.setAttribute('class', 'url');
+    var span = build('span', {class: 'url'});
     var nobr = document.createElement('nobr');
     span.appendChild(nobr);
     nobr.appendChild(document.createTextNode(tab.url));
     div.appendChild(span);
-    var span = document.createElement('span');
-    span.setAttribute('class', 'thumb');
-    var img = document.createElement('img');
-    img.setAttribute('class', 'preview');
-    img.setAttribute('src', tab.thumbURL);
+    var span = build('span', {class: 'thumb'});
+    var img = build('img', {class: 'preview', src: tab.thumbURL});
     span.appendChild(img);
     div.appendChild(span);
     box.appendChild(div);
