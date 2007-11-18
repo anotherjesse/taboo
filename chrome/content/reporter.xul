@@ -2,11 +2,11 @@
 
 <!--
  Copyright 2007 Jesse Andrews
- 
+
  This file may be used under the terms of of the
  GNU General Public License Version 2 or later (the "GPL"),
  http://www.gnu.org/licenses/gpl.html
- 
+
  Software distributed under the License is distributed on an "AS IS" basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  for the specific language governing rights and limitations under the
@@ -16,42 +16,59 @@
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	buttons="accept,cancel,extra1"
-	buttonlabelextra1="Never ask to send reports"
+  buttons="accept,cancel,extra1"
+  buttonlabelextra1="Never ask to send reports"
   title="My Dialog"
-	buttonlabelcancel="Don't send"
-	height="500"
-	width="700"
+  buttonlabelcancel="Don't send"
+  height="500"
+  width="700"
+  onload="onLoad();"
   buttonlabelaccept="Send">
-	<script type="text/javascript">
-		<![CDATA[
-		window.addEventListener('load', function() {
-			document.getElementById('exception').value = "hello\nworld";
-			document.getElementById('feedback').focus();
-		}, true)
-		]]>
-	</script>
 
-	<hbox>
-		<label value="Taboo Encountered a Problem" style="font-weight: bold; font-size: 1.5em" />
-		<spacer flex="1" />
-		<image src="chrome://taboo/skin/logo.png" />
-		<spacer width="5" />
-	</hbox>
+  <script type="text/javascript" src="reporter.js" />
 
-	<spacer height="10" />
+  <script type="text/javascript">
+    <![CDATA[
+    function onLoad() {
+      document.getElementById('feedback').focus();
 
-	<hbox>
-		<label value="Oops, Taboo messed up. Sending a report on what went wrong will help us improve the next version." />
-		<spacer flex="1" />
-		<label class="text-link" value="privacy details" onclick='window.openDialog("chrome://taboo/chrome/reporter.xul", "", "chrome, dialog, modal, resizable=yes", {})' />
-	</hbox>
+      var report = window.arguments[0].exception;
 
-	<groupbox flex="1">
-		<label value="What were you trying to do when the problem occurred?" />
-		<textbox id="feedback" value="" multiline="true" flex="1" />
-		<splitter />
-		<label value="Here is the error that happened" />
-		<textbox id="exception" value="" multiline="true" readonly="true" flex="4" />
-	</groupbox>
+      report += "\n\nSYSTEM INFO\n\n";
+      sysInfo().forEach(function(row) {
+        report += row[0] + ":\n  " + row[1] + "\n"
+      })
+
+      report += "\n\nACTIVE EXTENSIONS\n\n";
+      extensions().forEach(function(extension) {
+        report += extension.name + "\n  " + extension.id + "\n  " + extension.version + "\n"
+      });
+
+      document.getElementById('exception').value = report
+    }
+    ]]>
+  </script>
+
+  <hbox>
+    <label value="Taboo Encountered a Problem" style="font-weight: bold; font-size: 1.5em" />
+    <spacer flex="1" />
+    <image src="chrome://taboo/skin/logo.png" />
+    <spacer width="5" />
+  </hbox>
+
+  <spacer height="10" />
+
+  <hbox>
+    <label value="Oops, Taboo messed up. Sending a report on what went wrong will help us improve the next version." />
+    <spacer flex="1" />
+    <label class="text-link" value="privacy details" onclick='window.openDialog("chrome://taboo/chrome/reporter.xul", "", "chrome, dialog, modal, resizable=yes", {})' />
+  </hbox>
+
+  <groupbox flex="1">
+    <label value="What were you trying to do when the problem occurred?" />
+    <textbox id="feedback" value="" multiline="true" flex="1" />
+    <splitter />
+    <label value="Here is the error that happened" />
+    <textbox id="exception" value="" multiline="true" readonly="true" flex="4" />
+  </groupbox>
 </dialog>
