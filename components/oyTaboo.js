@@ -304,12 +304,9 @@ TabooStorageSQL.prototype = {
     }
 
     var data = entry.full.replace(/\r\n?/g, '\n');
-    var sandbox = new Cu.Sandbox('about:blank');
-    var state = Cu.evalInSandbox(data, sandbox);
-
     return new TabooInfo(url, entry.title, entry.description, entry.favicon,
                          imageURL, thumbURL, entry.created, entry.updated,
-                         state);
+                         data);
   },
   getURLs: function TSSQL_getURLs(filter, deleted) {
     var condition = [];
@@ -421,15 +418,26 @@ TabooService.prototype = {
 
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
-    var winJSON = "(" + ss.getWindowState(win) + ")";
 
-    if (getBoolPref('extensions.taboo.debug', false))
-      dump(winJSON + "\n");
-
+    var state;
     var sandbox = new Cu.Sandbox('about:blank');
-    var winState = Cu.evalInSandbox(winJSON, sandbox);
 
-    var state = winState.windows[0].tabs[currentTab];
+    if (ss.getTabState) {
+      var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
+
+      if (getBoolPref('extensions.taboo.debug', false))
+        dump(tabJSON + "\n");
+
+      state = Cu.evalInSandbox(tabJSON, sandbox);
+    } else {
+      var winJSON = "(" + ss.getWindowState(win) + ")";
+
+      if (getBoolPref('extensions.taboo.debug', false))
+        dump(winJSON + "\n");
+
+      var winState = Cu.evalInSandbox(winJSON, sandbox);
+      state = winState.windows[0].tabs[currentTab];
+    }
 
     var url = state.entries[state.index - 1].url;
     url = url.replace(/#.*$/, '');
@@ -499,15 +507,9 @@ TabooService.prototype = {
     return enumerator;
   },
 
-  /* Because sessionstore doesn't let us restore a single tab, we cut'n'paste
-   * a bunch of code here
-   */
   open: function TB_open(aURL, aWhere) {
     var info = this._storage.retrieve(aURL);
     var tabData = info.data;
-
-    // helper hash for ensuring unique frame IDs
-    var idMap = { used: {} };
 
     var wm = Cc['@mozilla.org/appshell/window-mediator;1']
       .getService(Ci.nsIWindowMediator);
@@ -533,9 +535,29 @@ TabooService.prototype = {
         return;
     }
 
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
+    if (ss.setTabState) {
+      ss.setTabState(tab, tabData);
+    } else {
+      this._setTabState(win, tab, tabData);
+    }
+  },
+
+  /* Because Firefox 2's sessionstore doesn't let us restore a single tab,
+   * we cut'n'paste a bunch of code here
+   */
+  _setTabState: function TB__setTabState(aWindow, aTab, aState) {
+    var sandbox = new Cu.Sandbox('about:blank');
+    var tabData = Cu.evalInSandbox(aState, sandbox);
+
+    // helper hash for ensuring unique frame IDs
+    var idMap = { used: {} };
+
     var _this = this;
 
-    var browser = win.getBrowser().getBrowserForTab(tab);
+    var tab = aTab;
+    var browser = aWindow.getBrowser().getBrowserForTab(tab);
     var history = browser.webNavigation.sessionHistory;
 
     if (history.count > 0) {
@@ -566,7 +588,7 @@ TabooService.prototype = {
     }
 
     // notify the tabbrowser that the tab chrome has been restored
-    var event = win.document.createEvent("Events");
+    var event = aWindow.document.createEvent("Events");
     event.initEvent("SSTabRestoring", true, false);
     tab.dispatchEvent(event);
 
