@@ -6,15 +6,20 @@ function Taboo() {
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
   this.addTaboo = function(event) {
-    if (event.shiftKey) {
-      var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
-      SVC.delete(url);
-      $('taboo-toolbarbutton-add').removeAttribute('saved');
-    }
-    else {
-      SVC.save(null);
-      $('taboo-toolbarbutton-add').setAttribute('saved', true);
-    }
+    SVC.save(null);
+    $('taboo-toolbarbutton-add').setAttribute('saved', true);
+  }
+
+  this.addTabooAndClose = function(event) {
+    SVC.save(null);
+    $('taboo-toolbarbutton-add').setAttribute('saved', true);
+    gBrowser.removeCurrentTab();
+  }
+
+  this.removeTaboo = function(event) {
+    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    SVC.delete(url);
+    $('taboo-toolbarbutton-add').removeAttribute('saved');
   }
 
   this.show = function(event) {
@@ -54,10 +59,14 @@ function taboo_init() {
   else {
     tboLog = function(x) {};
   }
-  tboPrefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch);
+
+
+  tboPrefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
+
   taboo = new Taboo();
 
   tboInstallInToolbar();
+  tboUpdateKeybindings();
 
   gBrowser.addProgressListener(tboProgressListener,
                                Ci.nsIWebProgress.NOTIFY_LOCATION);
@@ -87,7 +96,7 @@ var tboProgressListener = {
 // Check whether we installed the toolbar button already and install if not
 function tboInstallInToolbar() {
 	// Make sure not to run this twice
-  if (!tboPrefs.getPrefType("extensions.taboo.setup")) {
+  if (!tboPrefs.getPrefType("setup")) {
 		if (!document.getElementById("taboo-toolbarbutton-add")) {
 			var insertBeforeBtn = "urlbar-container";
 			var toolbar = document.getElementById("nav-bar");
@@ -104,6 +113,27 @@ function tboInstallInToolbar() {
 				document.persist(toolbar.id, "currentset");
 			}
 		}
-		tboPrefs.setBoolPref("extensions.taboo.setup", true);
+		tboPrefs.setBoolPref("setup", true);
   }
+}
+
+function tboUpdateKeybindings() {
+  
+  function update(key_id, attribute) {
+    try {
+      if (tboPrefs.getPrefType(key_id + '.' + attribute)) {
+        var val = tboPrefs.getCharPref(key_id + '.' + attribute);
+        if (val && val.length > 0) {
+          var binding = document.getElementById(key_id);
+          binding.setAttribute(attribute, val);
+        }
+      }
+    } catch (e) {}
+  }
+
+  ["key_showTaboos", "key_addTaboo", "key_addTabooAndClose", "key_removeTaboo"].forEach(function(key_id) {
+    update(key_id, 'key');
+    update(key_id, 'modifiers');
+  });
+
 }

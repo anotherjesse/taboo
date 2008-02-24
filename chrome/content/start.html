@@ -29,7 +29,7 @@
 		const CI = Components.interfaces;
     const SVC = Components.classes['@oy/taboo;1']
                           .getService(Components.interfaces.oyITaboo);
-    tboPrefs = CC['@mozilla.org/preferences-service;1'].getService(CI.nsIPrefBranch);
+    tboPrefs = CC['@mozilla.org/preferences-service;1'].getService(CI.nsIPrefService).getBranch('extensions.taboo.')
 
     var $ = function(x) { return document.getElementById(x); }
 

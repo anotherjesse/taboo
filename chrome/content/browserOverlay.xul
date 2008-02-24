@@ -36,15 +36,29 @@
   </toolbox>
   
   <keyset id="mainKeyset">
-      <key id="key_showFolds"
+      <key id="key_showTaboos"
           key="F"
           command="cmd_showTaboos"
+          modifiers="accel shift"/>
+      <key id="key_addTaboo"
+          key="A"
+          command="cmd_addTaboo"
+          modifiers="accel shift"/>
+      <key id="key_addTabooAndClose"
+          key="C"
+          command="cmd_addTabooAndClose"
+          modifiers="accel shift"/>
+      <key id="key_removeTaboo"
+          key="U"
+          command="cmd_removeTaboo"
           modifiers="accel shift"/>
   </keyset>
   
   <commandset id="mainCommandSet">
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
+    <command id="cmd_addTabooAndClose" oncommand="taboo.addTabooAndClose(event)" />
+    <command id="cmd_removeTaboo" oncommand="taboo.removeTaboo(event)" />
   </commandset>
 
 </overlay>
