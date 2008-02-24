@@ -4,15 +4,14 @@ support drag and drop into bookmarkbar/... (dnd flavors)
 fix https://bugzilla.mozilla.org/show_bug.cgi?id=393716 and adapt taboo
 to use new API.
 
+need visual feedback when you resave/save (animation on the button?)
+
 =======
 
 
 Feedback:
 
 http://groups.google.com/group/taboo-extension/browse_thread/thread/8baa4ffb295697ee 
-- Right now there is 1 hotkey: Ctrl-Shift-F - "find a taboo" - which
-  opens the page of tabs.  Add hotkey for tabooing the current page and 
-  then make both costomizable via prefs.
 - customized right click menu for thumbnails (delete thumbnail,refresh/reload 
   maybe and open in foreground and background tab options)
 
