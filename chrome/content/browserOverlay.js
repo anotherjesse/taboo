@@ -13,7 +13,11 @@ function Taboo() {
   this.addTabooAndClose = function(event) {
     SVC.save(null);
     $('taboo-toolbarbutton-add').setAttribute('saved', true);
-    gBrowser.removeCurrentTab();
+
+    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    if (SVC.isSaved(url)) {
+      BrowserCloseTabOrWindow();
+    }
   }
 
   this.removeTaboo = function(event) {
