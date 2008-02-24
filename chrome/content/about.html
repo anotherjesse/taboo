@@ -2,7 +2,18 @@
 <head>
 <script type="text/javascript">
 document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + Math.random() + '" />');
+
+function customize(pref) {
+  alert(pref)
+  return false;
+}
+
 </script>
+<style type="text/css" id="foo">
+table .prefs {
+  text-align: center;
+}
+</style>
 </head>
 
 <body class="about">
@@ -17,7 +28,7 @@ document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + M
 </tr>
 <tr>
 	<td><span id="taboo-toolbarbutton-add-saved"></span></td>
-	<td>Saved Taboos display this icon instead. Clicking this again will resave the taboo.  (shift-clicking this will move the taboo to the trashcan)</td>
+	<td>Saved Taboos display this icon instead. Clicking this again will resave the taboo with current location/history/form fields.</td>
 </tr>
 <tr>
 	<td><span id="taboo-toolbarbutton-view"></span></td>
@@ -28,10 +39,38 @@ document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + M
 <br />
 <br />
 
+<h1>Keyboard Shortcuts</h1>
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Key Combo</th>
+  </tr>
+  <tr>
+    <td>Save Current Tab</td>
+    <td class="shortcut">Accel-Shift-A</td>
+  </tr>
+  <tr>
+    <td>Save Current Tab and Close Tab</td>
+    <td class="shortcut">Accel-Shift-C</td>
+  </tr>
+  <tr>
+    <td>Unsave Current Tab</td>
+    <td class="shortcut">Accel-Shift-U</td>
+  </tr>
+  <tr>
+    <td>Show Taboos</td>
+    <td class="shortcut">Accel-Shift-F</td>
+  </tr>
+</table>
+<p>*<em>Accel means "Apple" on Macs and "Control" on Windows/Linux</em></p>
+
+<br />
+<br />
+
 <h1>About Taboo</h1>
-<p>Taboo was created by <a target="window" href="http://overstimulate.com">Jesse Andrews</a>,
-                        <a target="window" href="http://yosh.org">Manish Singh</a>, and
-                        <a target="window" href="http://iantriesagain.com">Ian Fischer</a>.
+<p>Taboo was created by <a target="_blank" href="http://overstimulate.com">Jesse Andrews</a>,
+                        <a target="_blank" href="http://yosh.org">Manish Singh</a>, and
+                        <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>.
 </p>
 </body>
 </html>
