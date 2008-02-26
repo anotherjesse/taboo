@@ -39,7 +39,7 @@ function Taboo() {
   }
 
   this.updateButton = function(url) {
-    if (SVC.isSaved(url)) {
+    if (url && SVC.isSaved(url)) {
       $('taboo-toolbarbutton-add').setAttribute('saved', true);
     }
     else {
@@ -84,8 +84,12 @@ window.addEventListener("load", taboo_init, false);
 window.addEventListener("unload", taboo_uninit, false);
 
 var tboProgressListener = {
+  last: 'none',
   onLocationChange: function(aWebProgress, aRequest, aLocation) {
-    var url = aLocation.spec.replace(/#.*/, '');
+    var url;
+    try {
+      url = aLocation.spec.replace(/#.*/, '');
+    } catch (e) {}
     if (url != this.last) {
       taboo.updateButton(url);
       this.last = url;
