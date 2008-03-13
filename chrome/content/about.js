@@ -11,25 +11,14 @@
  * License.
  */
 
-function imageOver(event) {
-  console.log('here ' + event.originalTarget);
-  var img = event.originalTarget;
-  img.style.top = (parseInt(img.style.top) - 24) + 'px';
-  console.log('here1 ' + img.style.top);
-}
-
 function About(container) {
   document.body.className = 'about';
-  this.info = true;
 
   var div = document.createElement('div');
   container.appendChild(div);
+  div.innerHTML = '<iframe src="about.html" style="width: 100%; height: 1200px; border: 0;" />';
 
-  this.start = function() {
-    div.innerHTML = '<iframe src="about.html" style="width: 100%; height: 700px; border: 0;" />';
-  }
-
+  this.start = function() {}
   this.finish = function() {}
-
   this.add = function(tab) {}
 }

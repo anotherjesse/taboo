@@ -17,48 +17,17 @@
     <title>Taboo</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
-    <script type="text/javascript">
-    // for debugging - get around chrome caching
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/start.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/calendar.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/grid.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/trash.css?' + Math.random() + '" />');
-    document.write('<link rel="stylesheet" href="chrome://taboo/skin/about.css?' + Math.random() + '" />');
+    <script type="text/javascript" src="chrome://taboo/content/start.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/calendar.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/grid.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/trash.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/about.js"></script>
 
-		const CC = Components.classes;
-		const CI = Components.interfaces;
-    const SVC = Components.classes['@oy/taboo;1']
-                          .getService(Components.interfaces.oyITaboo);
-    tboPrefs = CC['@mozilla.org/preferences-service;1'].getService(CI.nsIPrefService).getBranch('extensions.taboo.')
-
-    var $ = function(x) { return document.getElementById(x); }
-
-    function init() {
-      const loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-                               .getService(Components.interfaces.mozIJSSubScriptLoader);
-
-      var scripts = [
-          'chrome://taboo/content/calendar.js',
-          'chrome://taboo/content/grid.js',
-          'chrome://taboo/content/trash.js',
-          'chrome://taboo/content/about.js',
-          'chrome://taboo/content/start.js',
-        ];
-
-      scripts.forEach(function(script) {
-        loader.loadSubScript(script);
-      });
-
-      $('search').onkeyup = function(event) {
-        controller.filter($('search').value);
-      }
-      $('search').value = '';
-      $('search').focus();
-    }
-
-    window.addEventListener("load", init, false);
-
-    </script>
+    <link rel="stylesheet" href="chrome://taboo/skin/start.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/calendar.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/grid.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/trash.css" />
+    <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
   </head>
   <body>
     <div id="header">
@@ -71,11 +40,11 @@
       <input type="text" id="search" />
     </div>
 
-		<div id="undelete" class="infoWrap">
-			<div id="text" class="info">
-				<a id="undeleteLink" href="#">Click here to undelete your taboo</a>
-			</div>
-		</div>
+    <div id="undelete" class="infoWrap">
+      <div id="text" class="info">
+        <a id="undeleteLink" href="#">Click here to undelete your taboo</a>
+      </div>
+    </div>
     <div id="content"></div>
   </body>
 </html>

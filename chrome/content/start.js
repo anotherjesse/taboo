@@ -11,10 +11,40 @@
  * License.
  */
 
+
+var $ = function(x) { return document.getElementById(x); }
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const SVC = Components.classes['@oy/taboo;1']
+  .getService(Components.interfaces.oyITaboo);
+var tboPrefs = Cc['@mozilla.org/preferences-service;1']
+  .getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
+
+function init() {
+  controller = new Controller();
+
+  try {
+    var view = tboPrefs.getCharPref("view");
+    controller.load(view);
+  }
+  catch (e) {
+    controller.load('Grid');
+  }
+
+  $('search').onkeyup = function(event) {
+    controller.filter(this.value);
+  }
+  $('search').value = '';
+  $('search').focus();
+}
+
+window.addEventListener("load", init, false);
+
 function Controller() {
   var content = $('content');
   var view = null;
-  
+
   this.load = function(view_name) {
     var ViewClass = top[view_name];
 
@@ -54,14 +84,14 @@ function Controller() {
   this.displayUndelete = function(tab, el) {
     var a = document.getElementById('undeleteLink');
     var div = document.getElementById('undelete');
-    a.onclick = function() { 
+    a.onclick = function() {
       el.style.display = '';
       div.style.visibility = 'hidden';
       SVC.undelete(tab.url);
     };
     div.url = tab.url;
-    div.style.visibility = 'visible';    
-    setTimeout(function() { 
+    div.style.visibility = 'visible';
+    setTimeout(function() {
       if (div.url == tab.url) {
         div.style.visibility = 'hidden';
       }
@@ -72,12 +102,12 @@ function Controller() {
     view.start();
 
     var taboos = SVC.get(searchTxt, view.trash);
-    
+
     if (!searchTxt && !view.trash && !view.info && !taboos.hasMoreElements()) {
       controller.load(DisplayInfo);
       return;
     }
-    
+
     while (taboos.hasMoreElements()) {
       var tab = taboos.getNext();
       tab.QueryInterface(Components.interfaces.oyITabooInfo);
@@ -86,15 +116,4 @@ function Controller() {
 
     view.finish();
   }
-
 }
-
-var controller = new Controller();
-try {
-  var view = tboPrefs.getCharPref("view");
-  controller.load(view);
-}
-catch (e) {
-  controller.load('Grid');
-}
-
