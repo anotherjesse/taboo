@@ -103,30 +103,30 @@ var tboProgressListener = {
 
 // Check whether we installed the toolbar button already and install if not
 function tboInstallInToolbar() {
-	// Make sure not to run this twice
+  // Make sure not to run this twice
   if (!tboPrefs.getPrefType("setup")) {
-		if (!document.getElementById("taboo-toolbarbutton-add")) {
-			var insertBeforeBtn = "urlbar-container";
-			var toolbar = document.getElementById("nav-bar");
-			if (toolbar && "insertItem" in toolbar) {
-				var insertBefore = $(insertBeforeBtn);
+    if (!document.getElementById("taboo-toolbarbutton-add")) {
+      var insertBeforeBtn = "urlbar-container";
+      var toolbar = document.getElementById("nav-bar");
+      if (toolbar && "insertItem" in toolbar) {
+        var insertBefore = $(insertBeforeBtn);
 
-				if (insertBefore && insertBefore.parentNode != toolbar)
-					insertBefore = null;
-	
-				toolbar.insertItem("taboo-toolbarbutton-add", insertBefore, null, false);
-				toolbar.insertItem("taboo-toolbarbutton-view", insertBefore, null, false);
-					
-				toolbar.setAttribute("currentset", toolbar.currentSet);
-				document.persist(toolbar.id, "currentset");
-			}
-		}
-		tboPrefs.setBoolPref("setup", true);
+        if (insertBefore && insertBefore.parentNode != toolbar)
+          insertBefore = null;
+
+        toolbar.insertItem("taboo-toolbarbutton-add", insertBefore, null, false);
+        toolbar.insertItem("taboo-toolbarbutton-view", insertBefore, null, false);
+
+        toolbar.setAttribute("currentset", toolbar.currentSet);
+        document.persist(toolbar.id, "currentset");
+      }
+    }
+    tboPrefs.setBoolPref("setup", true);
   }
 }
 
 function tboUpdateKeybindings() {
-  
+
   function update(key_id, attribute) {
     try {
       if (tboPrefs.getPrefType(key_id + '.' + attribute)) {
@@ -143,5 +143,4 @@ function tboUpdateKeybindings() {
     update(key_id, 'key');
     update(key_id, 'modifiers');
   });
-
 }
