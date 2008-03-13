@@ -17,13 +17,13 @@
 
 .grid li span {
   width: 127px;
-  margin: 0 auto;
   display: block;
 }
 
 .grid li span.title {
   width: 125px;
   overflow: hidden;
+  margin-top: -5px;
   font-size: 12px;
   padding-top: 4px;
   font-weight: bold;
@@ -52,11 +52,11 @@
 
 .grid li div {
   margin: 5px;
-  padding: 5px;
+  padding: 10px;
   -moz-border-radius: 10px;
   border: 1px solid #e8e8e8;
   background: #f8f8f8;
-  width: 140px;
+  width: 125px;
   cursor: pointer;
   color: #333;
 }
@@ -72,10 +72,10 @@
   background: transparent url("close.png") top no-repeat;
   width: 14px !important;
   height: 14px !important;
-  float: right;
-  top: -10px;
-  right: -10px;
   position: relative;
+  float: right;
+  top: -15px;
+  right: -15px;
 }
 
 .grid li:hover .delete {

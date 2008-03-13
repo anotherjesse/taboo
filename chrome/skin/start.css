@@ -30,6 +30,10 @@ body {
   width: 250px;
 }
 
+#undelete a {
+  color: #000;
+}
+
 #undelete div {
   width: 250px;
 }
