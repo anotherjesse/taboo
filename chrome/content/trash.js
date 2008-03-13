@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Jesse Andrews, Manish Singh, Ian Fischer
+ * Copyright 2007-2008 Jesse Andrews, Manish Singh, Ian Fischer
  *
  * This file may be used under the terms of of the
  * GNU General Public License Version 2 or later (the "GPL"),

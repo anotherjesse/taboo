@@ -111,8 +111,9 @@ function tboInstallInToolbar() {
       if (toolbar && "insertItem" in toolbar) {
         var insertBefore = $(insertBeforeBtn);
 
-        if (insertBefore && insertBefore.parentNode != toolbar)
+        if (insertBefore && insertBefore.parentNode != toolbar) {
           insertBefore = null;
+        }
 
         toolbar.insertItem("taboo-toolbarbutton-add", insertBefore, null, false);
         toolbar.insertItem("taboo-toolbarbutton-view", insertBefore, null, false);
