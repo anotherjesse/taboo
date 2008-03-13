@@ -543,13 +543,34 @@ TabooService.prototype = {
     if (ss.setTabState) {
       ss.setTabState(tab, tabData);
     } else {
-      this._setTabState(win, tab, tabData);
+      this._setTabStatePrecursor(win, tab, tabData, 0);
     }
   },
 
   /* Because Firefox 2's sessionstore doesn't let us restore a single tab,
    * we cut'n'paste a bunch of code here
    */
+  _setTabStatePrecursor: function TB__setTabStatePrecursor(aWindow, aTab, aState, aCount) {
+    var tabbrowser = aWindow.getBrowser();
+
+    try {
+      if (!tabbrowser.getBrowserForTab(aTab).markupDocumentViewer) {
+       throw "Tab not ready";
+     }
+    }
+    catch (ex) {
+      if (aCount < 10) {
+        var setTabStateFunc = function(self) {
+          self._setTabStatePrecursor(aWindow, aTab, aState, aCount + 1);
+        }
+      }
+      aWindow.setTimeout(setTabStateFunc, 100, this);
+      return;
+    }
+
+    this._setTabState(aWindow, aTab, aState);
+  },
+
   _setTabState: function TB__setTabState(aWindow, aTab, aState) {
     var sandbox = new Cu.Sandbox('about:blank');
     var tabData = Cu.evalInSandbox(aState, sandbox);
