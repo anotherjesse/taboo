@@ -48,6 +48,7 @@
   text-decoration: underline;
   padding-bottom: 2px;
   padding-top: 5px;
+  white-space: nowrap;
 }
 
 .grid li div {
@@ -87,7 +88,7 @@
 }
 
 .grid li img.preview {
-  margin-top: 5px;
+  margin-top: 0px;
   border: 1px solid #888;
 }
 
@@ -97,4 +98,14 @@
 
 .grid li:hover span.url {
   color: #f80;
+}
+
+.grid #tooltip > div {
+  border: 1px solid #888;
+  background-color: #fff;
+  padding: 5px;
+}
+
+.grid #tooltip h1 {
+  font-size: 20px;
 }

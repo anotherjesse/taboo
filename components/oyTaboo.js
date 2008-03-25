@@ -146,7 +146,7 @@ function snapshot(win, outputWidth, outputHeight) {
 
   var realW = content.document.body ? content.document.body.clientWidth
                                     : content.innerWidth;
-  if (!realH || realW == 0) {
+  if (!realW || realW == 0) {
     realW = content.innerWidth;
   }
   var realH = content.innerHeight;

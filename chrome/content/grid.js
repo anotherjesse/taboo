@@ -25,9 +25,21 @@ function Grid(container) {
 
   this.add = function(tab) {
     var box = document.createElement('li');
-    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
-      tab.title + '</nobr></span><span class="url" title="'+ tab.url +'"><nobr>' +
-      tab.url + '</nobr></span><span class="thumb"><img class="preview" src="' + tab.thumbURL + '" full="' + tab.imageURL + '" /></span></div>';
+    box.innerHTML = '<div><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
+      tab.title + '</nobr></span><span class="url" href="'+ tab.url +'">' +
+      tab.url + '</span><span class="thumb"><img class="preview" src="' + tab.thumbURL + '" full="' + tab.imageURL + '" /></span></div>';
+      
+    $(box).tooltip({
+      delay: 750,
+      showURL: false,
+      bodyHandler: function() {
+        return $('<div/>')
+          .append($('<h1/>').text(tab.title))
+          .append($("<img/>").attr("src", tab.imageURL))
+          .append($('<p/>').text(tab.url));
+      }
+    });
+      
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {

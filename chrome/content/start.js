@@ -12,8 +12,6 @@
  */
 
 
-var $ = function(x) { return document.getElementById(x); }
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const SVC = Components.classes['@oy/taboo;1']
@@ -32,17 +30,18 @@ function init() {
     controller.load('Grid');
   }
 
-  $('search').onkeyup = function(event) {
+  var searchBox = document.getElementById('search');
+  searchBox.onkeyup = function(event) {
     controller.filter(this.value);
   }
-  $('search').value = '';
-  $('search').focus();
+  searchBox.value = '';
+  searchBox.focus();
 }
 
 window.addEventListener("load", init, false);
 
 function Controller() {
-  var content = $('content');
+  var content = document.getElementById('content');
   var view = null;
 
   this.load = function(view_name) {
