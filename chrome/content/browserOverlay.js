@@ -1,18 +1,30 @@
 var tboDebug = false;
-var $ = function(x) { return document.getElementById(x); }
 var tboPrefs, tboLog;
 
 function Taboo() {
+  var $ = function(x) { return document.getElementById(x); }
+  
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
+
+  function saved(state) {
+    if ($('taboo-toolbarbutton-add')) {
+      if (state) {
+        $('taboo-toolbarbutton-add').setAttribute('saved', true);
+      }
+      else {
+        $('taboo-toolbarbutton-add').removeAttribute('saved');
+      }
+    }
+  }
 
   this.addTaboo = function(event) {
     SVC.save(null);
-    $('taboo-toolbarbutton-add').setAttribute('saved', true);
+    saved(true);
   }
 
   this.addTabooAndClose = function(event) {
     SVC.save(null);
-    $('taboo-toolbarbutton-add').setAttribute('saved', true);
+    saved(true);
 
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
     if (SVC.isSaved(url)) {
@@ -23,7 +35,7 @@ function Taboo() {
   this.removeTaboo = function(event) {
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
     SVC.delete(url);
-    $('taboo-toolbarbutton-add').removeAttribute('saved');
+    saved(false);
   }
 
   this.show = function(event) {
@@ -40,10 +52,10 @@ function Taboo() {
 
   this.updateButton = function(url) {
     if (url && SVC.isSaved(url)) {
-      $('taboo-toolbarbutton-add').setAttribute('saved', true);
+      saved(true);
     }
     else {
-      $('taboo-toolbarbutton-add').removeAttribute('saved');
+      saved(false);
     }
   }
 }
@@ -109,7 +121,7 @@ function tboInstallInToolbar() {
       var insertBeforeBtn = "urlbar-container";
       var toolbar = document.getElementById("nav-bar");
       if (toolbar && "insertItem" in toolbar) {
-        var insertBefore = $(insertBeforeBtn);
+        var insertBefore = document.getElementById(insertBeforeBtn);
 
         if (insertBefore && insertBefore.parentNode != toolbar) {
           insertBefore = null;
