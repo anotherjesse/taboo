@@ -36,6 +36,7 @@ interface oyITaboo : nsISupports {
   void reallyDelete(in AUTF8String aURL);
 
   nsISimpleEnumerator get(in AUTF8String aFilter, in boolean aDeleted);
+  nsISimpleEnumerator getRecent(in long aMaxRecent);
 
   void addObserver(in oyITabooObserver aObserver);
   void removeObserver(in oyITabooObserver aObserver);
