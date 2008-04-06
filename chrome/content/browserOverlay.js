@@ -49,7 +49,7 @@ function Taboo() {
     }
     else {
       var item = document.createElement('menuitem');
-      item.setAttribute('label', 'No Recent Tabs Saved');
+      item.setAttribute('label', 'No Tabs Saved');
       item.setAttribute('disabled', true)
       popup.appendChild(item);
     }
