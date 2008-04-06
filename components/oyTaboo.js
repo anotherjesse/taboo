@@ -324,10 +324,10 @@ TabooStorageSQL.prototype = {
 
     if (deleted) {
       sql += 'deleted IS NOT NULL';
-      sortkey = 'deleted DESC LIMIT' + aMaxResults;
+      sortkey = 'deleted DESC LIMIT ' + aMaxResults;
     } else {
       sql += 'deleted IS NULL';
-      sortkey = 'updated DESC LIMIT' + aMaxResults;
+      sortkey = 'updated DESC LIMIT ' + aMaxResults;
     }
 
     condition.unshift(sql);

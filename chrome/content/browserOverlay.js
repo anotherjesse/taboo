@@ -38,7 +38,7 @@ function Taboo() {
       popup.appendChild(item);
     }
 
-    var taboos = SVC.get('', false);
+    var taboos = SVC.getRecent(15);
 
     if (taboos.hasMoreElements()) {
       while (taboos.hasMoreElements()) {
