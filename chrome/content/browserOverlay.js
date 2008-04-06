@@ -17,6 +17,44 @@ function Taboo() {
     }
   }
 
+  this.gotoRecent = function(targetNode, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    SVC.open(targetNode.getAttribute('url'), whereToOpenLink(event));
+  }
+
+  this.showRecentList = function(domId) {
+    var popup = $(domId);
+    while (popup.firstChild) {
+      popup.removeChild(popup.firstChild);
+    };
+
+    function addRecent(tab) {
+      var item = document.createElement('menuitem');
+      item.setAttribute('label', tab.title);
+      item.setAttribute('oncommand', 'taboo.gotoRecent(this, event);');
+      item.setAttribute('url', tab.url)
+      item.setAttribute('tooltiptext', tab.url);
+      popup.appendChild(item);
+    }
+
+    var taboos = SVC.get('', false);
+
+    if (taboos.hasMoreElements()) {
+      while (taboos.hasMoreElements()) {
+        var tab = taboos.getNext();
+        tab.QueryInterface(Components.interfaces.oyITabooInfo);
+        addRecent(tab);
+      }
+    }
+    else {
+      var item = document.createElement('menuitem');
+      item.setAttribute('label', 'No Recent Tabs Saved');
+      item.setAttribute('disabled', true)
+      popup.appendChild(item);
+    }
+  }
+
   this.addTaboo = function(event) {
     SVC.save(null);
     saved(true);
