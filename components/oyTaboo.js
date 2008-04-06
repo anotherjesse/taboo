@@ -311,7 +311,7 @@ TabooStorageSQL.prototype = {
                          imageURL, thumbURL, entry.created, entry.updated,
                          data);
   },
-  getURLs: function TSSQL_getURLs(filter, deleted) {
+  getURLs: function TSSQL_getURLs(filter, deleted, aMaxResults) {
     var condition = [];
 
     var sortkey, sql = '';
@@ -324,10 +324,10 @@ TabooStorageSQL.prototype = {
 
     if (deleted) {
       sql += 'deleted IS NOT NULL';
-      sortkey = 'deleted DESC';
+      sortkey = 'deleted DESC LIMIT' + aMaxResults;
     } else {
       sql += 'deleted IS NULL';
-      sortkey = 'updated DESC';
+      sortkey = 'updated DESC LIMIT' + aMaxResults;
     }
 
     condition.unshift(sql);
@@ -493,10 +493,15 @@ TabooService.prototype = {
     }
   },
   get: function TB_get(filter, deleted) {
-    var urls = this._storage.getURLs(filter, deleted);
+    return this._tabEnumerator(this._storage.getURLs(filter, deleted, -1));
+  },
+  getRecent: function TB_getRecent(aMaxRecent) {
+    return this._tabEnumerator(this._storage.getURLs(null, false, aMaxRecent));
+  },
 
-    var enumerator = {
-      _urls: urls,
+  _tabEnumerator: function TB__tabEnumerator(aURLs) {
+    return {
+      _urls: aURLs,
       _storage: this._storage,
       getNext: function() {
         var url = this._urls.shift();
@@ -506,8 +511,6 @@ TabooService.prototype = {
         return this._urls.length > 0;
       }
     }
-
-    return enumerator;
   },
 
   open: function TB_open(aURL, aWhere) {
