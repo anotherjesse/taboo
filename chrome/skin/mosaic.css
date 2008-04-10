@@ -1,0 +1,39 @@
+.mosaic #main {
+  position: fixed;
+  width: 550px;
+  top: 40px;
+  left: 5px;
+  padding: 10px;
+}
+
+.mosaic #list {
+  position: absolute;
+  left: 600px;
+  top: 40px;
+}
+
+.mosaic #list img {
+  margin: 4px;
+  border: 1px solid #ccc;
+}
+
+.mosaic #main img.full {
+  border: 3px solid #888;
+  max-height: 400px;
+  cursor: pointer;
+}
+
+.mosaic #main .url {
+  font-size: 12px;
+  margin-bottom: 5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.mosaic #main .title {
+  font-size: 18px;
+}
+
+.mosaic #main .date {
+  font-size: 14px;
+}

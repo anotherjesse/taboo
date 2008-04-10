@@ -1,14 +1,17 @@
 body {
   background: #eee;
   font-family: "Times New Roman", Times, serif;
+  margin: 0;
+  padding: 0;
 }
 
 #views {
   float: right;
+  margin-right: 10px;
 }
 
 #views a {
-  border: 1px solid #ccc;
+  border: 1px solid #aaa;
   text-decoration: none;
   color: #08f;
   background: white;
@@ -21,7 +24,8 @@ body {
 }
 
 #search {
-  border: 1px solid #ccc; 
+  margin-left: 10px;
+  border: 1px solid #aaa;
   padding: 2px 2px 2px 24px;
   background: white url("search.gif") left no-repeat;
 }
@@ -36,6 +40,15 @@ body {
 
 #undelete div {
   width: 250px;
+}
+
+#header {
+  position: fixed;
+  z-index: 1000;
+  background: #ccc;
+  padding: 7px 0;
+  width: 100%;
+  border-bottom: 1px solid #888;
 }
 
 .infoWrap {
