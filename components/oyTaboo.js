@@ -515,6 +515,10 @@ TabooService.prototype = {
 
   open: function TB_open(aURL, aWhere) {
     var info = this._storage.retrieve(aURL);
+    if (!info) {
+      throw 'Taboo for ' + aURL + ' does not exist';
+    }
+
     var tabData = info.data;
 
     var wm = Cc['@mozilla.org/appshell/window-mediator;1']
