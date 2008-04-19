@@ -63,3 +63,23 @@ body {
   background: #ee2;
   -moz-border-radius: 5px;
 }
+
+#prefooter {
+  clear: both;
+  height: 40px;
+}
+
+#footer {
+    position: fixed;
+    z-index: 1000;
+    background: #ccc;
+    padding: 7px 0;
+    width: 100%;
+    border-top: 1px solid #888;
+    bottom: 0;
+}
+
+#footer-controls {
+  float: right;
+  margin-right: 10px;
+}

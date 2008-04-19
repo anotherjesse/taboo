@@ -109,3 +109,7 @@
 .grid #tooltip h1 {
   font-size: 20px;
 }
+
+#footer-controls span {
+  padding: 10px;
+}

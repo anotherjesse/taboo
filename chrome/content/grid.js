@@ -11,8 +11,40 @@
  * License.
  */
 
-function Grid(container) {
+function Grid(container, footerControls) {
   document.body.className = 'grid';
+
+  var size = 125;
+
+  function zoomIn() {
+    size += 10;
+    if (size > 125) {
+      // TODO: switch image to the large version
+    }
+    style.innerHTML = '.grid li img.preview { max-width: '+size+'px; }'
+    event.preventDefault();
+  }
+
+  function zoomOut(event) {
+    size -= 10;
+    style.innerHTML = '.grid li img.preview { max-width: '+size+'px; }'
+    event.preventDefault();
+  }
+
+  var span = document.createElement('span');
+  span.setAttribute('style', 'background: #fd0; margin: 5px');
+  span.innerHTML = '+'
+  span.onclick = zoomIn;
+  footerControls.appendChild(span);
+
+  var span = document.createElement('span');
+  span.setAttribute('style', 'background: #fd0; margin: 5px');
+  span.innerHTML = '-'
+  span.onclick = zoomOut;
+  footerControls.appendChild(span);
+
+  var style = document.createElement('style');
+  container.appendChild(style)
 
   var ul = document.createElement('ul');
   container.appendChild(ul);

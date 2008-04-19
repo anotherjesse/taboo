@@ -42,14 +42,16 @@ window.addEventListener("load", init, false);
 
 function Controller() {
   var content = document.getElementById('content');
+  var footerControls = document.getElementById('footer-controls');
   var view = null;
 
   this.load = function(view_name) {
     var ViewClass = top[view_name];
 
     content.innerHTML = '';
+    footerControls.innerHTML = '';
 
-    view = new ViewClass(content);
+    view = new ViewClass(content, footerControls);
     if (!view_name.match(/Trash|About/)) {
       tboPrefs.setCharPref("view", view_name);
     }

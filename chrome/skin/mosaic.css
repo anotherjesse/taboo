@@ -34,6 +34,18 @@
   font-size: 18px;
 }
 
-.mosaic #main .date {
-  font-size: 14px;
+.mosaic #main .description {
+  border: 1px solid #888;
+  background: #ffffff;
+  padding: 5px;
+  min-height: 20px;
+  margin-top: 10px;
+}
+
+.mosaic input[type=text].inplace_field {
+  width: 100%;
+}
+
+.mosaic textarea.inplace_field {
+  width: 100%;
 }
