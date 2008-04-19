@@ -24,12 +24,15 @@ interface oyITabooObserver : nsISupports {
   void onReallyDelete(in AUTF8String aURL);
 };
 
-[scriptable, uuid(ffec9296-6456-4eb9-8184-406f5dd32fbb)]
+[scriptable, uuid(7df4aa26-a511-4b05-a1f2-a1402f6b3e5d)]
 interface oyITaboo : nsISupports {
   void open(in AUTF8String aURL, in AUTF8String aWhere);
-  boolean save(in AUTF8String aDescription);
 
+  boolean save(in AUTF8String aDescription);
   boolean isSaved(in AUTF8String aURL);
+
+  void update(in AUTF8String aURL, in AUTF8String aTitle,
+              in AUTF8String aDescription);
 
   void delete(in AUTF8String aURL);
   void undelete(in AUTF8String aURL);

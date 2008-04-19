@@ -262,6 +262,28 @@ TabooStorageSQL.prototype = {
     var entry = this._store.find(url);
     return (entry && !entry.deleted);
   },
+  update: function TSSQL_update(aURL, aTitle, aDescription) {
+    var entry = this._store.find(aURL);
+    if (!entry || entry.deleted) {
+      return false;
+    }
+
+    if (aTitle || aDescription) {
+      if (aTitle) {
+        entry.title = aTitle;
+      }
+
+      if (aDescription) {
+        entry.description = aDescription;
+      }
+
+      entry.updated = Date.now();
+
+      entry.save();
+    }
+
+    return true;
+  },
   delete: function TSSQL_delete(url) {
     this._deleteOp(url, Date.now());
   },
@@ -471,6 +493,12 @@ TabooService.prototype = {
   isSaved: function TB_isSaved(aURL) {
     return this._storage.exists(aURL);
   },
+  update: function TB_update(aURL, aTitle, aDescription) {
+    var valid = this._storage.update(aURL, aTitle, aDescription);
+    if (!valid) {
+      throw 'Taboo for ' + aURL + ' does not exist';
+    }
+  },
   delete: function TB_delete(aURL) {
     this._storage.delete(aURL);
 
@@ -515,6 +543,10 @@ TabooService.prototype = {
 
   open: function TB_open(aURL, aWhere) {
     var info = this._storage.retrieve(aURL);
+    if (!info) {
+      throw 'Taboo for ' + aURL + ' does not exist';
+    }
+
     var tabData = info.data;
 
     var wm = Cc['@mozilla.org/appshell/window-mediator;1']
