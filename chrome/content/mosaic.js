@@ -30,8 +30,6 @@ function Mosaic(container) {
   detail_title.setAttribute('class', 'title');
   main.appendChild(detail_title);
 
-  var currentUrl = null;
-
   $(detail_title).editInPlace({
     callback: function(original_element, html) {
       SVC.update(currentUrl, html, null);
@@ -45,7 +43,7 @@ function Mosaic(container) {
 
   $(detail_description).editInPlace({
     field_type: "textarea",
-    textarea_rows: "15",
+    textarea_rows: "10",
     textarea_cols: "35",
     bg_out: '#fff',
     callback: function(original_element, html) {
@@ -66,12 +64,13 @@ function Mosaic(container) {
   container.appendChild(list)
 
   this.start = function() {
+    currentUrl = null;
     list.innerHTML = '';
   }
 
   this.finish = function() {}
 
-  var loadedFirst = false;
+  var currentUrl = null;
 
   this.add = function(tab) {
     var img = document.createElement('img');
@@ -89,9 +88,8 @@ function Mosaic(container) {
       detail_description.innerHTML = tab.description;
     }
 
-    if (!loadedFirst) {
+    if (!currentUrl) {
       img.onclick();
-      loadedFirst = true;
     }
   }
 }
