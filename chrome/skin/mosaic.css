@@ -10,6 +10,7 @@
   position: absolute;
   left: 600px;
   top: 40px;
+  padding-bottom: 40px;
 }
 
 .mosaic #list img {

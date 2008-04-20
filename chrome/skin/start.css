@@ -70,13 +70,13 @@ body {
 }
 
 #footer {
-    position: fixed;
-    z-index: 1000;
-    background: #ccc;
-    padding: 7px 0;
-    width: 100%;
-    border-top: 1px solid #888;
-    bottom: 0;
+  position: fixed;
+  z-index: 1000;
+  background: #ccc;
+  padding: 7px 0;
+  width: 100%;
+  border-top: 1px solid #888;
+  bottom: 0;
 }
 
 #footer-controls {
