@@ -55,6 +55,9 @@ DomBuilder = {
         if (isIE) this.ieAttrSet(a, i, el);
         else el.setAttribute(i, a[i]);
       }
+      else {
+        el[i] = a[i];
+      }
     }
     for (var i=0; i<c.length; i++) {
       if (typeof c[i] == 'string') c[i] = document.createTextNode(c[i]);

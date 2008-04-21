@@ -100,18 +100,16 @@ function Calendar(container) {
     var previous = SPAN({class: 'nav'}, '<');
     var next = SPAN({class: 'nav'}, '>');
 
-    var header = TR({},
-      TH({colspan: 7},
-        previous,
-        (self.month+1) + ' / ' + self.year,
-        next
-      )
-    )
+    var header = TR(TH({colspan: 7},
+      previous,
+      (self.month+1) + ' / ' + self.year,
+      next
+    ));
 
     table.appendChild(header)
 
     table.appendChild(TR(
-      TH({}, 'SUN'), TH({}, 'MON'), TH({}, 'TUES'), TH({}, 'WED'), TH({}, 'THUR'), TH({}, 'FRI'), TH({}, 'SAT')));
+      TH('SUN'), TH('MON'), TH('TUES'), TH('WED'), TH('THUR'), TH('FRI'), TH('SAT')));
 
     previous.onclick = function() {
       self.month--;

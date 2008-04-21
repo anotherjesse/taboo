@@ -39,25 +39,16 @@ function Grid(container, footerControls) {
 
   function zoomIn() {
     setSize(size+25);
-    event.preventDefault();
   }
 
-  function zoomOut(event) {
+  function zoomOut() {
     setSize(size-25);
-    event.preventDefault();
   }
 
-  var span = document.createElement('span');
-  span.innerHTML = '+'
-  span.onclick = zoomIn;
-  footerControls.appendChild(span);
+  footerControls.appendChild(BUTTON({onclick: zoomOut}, 'zoom out'));
+  footerControls.appendChild(BUTTON({onclick: zoomIn}, 'zoom in'));
 
-  var span = document.createElement('span');
-  span.innerHTML = '-'
-  span.onclick = zoomOut;
-  footerControls.appendChild(span);
-
-  var ul = document.createElement('ul');
+  var ul = UL();
   container.appendChild(ul);
 
   this.start = function() {
@@ -68,8 +59,8 @@ function Grid(container, footerControls) {
   this.finish = function() {}
 
   this.add = function(tab) {
-    var box = LI({},
-      DIV({}, 
+    var box = LI(
+      DIV(
         SPAN({class: 'delete', title: 'delete taboo'}),
         SPAN({class: 'title', title: tab.title}, tab.title),
         SPAN({class: 'url', href: tab.url, title: tab.url}, tab.url),
