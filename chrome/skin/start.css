@@ -23,6 +23,17 @@ body {
   color: #f80;
 }
 
+.grid #grid,
+.trash #trash,
+.mosaic #mosaic,
+.about #about,
+.calendar #calendar {
+  border-color: #555;
+  color: #e70;
+}
+
+
+
 #search {
   margin-left: 10px;
   border: 1px solid #aaa;
