@@ -13,9 +13,13 @@
 
 function Grid(container, footerControls) {
   document.body.className = 'grid';
-
-  var size = 125;
   
+  if (!tboPrefs.getPrefType('grid-size')) {
+    tboPrefs.setIntPref('grid-size', 125);
+  }
+
+  var size = tboPrefs.getIntPref('grid-size');
+
   function setSize(newSize) {
     if (newSize < 100) return;
     if (newSize > 500) return;
@@ -30,6 +34,7 @@ function Grid(container, footerControls) {
     
     ul.className = class
     size = newSize;
+    tboPrefs.setIntPref('grid-size', size);
   }
 
   function zoomIn() {
@@ -57,7 +62,7 @@ function Grid(container, footerControls) {
 
   this.start = function() {
     ul.innerHTML = '';
-    setSize(100)
+    setSize(size)
   }
 
   this.finish = function() {}
