@@ -25,7 +25,12 @@ function Trash(container) {
 
   deleteAll.onclick = function() {
     for (var i in deleted) {
-      controller.tabFinalDelete(deleted[i].tab, deleted[i].el);
+      // if parentNode doesn't exist, it has already been removed from page
+      // eg - it has been undeleted or deleted - but we don't keep deleted
+      // array up to date so we need to check.
+      if (deleted[i].el.parentNode) {
+        controller.tabFinalDelete(deleted[i].tab, deleted[i].el);
+      }
     }
   };
   container.appendChild(deleteAll);

@@ -33,4 +33,3 @@ This release:
   unable to delete from mosaic
   persist grid size on change
   visual styling for grid size
-  deleting all taboos will delete those restored during the same session!

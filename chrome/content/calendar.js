@@ -137,7 +137,7 @@ function Calendar(container) {
       var curDate = new Date(self.year, self.month, date);
 
       if (!tr) {
-        tr = document.createElement('tr');
+        tr = TR();
         for (var i=0; i<curDate.getDay(); i++) {
           tr.appendChild(TD({class: 'blank'}));
         }
