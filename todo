@@ -26,3 +26,8 @@ https://addons.mozilla.org/en-US/firefox/reviews/reply/13147
 - in grid mode, it would be nice to be able to edit the title of the taboo
 - calendar mode it would be nice if the thumbnails were a little bigger, so you can recognize your taboo faster
 
+This release:
+  XSS attack in calendar/mosaic/trash
+  style feedback / include taboo name
+  undelete link isn't visible any more (deleting in grid)
+  unable to delete from mosaic
