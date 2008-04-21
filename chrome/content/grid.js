@@ -43,13 +43,11 @@ function Grid(container, footerControls) {
   }
 
   var span = document.createElement('span');
-  span.setAttribute('style', 'background: #fd0; margin: 5px');
   span.innerHTML = '+'
   span.onclick = zoomIn;
   footerControls.appendChild(span);
 
   var span = document.createElement('span');
-  span.setAttribute('style', 'background: #fd0; margin: 5px');
   span.innerHTML = '-'
   span.onclick = zoomOut;
   footerControls.appendChild(span);

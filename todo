@@ -31,3 +31,5 @@ This release:
   style feedback / include taboo name
   undelete link isn't visible any more (deleting in grid)
   unable to delete from mosaic
+  persist grid size on change
+  visual styling for grid size
