@@ -1,91 +1,83 @@
+/* handle the trash of deleted taboos */
+
 .trash ul {
-  padding: 0;
+  padding: 0 5px;
   list-style: none;
 }
 
 .trash li {
   float: left;
   display: block;
-  height: 150px;
-  margin-bottom: 15px;
 }
 
-.trash li span {
-  width: 125px;
-  margin: 0 auto;
-  display: block;
+.trash li div {
+  overflow: hidden;
+}
+
+.trash li div { width: 125px; height: 123px; }
+
+.trash .preview img {
+  width: 100%;
 }
 
 .trash li span.title {
-  width: 125px;
   overflow: hidden;
   font-size: 12px;
-  padding-top: 4px;
   font-weight: bold;
   color: #777;
-}
-
-.trash li img.preview {
-  max-width: 125px;
-  max-height: 125px;
+  display: block;
+  white-space: nowrap;
 }
 
 .trash li span.url {
-  width: 125px;
+  display:block;
   overflow: hidden;
   font-size: 11px;
   color: #08f;
   text-decoration: underline;
-  padding-bottom: 2px;
-  padding-top: 5px;
+  white-space: nowrap;
 }
 
-.trash li div {
+.trash li {
   margin: 5px;
   padding: 5px;
+  -moz-border-radius: 10px;
   border: 1px solid #e8e8e8;
   background: #f8f8f8;
-  width: 140px;
   cursor: pointer;
   color: #333;
-  -moz-border-radius: 10px;
+  position: relative;
 }
 
-.trash li div:hover {
+/* Handle hover over the trash item */
+
+.trash li:hover {
   border-color: #ddd;
   background: #fff;
   color: black;
 }
+
+.trash li:hover .url {
+  color: #f80;
+}
+
+/* display the delete buttom */
 
 .trash li .delete {
   display: none;
   background: transparent url("close.png") top no-repeat;
   width: 14px !important;
   height: 14px !important;
-  float: right;
-  top: -10px;
-  right: -10px;
-  position: relative;
+  position: absolute;
+  top: -5px;
+  right: -5px;
 }
 
 .trash li:hover .delete {
-  display: inline;
+  display: inherit;
 }
 
 .trash li .delete:hover {
   background: transparent url("close.png") bottom no-repeat;
 }
 
-.trash li img.preview {
-  margin-top: 5px;
-  margin-left: 6px;
-  border: 1px solid #888;
-}
-
-.trash li:hover img {
-  border-color: black;
-}
-
-.trash li:hover span.url {
-  color: #f80;
-}

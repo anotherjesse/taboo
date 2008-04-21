@@ -38,7 +38,7 @@ function Grid(container, footerControls) {
   }
 
   function zoomOut(event) {
-    setSize(size - 25);
+    setSize(size-25);
     event.preventDefault();
   }
 
@@ -51,9 +51,6 @@ function Grid(container, footerControls) {
   span.innerHTML = '-'
   span.onclick = zoomOut;
   footerControls.appendChild(span);
-
-  var style = document.createElement('style');
-  container.appendChild(style)
 
   var ul = document.createElement('ul');
   container.appendChild(ul);

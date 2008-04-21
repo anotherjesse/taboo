@@ -3,6 +3,25 @@ body {
   font-family: "Times New Roman", Times, serif;
   margin: 0;
   padding: 0;
+  overflow: -moz-scrollbars-vertical;
+}
+
+/* header: search/view selection */
+
+#header {
+  position: fixed;
+  z-index: 1000;
+  background: #ccc;
+  padding: 7px 0;
+  width: 100%;
+  border-bottom: 1px solid #888;
+}
+
+#search {
+  margin-left: 10px;
+  border: 1px solid #aaa;
+  padding: 2px 2px 2px 24px;
+  background: white url("search.gif") left no-repeat;
 }
 
 #views {
@@ -32,13 +51,15 @@ body {
   color: #e70;
 }
 
+/* ???? */
 
-
-#search {
-  margin-left: 10px;
-  border: 1px solid #aaa;
-  padding: 2px 2px 2px 24px;
-  background: white url("search.gif") left no-repeat;
+.infoWrap {
+  text-align: center;
+  visibility: hidden;
+  padding: 3px 10px;
+  margin: 0 auto 10px auto;
+  background: #ee2;
+  -moz-border-radius: 5px;
 }
 
 #undelete {
@@ -53,27 +74,7 @@ body {
   width: 250px;
 }
 
-#header {
-  position: fixed;
-  z-index: 1000;
-  background: #ccc;
-  padding: 7px 0;
-  width: 100%;
-  border-bottom: 1px solid #888;
-}
-
-.infoWrap {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-  visibility: hidden;
-}
-
-.info {
-  padding: 3px 0 3px 0;
-  background: #ee2;
-  -moz-border-radius: 5px;
-}
+/* FOOTER */
 
 #prefooter {
   clear: both;
@@ -93,8 +94,4 @@ body {
 #footer-controls {
   float: right;
   margin-right: 10px;
-}
-
-html {
-  overflow: -moz-scrollbars-vertical;
 }

@@ -20,57 +20,53 @@ function daysOf(year, month) {
   return new Date(date - 1).getDate();
 }
 
+function calDB() {
+  var _db = {};
+
+  this.add = function(tab) {
+    var date = new Date(tab.updated);
+    var Y = date.getFullYear();
+    var M = date.getMonth();
+    var D = date.getDate();
+    if (!_db[Y])       { _db[Y]       = {}; }
+    if (!_db[Y][M])    { _db[Y][M]    = {}; }
+    if (!_db[Y][M][D]) { _db[Y][M][D] = []; }
+    _db[Y][M][D].push(tab);
+  }
+
+  this.clear = function() {
+    _db = {};
+  }
+
+  this.get = function(Y,M,D) {
+    try {
+      return _db[Y][M][D];
+    }
+    catch (e) {}
+  }
+}
+
 function Calendar(container) {
   var self=this;
   document.body.className = 'calendar';
   self.year = new Date().getFullYear();   // default to current year
   self.month = new Date().getMonth();     // default to current month
 
-  var table = document.createElement('table');
+  var table = TABLE();
   container.appendChild(table);
 
-  function calDB() {
-    var _db = {};
-    
-    this.add = function(tab) {
-      var date = new Date(tab.updated);
-      var Y = date.getFullYear();
-      var M = date.getMonth();
-      var D = date.getDate();
-      if (!_db[Y])       { _db[Y]       = {}; }
-      if (!_db[Y][M])    { _db[Y][M]    = {}; }
-      if (!_db[Y][M][D]) { _db[Y][M][D] = []; }
-      _db[Y][M][D].push(tab);
-    }
-
-    this.clear = function() { 
-      _db = {};
-    }
-
-    this.getTabs = function(Y,M,D) {
-      try {
-        return _db[Y][M][D];
-      }
-      catch (e) {}
-    }
-  }
-  
   var db = new calDB();
 
   function addTabsToTD(year, month, date, td) {
-    var tabs = db.getTabs(year, month, date);
+    var tabs = db.get(year, month, date);
     if (tabs && tabs.length > 0) {
-      var img = document.createElement('img');
-      img.setAttribute('src', tabs[0].thumbURL);
+      var img = IMG({src: tabs[0].thumbURL});
       td.appendChild(img);
       td.onclick = function() {
-        var div = document.createElement('div');
-        div.setAttribute('class', 'tabs');
-        tabs.forEach(function(tab) { 
-          var img = document.createElement('img');
-          img.setAttribute('src', tab.thumbURL);
-          img.setAttribute('title', tab.title); 
-          img.onclick = function(event) { 
+        var div = DIV({class: 'tabs'});
+        tabs.forEach(function(tab) {
+          var img = IMG({src: tab.thumbURL, title: tab.title})
+          img.onclick = function(event) {
             SVC.open(tab.url, whereToOpenLink(event));
           }
           div.appendChild(img);
@@ -87,7 +83,7 @@ function Calendar(container) {
     }
     else {
       td.setAttribute('class', 'empty')
-      td.appendChild(document.createTextNode(date));        
+      td.appendChild(document.createTextNode(date));
     }
   }
 
@@ -97,15 +93,27 @@ function Calendar(container) {
 
   this.finish = function() {
     container.removeChild(table);
-    table = document.createElement('table');
+    table = TABLE();
     container.appendChild(table);
     var days = daysOf(self.year, self.month);
 
-    table.innerHTML = "<tr><th colspan='7' id='date_nav'><span id='nav_left'>&larr;</span>" + (self.month+1) + ' / ' + self.year + '<span id="nav_right">&rarr;</span></th></tr>' +   
-                      "<tr><th>SUN</th><th>MON</th><th>TUE</th><th>WED</th><th>THUR</th><th>FRI</th><th>SAT</th></tr>";
+    var previous = SPAN({class: 'nav'}, '<');
+    var next = SPAN({class: 'nav'}, '>');
 
-    var left = document.getElementById('nav_left');
-    left.onclick = function() {
+    var header = TR({},
+      TH({colspan: 7},
+        previous,
+        (self.month+1) + ' / ' + self.year,
+        next
+      )
+    )
+
+    table.appendChild(header)
+
+    table.appendChild(TR(
+      TH({}, 'SUN'), TH({}, 'MON'), TH({}, 'TUES'), TH({}, 'WED'), TH({}, 'THUR'), TH({}, 'FRI'), TH({}, 'SAT')));
+
+    previous.onclick = function() {
       self.month--;
       if (self.month < 0) {
         self.month = 11;
@@ -114,8 +122,7 @@ function Calendar(container) {
       self.finish();
     }
 
-    var right = document.getElementById('nav_right');
-    right.onclick = function() {
+    next.onclick = function() {
       self.month++;
       if (self.month > 11) {
         self.month = 0;
@@ -128,18 +135,16 @@ function Calendar(container) {
 
     for (var date=1; date<=days; date++) {
       var curDate = new Date(self.year, self.month, date);
-      
+
       if (!tr) {
         tr = document.createElement('tr');
         for (var i=0; i<curDate.getDay(); i++) {
-          var td = document.createElement('td');
-          td.setAttribute('class', 'blank')
-          tr.appendChild(td);
+          tr.appendChild(TD({class: 'blank'}));
         }
         table.appendChild(tr);
       }
-        
-      var td = document.createElement('td');
+
+      var td = TD();
 
       addTabsToTD(self.year, self.month, date, td);
 

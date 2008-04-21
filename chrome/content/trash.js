@@ -19,43 +19,25 @@ function Trash(container) {
   
   document.getElementById('undelete').style.visibility = 'hidden';
   
-  var div = document.createElement('div');
-  div.setAttribute('id', 'deleteAll');
-  div.setAttribute('class', 'infoWrap');
-  div.style.visibility = 'visible';
-  div.style.width = '255px';
+  var deleteAll = DIV({id: 'deleteAll', class: 'infoWrap', style: 'visibility: visible; width: 255px'},
+    "Click here to delete all of these taboos."
+    );
 
-  var text = document.createElement('div');
-  text.setAttribute('class', 'info');
-  text.style.width = '255px';
-  div.appendChild(text);
-
-  var a = document.createElement('a');
-  a.innerHTML = 'Click here to delete all of these taboos.';
-  a.href = '#';
-  a.onclick = function() {
+  deleteAll.onclick = function() {
     for (var i in deleted) {
       controller.tabFinalDelete(deleted[i].tab, deleted[i].el);
     }
   };
-  text.appendChild(a);
-  document.getElementById('content').appendChild(div);
-  
-  document.getElementById('content').appendChild(document.createElement('br'));
-  
-  div = document.createElement('div');
-  div.setAttribute('class', 'infoWrap');
-  div.style.width = '400px';
+  container.appendChild(deleteAll);
 
-  text = document.createElement('div');
-  text.setAttribute('class', 'info');
-  text.style.width = '400px';
-  text.innerHTML = 'This taboo has been undeleted.  Click another view to see it.'
-  div.appendChild(text);
 
-	document.getElementById('content').appendChild(div);
+  var undeleted = DIV({class: 'infoWrap', style: 'width: 400px'},
+    'This taboo has been restored.'
+  )
 
-  var ul = document.createElement('ul');
+  container.appendChild(undeleted);
+
+  var ul = UL();
   container.appendChild(ul);
 
   this.start = function() {
@@ -65,10 +47,16 @@ function Trash(container) {
   this.finish = function() {}
 
   this.add = function(tab) {
-    var box = document.createElement('li');
-    box.innerHTML = '<div title="'+tab.title+'"><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
-      tab.title + '</nobr></span><span class="url" title="'+ tab.url +'">' +
-      tab.url + '</span><img class="preview" src="' + tab.thumbURL + '" /></div>';
+    var box = LI({},
+      DIV({}, 
+        SPAN({class: 'delete', title: 'permenantly delete taboo'}),
+        SPAN({class: 'title', title: tab.title}, tab.title),
+        SPAN({class: 'url', title: tab.url}, tab.url),
+        SPAN({class: 'preview'},
+          IMG({class: 'thumb', src: tab.thumbURL})
+        )
+      )
+    );
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
@@ -76,9 +64,9 @@ function Trash(container) {
       }
       else {
         controller.tabUndelete(tab);
-        box.style.display = 'none';
-        div.style.visibility = 'visible';
-        setTimeout(function() { div.style.display = 'none'; }, 30000);   
+        box.parentNode.removeChild(box);
+        undeleted.style.visibility = 'visible';
+        setTimeout(function() { undeleted.style.display = 'none'; }, 30000);   
       }
     }
     ul.appendChild(box);

@@ -1,41 +1,33 @@
+/* detail view of a tab */
+
 .mosaic #main {
   position: fixed;
-  width: 550px;
+  width: 506px;
   top: 40px;
   left: 5px;
   padding: 10px;
 }
 
-.mosaic #list {
-  position: absolute;
-  left: 600px;
-  top: 40px;
-  padding-bottom: 40px;
-}
-
-.mosaic #list img {
-  margin: 4px;
-  border: 1px solid #ccc;
-}
-
-.mosaic #main img.full {
+.mosaic #main #detail_img {
   border: 3px solid #888;
   max-height: 400px;
   cursor: pointer;
 }
 
-.mosaic #main .url {
+.mosaic #main #detail_url {
   font-size: 12px;
   margin-bottom: 5px;
   text-decoration: underline;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.mosaic #main .title {
+.mosaic #main #detail_title {
   font-size: 18px;
 }
 
-.mosaic #main .description {
+.mosaic #main #detail_description {
   border: 1px solid #888;
   background: #ffffff;
   padding: 5px;
@@ -43,10 +35,26 @@
   margin-top: 10px;
 }
 
+/* styling for inplace editing */
+
 .mosaic input[type=text].inplace_field {
   width: 100%;
 }
 
 .mosaic textarea.inplace_field {
   width: 100%;
+}
+
+/* list of all the tabs */
+
+.mosaic #list {
+  position: absolute;
+  left: 550px;
+  top: 40px;
+  padding-bottom: 40px;
+}
+
+.mosaic #list img {
+  margin: 2px;
+  border: 1px solid #ccc;
 }

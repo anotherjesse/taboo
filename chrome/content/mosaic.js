@@ -11,39 +11,31 @@
  * License.
  */
 
+function setText(node, txt) {
+  node.innerHTML = '';
+  node.appendChild(document.createTextNode(txt));
+}
+
 function Mosaic(container) {
   document.body.className = 'mosaic';
 
-  var main = document.createElement('div');
-  main.setAttribute('id', 'main');
-  container.appendChild(main);
+  var img = IMG({id: 'detail_img'});
+  var url = DIV({id: 'detail_url'});
+  var title = DIV({id: 'detail_title'});
+  var description = DIV({id: 'detail_description'});
 
-  var detail_img = document.createElement('img');
-  detail_img.setAttribute('class', 'full')
-  main.appendChild(detail_img);
+  container.appendChild(DIV({id: 'main'}, img, url, title, description));
 
-  var detail_url = document.createElement('div')
-  detail_url.setAttribute('class', 'url');
-  main.appendChild(detail_url);
-
-  var detail_title = document.createElement('div')
-  detail_title.setAttribute('class', 'title');
-  main.appendChild(detail_title);
-
-  $(detail_title).editInPlace({
+  $(title).editInPlace({
     callback: function(original_element, html) {
       SVC.update(currentUrl, html, null);
       return(html);
     }
   });
 
-  var detail_description = document.createElement('div');
-  detail_description.setAttribute('class', 'description');
-  main.appendChild(detail_description);
-
-  $(detail_description).editInPlace({
+  $(description).editInPlace({
     field_type: "textarea",
-    textarea_rows: "10",
+    textarea_rows: "8",
     textarea_cols: "35",
     bg_out: '#fff',
     callback: function(original_element, html) {
@@ -52,12 +44,12 @@ function Mosaic(container) {
     }
   });
 
-  detail_url.onclick = function(event) {
-    SVC.open(detail_img.getAttribute('url'), whereToOpenLink(event));
+  function openCurrent(event) {
+    SVC.open(currentUrl, whereToOpenLink(event));
   }
-  detail_img.onclick = function(event) {
-    SVC.open(detail_img.getAttribute('url'), whereToOpenLink(event));
-  }
+
+  url.onclick = openCurrent;
+  img.onclick = openCurrent;
 
   var list = document.createElement('div');
   list.setAttribute('id', 'list');
@@ -73,23 +65,19 @@ function Mosaic(container) {
   var currentUrl = null;
 
   this.add = function(tab) {
-    var img = document.createElement('img');
-    img.setAttribute('src', tab.thumbURL);
-    img.setAttribute('full', tab.imageURL);
-    img.setAttribute('title', tab.title);
-    list.appendChild(img);
+    var tile = IMG({src: tab.thumbURL, full: tab.imageURL, title: tab.title});
+    list.appendChild(tile)
 
-    img.onclick = function(event) {
+    tile.onclick = function(event) {
       currentUrl = tab.url;
-      detail_img.setAttribute('src', tab.imageURL);
-      detail_img.setAttribute('url', tab.url);
-      detail_url.innerHTML = tab.url;
-      detail_title.innerHTML = tab.title;
-      detail_description.innerHTML = tab.description;
+      img.setAttribute('src', tab.imageURL);
+      setText(url, tab.url);
+      setText(title, tab.title);
+      setText(description, tab.description);
     }
 
     if (!currentUrl) {
-      img.onclick();
+      tile.onclick();
     }
   }
 }

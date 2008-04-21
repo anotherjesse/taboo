@@ -26,7 +26,7 @@ function init() {
 
   try {
     var view = tboPrefs.getCharPref("view");
-    controller.load(view);
+    controller.load('Trash');
   }
   catch (e) {
     controller.load('Grid');

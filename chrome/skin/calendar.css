@@ -1,3 +1,9 @@
+.calendar .nav {
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+}
+
 .calendar td {
     width: 100px;
     height: 100px;
