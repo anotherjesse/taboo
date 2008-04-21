@@ -85,7 +85,7 @@ body {
   position: fixed;
   z-index: 1000;
   background: #ccc;
-  padding: 7px 0;
+  padding: 7px 10px;
   width: 100%;
   border-top: 1px solid #888;
   bottom: 0;
@@ -93,5 +93,19 @@ body {
 
 #footer-controls {
   float: right;
-  margin-right: 10px;
+  margin-right: 20px;
+}
+
+#footer .button {
+  border: 1px solid #888;
+  margin: 3px;
+  padding: 3px;
+  background: white;
+  color: #08f;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+#footer .button:hover {
+  color: #f80;
 }
