@@ -27,9 +27,7 @@ https://addons.mozilla.org/en-US/firefox/reviews/reply/13147
 - calendar mode it would be nice if the thumbnails were a little bigger, so you can recognize your taboo faster
 
 This release:
-  XSS attack due to inplace editor - after save it uses innerHTML :( 
   style feedback / include taboo name
   undelete link isn't visible any more (deleting in grid)
   unable to delete from mosaic
-  persist grid size on change
   visual styling for grid size

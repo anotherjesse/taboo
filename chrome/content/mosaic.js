@@ -29,7 +29,7 @@ function Mosaic(container) {
   $(title).editInPlace({
     callback: function(original_element, html) {
       SVC.update(currentUrl, html, null);
-      return(html);
+      return html.replace(/</g, '&lt;');
     }
   });
 
@@ -40,7 +40,7 @@ function Mosaic(container) {
     bg_out: '#fff',
     callback: function(original_element, html) {
       SVC.update(currentUrl, null, html);
-      return(html);
+      return html.replace(/</g, '&lt;');
     }
   });
 
