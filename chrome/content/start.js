@@ -20,6 +20,8 @@ var tboPrefs = Cc['@mozilla.org/preferences-service;1']
   .getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
 
 function init() {
+  DomBuilder.apply(window);
+
   controller = new Controller();
 
   try {

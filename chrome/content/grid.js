@@ -15,19 +15,30 @@ function Grid(container, footerControls) {
   document.body.className = 'grid';
 
   var size = 125;
+  
+  function setSize(newSize) {
+    if (newSize < 100) return;
+    if (newSize > 500) return;
+    
+    var class = 's'+newSize+' ';
+    if (newSize < 200) {
+      class += 'small'
+    }
+    else {
+      class += 'large'
+    }
+    
+    ul.className = class
+    size = newSize;
+  }
 
   function zoomIn() {
-    size += 10;
-    if (size > 125) {
-      // TODO: switch image to the large version
-    }
-    style.innerHTML = '.grid li img.preview { max-width: '+size+'px; }'
+    setSize(size+25);
     event.preventDefault();
   }
 
   function zoomOut(event) {
-    size -= 10;
-    style.innerHTML = '.grid li img.preview { max-width: '+size+'px; }'
+    setSize(size - 25);
     event.preventDefault();
   }
 
@@ -51,27 +62,23 @@ function Grid(container, footerControls) {
 
   this.start = function() {
     ul.innerHTML = '';
+    setSize(100)
   }
 
   this.finish = function() {}
 
   this.add = function(tab) {
-    var box = document.createElement('li');
-    box.innerHTML = '<div><span class="delete" title="delete taboo"></span><span class="title"><nobr>' +
-      tab.title + '</nobr></span><span class="url" href="'+ tab.url +'">' +
-      tab.url + '</span><span class="thumb"><img class="preview" src="' + tab.thumbURL + '" full="' + tab.imageURL + '" /></span></div>';
-      
-    $(box).tooltip({
-      delay: 750,
-      showURL: false,
-      bodyHandler: function() {
-        return $('<div/>')
-          .append($('<h1/>').text(tab.title))
-          .append($("<img/>").attr("src", tab.imageURL))
-          .append($('<p/>').text(tab.url));
-      }
-    });
-      
+    var box = LI({},
+      DIV({}, 
+        SPAN({class: 'delete', title: 'delete taboo'}),
+        SPAN({class: 'title', title: tab.title}, tab.title),
+        SPAN({class: 'url', href: tab.url, title: tab.url}, tab.url),
+        SPAN({class: 'preview'},
+          IMG({class: 'thumb', src: tab.thumbURL}),
+          IMG({class: 'large', src: tab.imageURL})
+        )
+      )
+    );
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
