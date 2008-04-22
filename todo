@@ -29,3 +29,4 @@ https://addons.mozilla.org/en-US/firefox/reviews/reply/13147
 This release:
   undelete link isn't visible any more (deleting in grid)
   unable to delete from mosaic
+  save/cancel on textarea are at wrong place

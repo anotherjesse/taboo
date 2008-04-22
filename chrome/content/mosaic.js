@@ -22,7 +22,7 @@ function Mosaic(container) {
   var img = IMG({id: 'detail_img'});
   var url = DIV({id: 'detail_url'});
   var title = DIV({id: 'detail_title'});
-  var description = DIV({id: 'detail_description'});
+  var description = PRE({id: 'detail_description'});
 
   container.appendChild(DIV({id: 'main'}, img, url, title, description));
 
