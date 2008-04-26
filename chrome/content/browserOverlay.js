@@ -1,9 +1,13 @@
-var tboDebug = false;
-var tboPrefs, tboLog;
+var taboo;
+
+(function() { // keep our privates to ourselves
+
+var $ = function $(id) { return document.getElementById(id); }
+var log = function log(msg) {}; // maybe overridden in init
+var debug = false;
+var prefs;
 
 function Taboo() {
-  var $ = function(x) { return document.getElementById(x); }
-  
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
   function saved(state) {
@@ -98,42 +102,39 @@ function Taboo() {
   }
 }
 
-var taboo;
-
-function taboo_init() {
-  if (tboDebug) {
-    if (typeof(console)=="undefined") {
-      var t = Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService)
-      tboLog = function(x) { t.logStringMessage(x); }
-    }
-    else {
-      tboLog = console.log;
+function init() {
+  if (debug) {
+    if ("undefined" != typeof console) {
+      log = console.log;
+    } else {
+      var t = Cc['@mozilla.org/consoleservice;1'].
+        getService(Ci.nsIConsoleService);
+      log = function log(x) { t.logStringMessage(x); }
     }
   }
-  else {
-    tboLog = function(x) {};
-  }
 
-
-  tboPrefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
+  prefs = Cc['@mozilla.org/preferences-service;1'].
+    getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
 
   taboo = new Taboo();
 
-  tboInstallInToolbar();
-  tboUpdateKeybindings();
+  installInToolbar();
+  updateKeybindings();
 
-  gBrowser.addProgressListener(tboProgressListener,
+  gBrowser.addProgressListener(progressListener,
                                Ci.nsIWebProgress.NOTIFY_LOCATION);
 }
 
-function taboo_uninit() {
-  gBrowser.removeProgressListener(tboProgressListener);
+function uninit() {
+  gBrowser.removeProgressListener(progressListener);
 }
 
-window.addEventListener("load", taboo_init, false);
-window.addEventListener("unload", taboo_uninit, false);
+window.addEventListener("load", init, false);
+window.addEventListener("unload", uninit, false);
 
-var tboProgressListener = {
+function nop() {}
+
+var progressListener = {
   last: 'none',
   onLocationChange: function(aWebProgress, aRequest, aLocation) {
     var url;
@@ -145,43 +146,41 @@ var tboProgressListener = {
       this.last = url;
     }
   },
-  onStateChange: function() {},
-  onStatusChange: function() {},
-  onProgressChange: function() {},
-  onSecurityChange: function() {},
+  onStateChange: nop,
+  onStatusChange: nop,
+  onProgressChange: nop,
+  onSecurityChange: nop,
 };
 
 // Check whether we installed the toolbar button already and install if not
-function tboInstallInToolbar() {
-  // Make sure not to run this twice
-  if (!tboPrefs.getPrefType("setup")) {
-    if (!document.getElementById("taboo-toolbarbutton-add")) {
-      var insertBeforeBtn = "urlbar-container";
-      var toolbar = document.getElementById("nav-bar");
-      if (toolbar && "insertItem" in toolbar) {
-        var insertBefore = document.getElementById(insertBeforeBtn);
+function installInToolbar() {
+  var addid = "taboo-toolbarbutton-add";
+  var viewid = "taboo-toolbarbutton-view";
+  if (prefs.getPrefType("setup") || $(addid))
+    return; // exit early -- already installed
 
-        if (insertBefore && insertBefore.parentNode != toolbar) {
-          insertBefore = null;
-        }
+  var before = $("urlbar-container");
+  var toolbar = $("nav-bar");
+  if (toolbar && "function" == typeof toolbar.insertItem) {
+    if (before && before.parentNode != toolbar)
+      before = null;
 
-        toolbar.insertItem("taboo-toolbarbutton-add", insertBefore, null, false);
-        toolbar.insertItem("taboo-toolbarbutton-view", insertBefore, null, false);
+    toolbar.insertItem(addid, before, null, false);
+    toolbar.insertItem(viewid, before, null, false);
 
-        toolbar.setAttribute("currentset", toolbar.currentSet);
-        document.persist(toolbar.id, "currentset");
-      }
-    }
-    tboPrefs.setBoolPref("setup", true);
+    toolbar.setAttribute("currentset", toolbar.currentSet);
+    document.persist(toolbar.id, "currentset");
   }
+
+  prefs.setBoolPref("setup", true); // Done! Never do this again.
 }
 
-function tboUpdateKeybindings() {
+function updateKeybindings() {
 
   function update(key_id, attribute) {
     try {
-      if (tboPrefs.getPrefType(key_id + '.' + attribute)) {
-        var val = tboPrefs.getCharPref(key_id + '.' + attribute);
+      if (prefs.getPrefType(key_id + '.' + attribute)) {
+        var val = prefs.getCharPref(key_id + '.' + attribute);
         if (val && val.length > 0) {
           var binding = document.getElementById(key_id);
           binding.setAttribute(attribute, val);
@@ -195,3 +194,5 @@ function tboUpdateKeybindings() {
     update(key_id, 'modifiers');
   });
 }
+
+})();
