@@ -63,8 +63,8 @@ function Grid(container, footerControls) {
       DIV(
         SPAN({class: 'delete', title: 'delete taboo'}),
         SPAN({class: 'title', title: tab.title}, tab.title),
-        SPAN({class: 'url', href: tab.url, title: tab.url}, tab.url),
-        SPAN({class: 'preview'},
+        A({class: 'url', href: tab.url, title: tab.url}, tab.url),
+        A({class: 'preview', href: tab.url},
           IMG({class: 'thumb', src: tab.thumbURL}),
           IMG({class: 'large', src: tab.imageURL})
         )

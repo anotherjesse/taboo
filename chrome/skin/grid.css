@@ -44,6 +44,7 @@
 
 .grid .preview img {
   width: 100%;
+  border: none;
 }
 
 .grid li span.title {
@@ -55,7 +56,7 @@
   white-space: nowrap;
 }
 
-.grid li span.url {
+.grid li a.url {
   display:block;
   overflow: hidden;
   font-size: 11px;
