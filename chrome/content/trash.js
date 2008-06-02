@@ -16,12 +16,12 @@ function Trash(container) {
   document.body.className = 'trash';
 
   var deleted = [];
-  
+
   document.getElementById('undelete').style.visibility = 'hidden';
-  
-  var deleteAll = DIV({id: 'deleteAll', class: 'infoWrap', style: 'visibility: visible; width: 255px'},
-    "Click here to delete all of these taboos."
-    );
+
+  var deleteAll = DIV({id: 'deleteAll', 'class': 'infoWrap',
+		       style: 'visibility: visible; width: 255px'},
+		      "Click here to delete all of these taboos.");
 
   deleteAll.onclick = function() {
     for (var i in deleted) {
@@ -36,9 +36,8 @@ function Trash(container) {
   container.appendChild(deleteAll);
 
 
-  var undeleted = DIV({class: 'infoWrap', style: 'width: 400px'},
-    'This taboo has been restored.'
-  )
+  var undeleted = DIV({'class': 'infoWrap', style: 'width: 400px'},
+    'This taboo has been restore');
 
   container.appendChild(undeleted);
 
@@ -47,18 +46,18 @@ function Trash(container) {
 
   this.start = function() {
     ul.innerHTML = '';
-  }
+  };
 
-  this.finish = function() {}
+  this.finish = function() {};
 
   this.add = function(tab) {
     var box = LI({},
-      DIV({}, 
-        SPAN({class: 'delete', title: 'permenantly delete taboo'}),
-        SPAN({class: 'title', title: tab.title}, tab.title),
-        SPAN({class: 'url', title: tab.url}, tab.url),
-        SPAN({class: 'preview'},
-          IMG({class: 'thumb', src: tab.thumbURL})
+      DIV({},
+        SPAN({'class': 'delete', title: 'permenantly delete taboo'}),
+        SPAN({'class': 'title', title: tab.title}, tab.title),
+        SPAN({'class': 'url', title: tab.url}, tab.url),
+        SPAN({'class': 'preview'},
+          IMG({'class': 'thumb', src: tab.thumbURL})
         )
       )
     );
@@ -71,10 +70,10 @@ function Trash(container) {
         controller.tabUndelete(tab);
         box.parentNode.removeChild(box);
         undeleted.style.visibility = 'visible';
-        setTimeout(function() { undeleted.style.display = 'none'; }, 30000);   
+        setTimeout(function() { undeleted.style.display = 'none'; }, 30000);
       }
-    }
+    };
     ul.appendChild(box);
     deleted.push({'tab':tab, 'el':box});
-  }
+  };
 }
