@@ -16,29 +16,19 @@ function Sync(container) {
 
   var sync_url = "http://taboosync.appspot.com/";
 
-  var div = document.createElement('div');
-  div.style.width = '100%';
-  div.style.height = '800px';
-  div.style.border = '0';
-  container.appendChild(div);
-  var req = new XMLHttpRequest();
-  req.open('GET', sync_url, true);
-  req.onreadystatechange = function() {
-    if (req.readyState == 4 && req.status == 200) {
-      var resp = req.responseText;
-      resp = resp.replace(/"/g, "'")
-                 .replace(/action='\//i, "action='" + sync_url)
-                 .replace(/\n/g, ' ')
-                 .replace(/<!DOCTYPE[^>]*>/i, '')
-                 .replace(/<html.*<body>/i, '')
-                 .replace(/<\/body.*<\/html>/i, '');
-      div.innerHTML = resp;
-      console.log(resp);
-    }
-  }
-  req.send(null);
+  var iframe = document.createElement('iframe');
+  iframe.src = sync_url;
+  iframe.style.width = '100%';
+  iframe.style.height = '800px';
+  container.appendChild(iframe);
 
-  this.start = function() {}
-  this.finish = function() {}
-  this.add = function(tab) {}
+  iframe.onload = function() {
+    if (iframe.contentDocument.location.href == sync_url) {
+      alert(iframe.contentDocument.cookie);
+    }
+  };
+
+  this.start = function() {};
+  this.finish = function() {};
+  this.add = function(tab) {};
 }

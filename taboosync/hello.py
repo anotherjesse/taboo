@@ -5,7 +5,8 @@ from models import *
 
 urls = (
   '/', 'index',
-  '/list', 'list'
+  '/list', 'list',
+  '/logout', 'logout'
 )
 
 render = web.template.render('templates', base='base')
@@ -25,7 +26,7 @@ class index:
     def GET(self):
         acct = get_acct()
         if acct:
-            return render.index(acct)
+            return render.index(acct, users.create_logout_url('/'))
         return web.found(users.create_login_url(web.webapi.ctx.path))
     def POST(self):
         acct = get_acct()
