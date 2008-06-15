@@ -56,7 +56,7 @@
   white-space: nowrap;
 }
 
-.grid li a.url {
+.grid li span.url {
   display:block;
   overflow: hidden;
   font-size: 11px;
