@@ -1,0 +1,13 @@
+$def with (page)
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>$page.title | Company, Inc</title>
+  <link href="/static/screen.css" type="text/css" rel="stylesheet" />
+  $:page.get('head')
+</head>
+<body>
+  $:page
+</body>
+</html>

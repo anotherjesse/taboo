@@ -1,0 +1,9 @@
+Grab the App Engine SDK:
+
+  http://code.google.com/appengine/downloads.html
+
+Then run the demo via:
+
+  dev_appserver.py .
+
+Customize your "routes" via app.yaml

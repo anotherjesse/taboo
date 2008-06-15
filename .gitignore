@@ -5,3 +5,5 @@ CVS
 .cvsignore
 .project
 '
+*.pyc
+taboosync/index.yaml
