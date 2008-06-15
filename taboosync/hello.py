@@ -5,7 +5,8 @@ from models import *
 
 urls = (
   '/', 'index',
-  '/list', 'list'
+  '/list', 'list',
+  '/logout', 'logout'
 )
 
 render = web.template.render('templates', base='base')
@@ -16,10 +17,10 @@ class index:
         if user:
             acct_list = Account.gql("WHERE user = :1", user).fetch(1)
             if acct_list:
-                return render.index(acct_list[0])
+                return render.index(acct_list[0], users.create_logout_url('/'))
             acct = Account(user=user)
             acct.put()
-            return render.index(acct)
+            return render.index(acct, users.create_logout_url('/'))
         else:
             return web.found(users.create_login_url(web.webapi.ctx.path))
     def POST(self):
