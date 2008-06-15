@@ -10,29 +10,36 @@ urls = (
 
 render = web.template.render('templates', base='base')
 
+def get_acct():
+    user = users.get_current_user()
+    if user:
+        acct_list = Account.gql("WHERE user = :1", user).fetch(1)
+        if acct_list:
+            return acct_list[0]
+        acct = Account(user=user)
+        acct.put
+        return acct
+    return False
+
 class index:
     def GET(self):
-        user = users.get_current_user()
-        if user:
-            acct_list = Account.gql("WHERE user = :1", user).fetch(1)
-            if acct_list:
-                return render.index(acct_list[0])
-            acct = Account(user=user)
-            acct.put()
+        acct = get_acct()
+        if acct:
             return render.index(acct)
-        else:
-            return web.found(users.create_login_url(web.webapi.ctx.path))
+        return web.found(users.create_login_url(web.webapi.ctx.path))
     def POST(self):
-        i = web.input()
-        person = Person()
-        person.name = i.name
-        person.put()
-        return web.seeother('/list')
+        acct = get_acct()
+        if acct:
+            i = web.input()
+            acct.keys = i.data
+            acct.put()
+            return web.seeother('/list')
+        return web.found(users.create_login_url(web.webapi.ctx.path))
 
 class list:
     def GET(self):
-        people = db.GqlQuery("SELECT * FROM Person ORDER BY created DESC LIMIT 10")
-        return render.list(people)
+        acct = get_acct()
+        return render.list(acct.keys)
 
 app = web.application(urls, globals())
 main = app.cgirun()
