@@ -18,7 +18,7 @@ def get_acct():
         if acct_list:
             return acct_list[0]
         acct = Account(user=user)
-        acct.put
+        acct.put()
         return acct
     return False
 
