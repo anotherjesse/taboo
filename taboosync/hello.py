@@ -32,7 +32,7 @@ class index:
         acct = get_acct()
         if acct:
             i = web.input()
-            acct.keys = i.data
+            acct.data = i.data
             acct.put()
             return web.seeother('/list')
         return web.found(users.create_login_url(web.webapi.ctx.path))
@@ -40,7 +40,7 @@ class index:
 class list:
     def GET(self):
         acct = get_acct()
-        return render.list(acct.keys)
+        return render.list(acct.data)
 
 app = web.application(urls, globals())
 main = app.cgirun()
