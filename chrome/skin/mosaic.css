@@ -10,7 +10,7 @@
 
 .mosaic #main #detail_img {
   border: 3px solid #888;
-  max-height: 400px;
+  max-height: 350px;
   cursor: pointer;
 }
 
@@ -39,10 +39,12 @@
 
 .mosaic input[type=text].inplace_field {
   width: 100%;
+  display: block;
 }
 
 .mosaic textarea.inplace_field {
   width: 100%;
+  display: block;
 }
 
 /* list of all the tabs */
@@ -52,9 +54,4 @@
   left: 550px;
   top: 40px;
   padding-bottom: 40px;
-}
-
-.mosaic #list img {
-  margin: 2px;
-  border: 1px solid #ccc;
 }

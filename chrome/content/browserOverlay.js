@@ -2,7 +2,7 @@ var taboo;
 
 (function() { // keep our privates to ourselves
 
-var $ = function $(id) { return document.getElementById(id); }
+var $ = function $(id) { return document.getElementById(id); };
 var log = function log(msg) {}; // maybe overridden in init
 var debug = false;
 var prefs;
@@ -35,9 +35,11 @@ function Taboo() {
 
     function addRecent(tab) {
       var item = document.createElement('menuitem');
+      item.setAttribute('class', 'menuitem-iconic');
       item.setAttribute('label', tab.title);
       item.setAttribute('oncommand', 'taboo.gotoRecent(this, event);');
-      item.setAttribute('url', tab.url)
+      item.setAttribute('url', tab.url);
+      item.setAttribute('image', tab.favicon);
       item.setAttribute('tooltiptext', tab.url);
       popup.appendChild(item);
     }
@@ -54,15 +56,15 @@ function Taboo() {
     else {
       var item = document.createElement('menuitem');
       item.setAttribute('label', 'No Tabs Saved');
-      item.setAttribute('disabled', true)
+      item.setAttribute('disabled', true);
       popup.appendChild(item);
     }
-  }
+  };
 
   this.addTaboo = function(event) {
     SVC.save(null);
     saved(true);
-  }
+  };
 
   this.addTabooAndClose = function(event) {
     SVC.save(null);
@@ -72,13 +74,13 @@ function Taboo() {
     if (SVC.isSaved(url)) {
       BrowserCloseTabOrWindow();
     }
-  }
+  };
 
   this.removeTaboo = function(event) {
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
     SVC.delete(url);
     saved(false);
-  }
+  };
 
   this.show = function(event) {
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec;
@@ -90,7 +92,7 @@ function Taboo() {
     else {
       openUILinkIn('chrome://taboo/content/start.html', 'tab');
     }
-  }
+  };
 
   this.updateButton = function(url) {
     if (url && SVC.isSaved(url)) {
@@ -99,7 +101,7 @@ function Taboo() {
     else {
       saved(false);
     }
-  }
+  };
 }
 
 function init() {
@@ -109,7 +111,7 @@ function init() {
     } else {
       var t = Cc['@mozilla.org/consoleservice;1'].
         getService(Ci.nsIConsoleService);
-      log = function log(x) { t.logStringMessage(x); }
+      log = function log(x) { t.logStringMessage(x); };
     }
   }
 

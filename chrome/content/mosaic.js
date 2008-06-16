@@ -35,7 +35,7 @@ function Mosaic(container) {
 
   $(description).editInPlace({
     field_type: "textarea",
-    textarea_rows: "8",
+    textarea_rows: "5",
     textarea_cols: "35",
     bg_out: '#fff',
     callback: function(original_element, html) {
@@ -65,19 +65,32 @@ function Mosaic(container) {
   var currentUrl = null;
 
   this.add = function(tab) {
-    var tile = IMG({src: tab.thumbURL, full: tab.imageURL, title: tab.title});
-    list.appendChild(tile)
+    var box = LI(
+      DIV({'class': 'thumb'},
+        IMG({src: tab.thumbURL})
+      ),
+      DIV({'class': 'preview'},
+        IMG({src: tab.imageURL}),
+        SPAN(tab.title)
+      )
+    );
 
-    tile.onclick = function(event) {
+    box.onclick = function(event) {
       currentUrl = tab.url;
       img.setAttribute('src', tab.imageURL);
       setText(url, tab.url);
       setText(title, tab.title);
       setText(description, tab.description);
-    }
+    };
+
+    box.onmouseover = function(event) {
+      $('.preview', this).css('top', (box.clientHeight/2-$('.preview', this)[0].clientHeight/2)+'px');
+    };
+
+    list.appendChild(box);
 
     if (!currentUrl) {
-      tile.onclick();
+      box.onclick();
     }
-  }
+  };
 }

@@ -1,15 +1,15 @@
 /*
  * Copyright 2007 Jesse Andrews and Manish Singh
- *  
+ *
  * This file may be used under the terms of of the
  * GNU General Public License Version 2 or later (the "GPL"),
  * http://www.gnu.org/licenses/gpl.html
- *  
+ *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
- * 
+ *
  * Portions are derived from the Mozilla nsSessionStore component:
  *
  * Copyright (C) 2006 Simon Bünzli <zeniko@gmail.com>
@@ -499,7 +499,7 @@ TabooService.prototype = {
       throw 'Taboo for ' + aURL + ' does not exist';
     }
   },
-  delete: function TB_delete(aURL) {
+  'delete': function TB_delete(aURL) {
     this._storage.delete(aURL);
 
     for (var i = 0; i < this._observers.length; i++) {
@@ -597,7 +597,7 @@ TabooService.prototype = {
       if (aCount < 10) {
         var setTabStateFunc = function(self) {
           self._setTabStatePrecursor(aWindow, aTab, aState, aCount + 1);
-        }
+        };
       }
       aWindow.setTimeout(setTabStateFunc, 100, this);
       return;
@@ -669,14 +669,14 @@ TabooService.prototype = {
   _deserializeHistoryEntry: function TB__deserializeHistoryEntry(aEntry, aIdMap) {
     var shEntry = Cc["@mozilla.org/browser/session-history-entry;1"].
                   createInstance(Ci.nsISHEntry);
-    
+
     var ioService = Cc["@mozilla.org/network/io-service;1"].
                     getService(Ci.nsIIOService);
     shEntry.setURI(ioService.newURI(aEntry.url, null, null));
     shEntry.setTitle(aEntry.title || aEntry.url);
     shEntry.setIsSubFrame(aEntry.subframe || false);
     shEntry.loadType = Ci.nsIDocShellLoadInfo.loadHistory;
-    
+
     if (aEntry.cacheKey) {
       var cacheKey = Cc["@mozilla.org/supports-PRUint32;1"].
                      createInstance(Ci.nsISupportsPRUint32);
@@ -694,11 +694,11 @@ TabooService.prototype = {
       }
       shEntry.ID = id;
     }
-    
+
     var scrollPos = (aEntry.scroll || "0,0").split(",");
     scrollPos = [parseInt(scrollPos[0]) || 0, parseInt(scrollPos[1]) || 0];
     shEntry.setScrollPosition(scrollPos[0], scrollPos[1]);
-    
+
     if (aEntry.postdata) {
       var stream = Cc["@mozilla.org/io/string-input-stream;1"].
                    createInstance(Ci.nsIStringInputStream);
@@ -712,13 +712,13 @@ TabooService.prototype = {
     {
       shEntry.ownerURI = ioService.newURI(aEntry.ownerURI, null, null);
     }
-    
+
     if (aEntry.children && shEntry instanceof Ci.nsISHContainer) {
       for (var i = 0; i < aEntry.children.length; i++) {
         shEntry.AddChild(this._deserializeHistoryEntry(aEntry.children[i], aIdMap), i);
       }
     }
-    
+
     return shEntry;
   },
   restoreDocument_proxy: function TB_restoreDocument_proxy(aEvent) {
@@ -726,7 +726,7 @@ TabooService.prototype = {
     if (!aEvent || !aEvent.originalTarget || !aEvent.originalTarget.defaultView || aEvent.originalTarget.defaultView != aEvent.originalTarget.defaultView.top) {
       return;
     }
-    
+
     var textArray = this.__SS_restore_text ? this.__SS_restore_text.split(" ") : [];
     function restoreTextData(aContent, aPrefix) {
       textArray.forEach(function(aEntry) {
@@ -735,7 +735,7 @@ TabooService.prototype = {
           var node = RegExp.$2 ? document.getElementById(RegExp.$3) : document.getElementsByName(RegExp.$3)[0] || null;
           if (node && "value" in node) {
             node.value = decodeURI(RegExp.$4);
-            
+
             var event = document.createEvent("UIEvents");
             event.initUIEvent("input", true, true, aContent, 0);
             node.dispatchEvent(event);
@@ -743,7 +743,7 @@ TabooService.prototype = {
         }
       });
     }
-    
+
     function restoreTextDataAndScrolling(aContent, aData, aPrefix) {
       restoreTextData(aContent, aPrefix);
       if (aData.innerHTML) {
@@ -758,7 +758,7 @@ TabooService.prototype = {
         }
       }
     }
-    
+
     var content = XPCNativeWrapper(aEvent.originalTarget).defaultView;
     if (this.currentURI.spec == "about:config") {
       // unwrap the document for about:config because otherwise the properties
@@ -766,12 +766,12 @@ TabooService.prototype = {
       content = content.wrappedJSObject;
     }
     restoreTextDataAndScrolling(content, this.__SS_restore_data, "");
-    
+
     // notify the tabbrowser that this document has been completely restored
     var event = this.ownerDocument.createEvent("Events");
     event.initEvent("SSTabRestored", true, false);
     this.__SS_restore_tab.dispatchEvent(event);
-    
+
     this.removeEventListener("load", this.__SS_restore, true);
     delete this.__SS_restore_data;
     delete this.__SS_restore_text;

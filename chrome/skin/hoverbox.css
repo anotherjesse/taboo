@@ -1,16 +1,16 @@
-.hoverbox ul {
+.mosaic ul {
   padding: 20px 60px;
 }
 
-.hoverbox .preview {
+.mosaic .preview {
   display: none;
 }
 
-.hoverbox img {
+.mosaic img {
   vertical-align: middle;
 }
 
-.hoverbox li .thumb {
+.mosaic li .thumb {
   background: #fff;
   border-color: #aaa #ccc #ddd #bbb;
   border-style: solid;
@@ -20,13 +20,13 @@
   overflow: hidden;
 }
 
-.hoverbox li .thumb img {
+.mosaic li .thumb img {
   overflow: hidden;
   min-width: 100px;
   min-height: 100px;
 }
 
-.hoverbox li {
+.mosaic li {
   background: #eee;
   color: inherit;
   display: inline;
@@ -37,12 +37,12 @@
   cursor: pointer;
 }
 
-.hoverbox .preview img {
+.mosaic .preview img {
   width: 200px;
   overflow: hidden;
 }
 
-.hoverbox li:hover .preview {
+.mosaic li:hover .preview {
   display: block;
   position: absolute;
   top: -15px; /* this is overriden onmouseover based on the height of the preview */
@@ -55,7 +55,7 @@
 }
 
 
-.hoverbox li:hover span {
+.mosaic li:hover span {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -71,7 +71,7 @@
   overflow: hidden;
 }
 
-.hoverbox li span:hover {
+.mosaic li span:hover {
   white-space: inherit;
   opacity: 0.95;
   color: #000;
