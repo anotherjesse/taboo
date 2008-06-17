@@ -884,7 +884,7 @@ tabooFavIconLoadListener.prototype = {
       if (this.mBytes && this.mCountRead > 0 && mimeType != null) {
         var data = 'data:';
         data += mimeType;
-        data += ';base64;';
+        data += ';base64,';
 
         var iconData = String.fromCharCode.apply(null, this.mBytes);
         data += base64Encode(iconData);
