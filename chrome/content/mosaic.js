@@ -26,23 +26,22 @@ function Mosaic(container) {
 
   container.appendChild(DIV({id: 'main'}, img, url, title, description));
 
-  $(title).editInPlace({
-    callback: function(original_element, html) {
-      SVC.update(currentUrl, html, null);
-      return html.replace(/</g, '&lt;');
-    }
-  });
+  $(title).editInPlace();
+
+  $(title).bind('callback', function(e, value) {
+		  SVC.update(currentUrl, value, null);
+		});
 
   $(description).editInPlace({
-    field_type: "textarea",
-    textarea_rows: "5",
-    textarea_cols: "35",
-    bg_out: '#fff',
-    callback: function(original_element, html) {
-      SVC.update(currentUrl, null, html);
-      return html.replace(/</g, '&lt;');
-    }
-  });
+			       field_type: "textarea",
+			       textarea_rows: "5",
+			       textarea_cols: "35",
+			       bg_out: '#fff'
+			     });
+
+  $(description).bind('callback', function(e, value) {
+			SVC.update(currentUrl, null, value);
+		      });
 
   function openCurrent(event) {
     SVC.open(currentUrl, whereToOpenLink(event));
@@ -53,14 +52,14 @@ function Mosaic(container) {
 
   var list = document.createElement('div');
   list.setAttribute('id', 'list');
-  container.appendChild(list)
+  container.appendChild(list);
 
   this.start = function() {
     currentUrl = null;
     list.innerHTML = '';
-  }
+  };
 
-  this.finish = function() {}
+  this.finish = function() {};
 
   var currentUrl = null;
 
@@ -78,9 +77,9 @@ function Mosaic(container) {
     box.onclick = function(event) {
       currentUrl = tab.url;
       img.setAttribute('src', tab.imageURL);
+      $(title).trigger('update', [tab.title]);
+      $(description).trigger('update', [tab.description]);
       setText(url, tab.url);
-      setText(title, tab.title);
-      setText(description, tab.description);
     };
 
     box.onmouseover = function(event) {
