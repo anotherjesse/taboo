@@ -268,12 +268,12 @@ TabooStorageSQL.prototype = {
       return false;
     }
 
-    if (aTitle || aDescription) {
-      if (aTitle) {
+    if (aTitle != null || aDescription != null) {
+      if (aTitle != null) {
         entry.title = aTitle;
       }
 
-      if (aDescription) {
+      if (aDescription != null) {
         entry.description = aDescription;
       }
 
