@@ -70,7 +70,7 @@ function Mosaic(container) {
       ),
       DIV({'class': 'preview'},
         IMG({src: tab.imageURL}),
-        SPAN(tab.title)
+        SPAN(tab.title || '')
       )
     );
 
