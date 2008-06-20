@@ -76,15 +76,19 @@ function Controller() {
   }
 
   this.tabFinalDelete = function(tab, el) {
+    humanMsg.displayMsg("This taboo has been permanently deleted.");
     el.style.display = "none";
     SVC.reallyDelete(tab.url);
   }
 
   this.tabUndelete = function(tab) {
+    humanMsg.displayMsg("This taboo has been restored.");
     SVC.undelete(tab.url);
   }
 
   this.displayUndelete = function(tab, el) {
+    humanMsg.displayMsg("This taboo has been deleted. View the trashcan to restore or permanently delete taboos.");
+    return;
     var a = document.getElementById('undeleteLink');
     var div = document.getElementById('undelete');
     a.onclick = function() {
