@@ -17,6 +17,11 @@ body {
   border-bottom: 1px solid #888;
 }
 
+#postheader {
+  clear: both;
+  height: 40px;
+}
+
 #search {
   margin-left: 10px;
   border: 1px solid #aaa;
@@ -53,16 +58,21 @@ body {
 
 /* ???? */
 
+.humanMsg {
+  -moz-border-radius: 15px;
+}
+/*
 .infoWrap {
   text-align: center;
   visibility: hidden;
   padding: 3px 10px;
-  margin: 0 auto 10px auto;
+  margin: 0px auto 0px auto;
   background: #ee2;
   -moz-border-radius: 5px;
 }
 
 #undelete {
+  padding-top: 10px;
   width: 250px;
 }
 
@@ -73,7 +83,7 @@ body {
 #undelete div {
   width: 250px;
 }
-
+*/
 /* FOOTER */
 
 #prefooter {
