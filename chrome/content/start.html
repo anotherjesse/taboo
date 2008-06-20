@@ -30,7 +30,11 @@
     <script type="text/javascript" src="chrome://taboo/content/trash.js"></script>
     <script type="text/javascript" src="chrome://taboo/content/about.js"></script>
 
+    <script type="application/x-javascript" src="chrome://taboo/content/vendor/humanmsg.js"></script>
+
     <link rel="stylesheet" href="chrome://taboo/content/jquery.tooltip.css" />
+
+    <link rel="stylesheet" href="chrome://taboo/content/vendor/humanmsg.css" />
 
     <link rel="stylesheet" href="chrome://taboo/skin/start.css" />
     <link rel="stylesheet" href="chrome://taboo/skin/calendar.css" />
@@ -45,18 +49,20 @@
       <div id="views">
         <a href="#" onclick="controller.load('Grid'); return false;" id="grid">grid</a>
         <a href="#" onclick="controller.load('Calendar'); return false;" id="calendar">calendar</a>
-        <a href="#" onclick="controller.load('Mosaic'); return false;" id="mosaic">mosaic</a>
+        <a href="#" onclick="controller.load('Mosaic'); return false;" id="mosaic">details</a>
         <a href="#" onclick="controller.load('Trash'); return false;" id="trash">trashcan</a>
         <a href="#" onclick="controller.load('About'); return false;" id="about">about</a>
       </div>
       <input type="text" id="search" />
     </div>
 
-    <div id="undelete" class="infoWrap">
+    <div id="postheader"></div>
+
+    <!-- div id="undelete" class="infoWrap">
       <div id="text" class="info">
         <a id="undeleteLink" href="#">Click here to undelete your taboo</a>
       </div>
-    </div>
+    </div -->
 
     <div id="content"></div>
     <div id="prefooter"></div>
