@@ -37,7 +37,7 @@ function Trash(container) {
 
 
   var undeleted = DIV({'class': 'infoWrap', style: 'width: 400px'},
-    'This taboo has been restore');
+    'This taboo has been restored');
 
   container.appendChild(undeleted);
 
