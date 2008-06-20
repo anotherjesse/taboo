@@ -17,13 +17,15 @@ function Trash(container) {
 
   var deleted = [];
 
-  document.getElementById('undelete').style.visibility = 'hidden';
+  var deleteAll = DIV({id: 'deleteAll',
+                       style: 'visibility: visible; width: 275px; padding-top: 10px; margin: 0 auto 0 auto;'});
 
-  var deleteAll = DIV({id: 'deleteAll', 'class': 'infoWrap',
-		       style: 'visibility: visible; width: 255px'},
-		      "Click here to delete all of these taboos.");
+  var deleteButton = BUTTON({id: 'deleteButton', style: 'padding: 3px;'},
+                            "Permanently delete all of these taboos");
 
-  deleteAll.onclick = function() {
+  deleteAll.appendChild(deleteButton);
+
+  deleteButton.onclick = function() {
     for (var i in deleted) {
       // if parentNode doesn't exist, it has already been removed from page
       // eg - it has been undeleted or deleted - but we don't keep deleted
@@ -34,12 +36,6 @@ function Trash(container) {
     }
   };
   container.appendChild(deleteAll);
-
-
-  var undeleted = DIV({'class': 'infoWrap', style: 'width: 400px'},
-    'This taboo has been restored');
-
-  container.appendChild(undeleted);
 
   var ul = UL();
   container.appendChild(ul);
@@ -53,7 +49,7 @@ function Trash(container) {
   this.add = function(tab) {
     var box = LI({},
       DIV({},
-        SPAN({'class': 'delete', title: 'permenantly delete taboo'}),
+        SPAN({'class': 'delete', title: 'Permenantly delete this taboo'}),
         SPAN({'class': 'title', title: tab.title}, tab.title),
         SPAN({'class': 'url', title: tab.url}, tab.url),
         SPAN({'class': 'preview'},
