@@ -87,6 +87,7 @@ html, body {
 	font-size: 12px;
 	list-style-type: none;
 	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
 	line-height: 40px;
 	display: none;
 	padding: 0 20px;
@@ -100,7 +101,9 @@ html, body {
 	}
 
 #humanMsgLog ul li:first-child {
-	margin-top: 1px;
+        border-bottom: 2px solid #bbb;
+        border-right: 2px solid #bbb;
+	margin-top: 3px;
 	}
 	
 #humanMsgLog ul li .error {

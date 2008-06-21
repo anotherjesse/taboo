@@ -44,7 +44,7 @@ var humanMsg = {
 		jQuery('#'+humanMsg.msgID+'').show().animate({ opacity: humanMsg.msgOpacity}, 200, function() {
 			jQuery('#'+humanMsg.logID)
 				.show().children('ul').prepend('<li>'+msg+'</li>')	// Prepend message to log
-				.children('li:first').slideDown(200)				// Slide it down
+				.children('li').slideDown(500)				// Slide it down
 		
 			if ( jQuery('#'+humanMsg.logID+' ul').css('display') == 'none') {
 				jQuery('#'+humanMsg.logID+' p').animate({ height: 70 }, 200, 'linear', function() {
