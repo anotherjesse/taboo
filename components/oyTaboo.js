@@ -34,7 +34,6 @@ const TB_CONTRACTID = '@oy/taboo;1';
 const TB_CLASSID    = Components.ID('{962a9516-b177-4083-bbe8-e10f47cf8570}');
 const TB_CLASSNAME  = 'Taboo Service';
 
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
@@ -387,6 +386,7 @@ TabooStorageSQL.prototype = {
   }
 }
 
+var newSSApi = false;
 
 function TabooService() {
   this._observers = [];
@@ -398,6 +398,17 @@ function TabooService() {
 TabooService.prototype = {
   _init: function TB__init() {
     this._storage = new TabooStorageSQL();
+
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
+    var extMgr = Cc['@mozilla.org/extensions/manager;1']
+      .getService(Ci.nsIExtensionManager);
+
+    var TorButtonGUID = '{e0204bd5-9d31-402b-a99d-a6aa8ffebdca}';
+
+    if (!extMgr.getItemForID(TorButtonGUID) && ss.getTabState) {
+      newSSApi = true;
+    }
   },
   observe: function TB_observe(subject, topic, state) {
     var obs = getObserverService();
@@ -447,7 +458,7 @@ TabooService.prototype = {
     var state;
     var sandbox = new Cu.Sandbox('about:blank');
 
-    if (ss.getTabState) {
+    if (newSSApi) {
       var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
 
       if (getBoolPref('extensions.taboo.debug', false))
@@ -575,7 +586,7 @@ TabooService.prototype = {
 
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
-    if (ss.setTabState) {
+    if (newSSApi) {
       ss.setTabState(tab, tabData);
     } else {
       this._setTabStatePrecursor(win, tab, tabData, 0);
