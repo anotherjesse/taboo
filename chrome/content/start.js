@@ -89,20 +89,6 @@ function Controller() {
   this.displayUndelete = function(tab, el) {
     humanMsg.displayMsg("This taboo has been deleted.<br /><small>View the trashcan to restore or permanently delete taboos.</small>");
     return;
-    var a = document.getElementById('undeleteLink');
-    var div = document.getElementById('undelete');
-    a.onclick = function() {
-      el.style.display = '';
-      div.style.visibility = 'hidden';
-      SVC.undelete(tab.url);
-    };
-    div.url = tab.url;
-    div.style.visibility = 'visible';
-    setTimeout(function() {
-      if (div.url == tab.url) {
-        div.style.visibility = 'hidden';
-      }
-    }, 30000);
   }
 
   this.display = function(searchTxt) {
