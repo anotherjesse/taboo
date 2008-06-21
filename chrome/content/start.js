@@ -26,6 +26,11 @@ function init() {
 
   try {
     var view = tboPrefs.getCharPref("view");
+    var taboos = SVC.get('', view.trash);
+    if (!view.trash && !view.info && !taboos.hasMoreElements()) {
+      controller.load('About');
+      return;
+    }
     controller.load(view);
   }
   catch (e) {
@@ -95,11 +100,6 @@ function Controller() {
     view.start();
 
     var taboos = SVC.get(searchTxt, view.trash);
-
-    if (!searchTxt && !view.trash && !view.info && !taboos.hasMoreElements()) {
-      controller.load(DisplayInfo);
-      return;
-    }
 
     while (taboos.hasMoreElements()) {
       var tab = taboos.getNext();

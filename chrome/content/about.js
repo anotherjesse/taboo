@@ -21,4 +21,5 @@ function About(container) {
   this.start = function() {}
   this.finish = function() {}
   this.add = function(tab) {}
+  this.info = true;
 }
