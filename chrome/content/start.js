@@ -87,7 +87,7 @@ function Controller() {
   }
 
   this.displayUndelete = function(tab, el) {
-    humanMsg.displayMsg("This taboo has been deleted. View the trashcan to restore or permanently delete taboos.");
+    humanMsg.displayMsg("This taboo has been deleted.<br /><small>View the trashcan to restore or permanently delete taboos.</small>");
     return;
     var a = document.getElementById('undeleteLink');
     var div = document.getElementById('undelete');
