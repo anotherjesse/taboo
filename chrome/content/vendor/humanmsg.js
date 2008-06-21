@@ -45,6 +45,7 @@ var humanMsg = {
 			jQuery('#'+humanMsg.logID)
 				.show().children('ul').prepend('<li>'+msg+'</li>')	// Prepend message to log
 				.children('li').slideDown(500)				// Slide it down
+        .click(function() { humanMsg.removeLogMsg(this); })
 		
 			if ( jQuery('#'+humanMsg.logID+' ul').css('display') == 'none') {
 				jQuery('#'+humanMsg.logID+' p').animate({ height: 70 }, 200, 'linear', function() {
@@ -57,10 +58,10 @@ var humanMsg = {
 			
 		})
 
-		// Watch for mouse & keyboard in .5s
+		// Watch for mouse & keyboard in .7s
 		humanMsg.t1 = setTimeout(humanMsg.bindEvents, 700)
-		// Remove message after 5s
-		humanMsg.t2 = setTimeout(humanMsg.removeMsg, 5000)
+		// Remove message after 10s
+		humanMsg.t2 = setTimeout(humanMsg.removeMsg, 10000)
 	},
 
 	bindEvents: function() {
@@ -81,7 +82,12 @@ var humanMsg = {
 		// If message is fully transparent, fade it out
 		if (jQuery('#'+humanMsg.msgID).css('opacity') == humanMsg.msgOpacity)
 			jQuery('#'+humanMsg.msgID).animate({ opacity: 0 }, 500, function() { jQuery(this).hide() })
-	}
+	},
+
+  removeLogMsg: function(msg) {
+    console.log('removeLogMsg', msg);
+    jQuery(msg).remove();
+  }
 };
 
 jQuery(document).ready(function(){
