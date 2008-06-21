@@ -24,7 +24,7 @@ var humanMsg = {
 			humanMsg.msgOpacity = parseFloat(msgOpacity);
 
 		// Inject the message structure
-		jQuery(appendTo).append('<div id="'+humanMsg.msgID+'" class="humanMsg"><div class="round"></div><p></p><div class="round"></div></div> <!--div id="'+humanMsg.logID+'"><p>'+logName+'</p><ul></ul></div -->')
+		jQuery(appendTo).append('<div id="'+humanMsg.msgID+'" class="humanMsg"><div class="round"></div><p></p><div class="round"></div></div> <div id="'+humanMsg.logID+'"><p>'+logName+'</p><ul></ul></div>')
 		
 		jQuery('#'+humanMsg.logID+' p').click(
 			function() { jQuery(this).siblings('ul').slideToggle() }
@@ -47,17 +47,20 @@ var humanMsg = {
 				.children('li:first').slideDown(200)				// Slide it down
 		
 			if ( jQuery('#'+humanMsg.logID+' ul').css('display') == 'none') {
-				jQuery('#'+humanMsg.logID+' p').animate({ bottom: 40 }, 200, 'linear', function() {
-					jQuery(this).animate({ bottom: 0 }, 300, 'easeOutBounce', function() { jQuery(this).css({ bottom: 0 }) })
+				jQuery('#'+humanMsg.logID+' p').animate({ height: 70 }, 200, 'linear', function() {
+					jQuery(this).animate({ height: 20 }, 300, 'easeOutBounce', 
+                               function() { 
+                                 jQuery(this).css({ height: 20 }) 
+                               })
 				})
 			}
 			
 		})
 
 		// Watch for mouse & keyboard in .5s
-		humanMsg.t1 = setTimeout("humanMsg.bindEvents()", 700)
+		humanMsg.t1 = setTimeout(humanMsg.bindEvents, 700)
 		// Remove message after 5s
-		humanMsg.t2 = setTimeout("humanMsg.removeMsg()", 5000)
+		humanMsg.t2 = setTimeout(humanMsg.removeMsg, 5000)
 	},
 
 	bindEvents: function() {

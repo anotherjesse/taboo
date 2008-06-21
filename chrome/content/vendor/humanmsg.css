@@ -21,6 +21,7 @@ html, body {
 	display: none;
 	opacity: 0;
 	z-index: 100000;
+        -moz-border-radius: 15px;
 }
 
 .humanMsg .round {
@@ -63,6 +64,8 @@ html, body {
 	text-align: center;
 	white-space: pre;
 	cursor: pointer;
+        -moz-border-radius-topleft: 15px;
+        -moz-border-radius-topright: 15px;
 	}
 
 #humanMsgLog p:hover {
