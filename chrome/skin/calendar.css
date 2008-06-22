@@ -80,8 +80,7 @@
     padding-bottom: 20px;
 }
 
-#nav_right,
-#nav_left {
+#nav_right,#nav_left {
     padding: 10px;
     cursor: pointer;
 }
