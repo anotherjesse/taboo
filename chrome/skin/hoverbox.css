@@ -1,16 +1,16 @@
-.mosaic ul {
+.mosaic #content ul {
   padding: 20px 60px;
 }
 
-.mosaic .preview {
+.mosaic #content .preview {
   display: none;
 }
 
-.mosaic img {
+.mosaic #content img {
   vertical-align: middle;
 }
 
-.mosaic li .thumb {
+.mosaic #content li .thumb {
   background: #fff;
   border-color: #aaa #ccc #ddd #bbb;
   border-style: solid;
@@ -20,13 +20,13 @@
   overflow: hidden;
 }
 
-.mosaic li .thumb img {
+.mosaic #content li .thumb img {
   overflow: hidden;
   min-width: 100px;
   min-height: 100px;
 }
 
-.mosaic li {
+.mosaic #content li {
   background: #eee;
   color: inherit;
   display: inline;
@@ -37,12 +37,12 @@
   cursor: pointer;
 }
 
-.mosaic .preview img {
+.mosaic #content .preview img {
   width: 200px;
   overflow: hidden;
 }
 
-.mosaic li:hover .preview {
+.mosaic #content li:hover .preview {
   display: block;
   position: absolute;
   top: -15px; /* this is overriden onmouseover based on the height of the preview */
@@ -55,7 +55,7 @@
 }
 
 
-.mosaic li:hover span {
+.mosaic #content li:hover span {
   position: absolute;
   top: 0px;
   left: 0px;
@@ -71,7 +71,7 @@
   overflow: hidden;
 }
 
-.mosaic li span:hover {
+.mosaic #content li span:hover {
   white-space: inherit;
   opacity: 0.95;
   color: #000;

@@ -1,29 +1,29 @@
-.calendar .nav {
+.calendar #content .nav {
   padding: 5px;
   margin: 5px;
   cursor: pointer;
 }
 
-.calendar td {
+.calendar #content td {
     width: 100px;
     height: 100px;
     border: 1px solid black;
 }
 
-.calendar td img {
+.calendar #content td img {
     max-width: 100px;
     max-height: 100px;
 }
 
-.calendar td.empty {
+.calendar #content td.empty {
     color: #ccc;
 }
 
-.calendar td.blank {
+.calendar #content td.blank {
     border: none;
 }
 
-.calendar .tabs {
+.calendar #content .tabs {
     position: fixed;
     top: 100px;
     left: 100px;
@@ -35,22 +35,22 @@
     border: 1px solid #888;
 }
 
-.calendar .tabs img {
+.calendar #content .tabs img {
     max-width: 125px;
     max-height: 125px;
     border: 1px solid #ccc;
     margin: 5px;
 }
 
-.calendar .tabs img:hover {
+.calendar #content .tabs img:hover {
     border-color: #888;
 }
 
-.calendar table {
+.calendar #content table {
     margin: 10px auto;
 }
 
-.calendar th#date_nav {
+.calendar #content th#date_nav {
     padding-bottom: 20px;
 }
 

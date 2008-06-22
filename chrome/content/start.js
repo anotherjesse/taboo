@@ -26,6 +26,11 @@ function init() {
 
   try {
     var view = tboPrefs.getCharPref("view");
+    var taboos = SVC.get('', view.trash);
+    if (!view.trash && !view.info && !taboos.hasMoreElements()) {
+      controller.load('About');
+      return;
+    }
     controller.load(view);
   }
   catch (e) {
@@ -89,31 +94,12 @@ function Controller() {
   this.displayUndelete = function(tab, el) {
     humanMsg.displayMsg("This taboo has been deleted.<br /><small>View the trashcan to restore or permanently delete taboos.</small>");
     return;
-    var a = document.getElementById('undeleteLink');
-    var div = document.getElementById('undelete');
-    a.onclick = function() {
-      el.style.display = '';
-      div.style.visibility = 'hidden';
-      SVC.undelete(tab.url);
-    };
-    div.url = tab.url;
-    div.style.visibility = 'visible';
-    setTimeout(function() {
-      if (div.url == tab.url) {
-        div.style.visibility = 'hidden';
-      }
-    }, 30000);
   }
 
   this.display = function(searchTxt) {
     view.start();
 
     var taboos = SVC.get(searchTxt, view.trash);
-
-    if (!searchTxt && !view.trash && !view.info && !taboos.hasMoreElements()) {
-      controller.load(DisplayInfo);
-      return;
-    }
 
     while (taboos.hasMoreElements()) {
       var tab = taboos.getNext();
