@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright 2008 Jesse Andrews
+
+ This file may be used under the terms of of the
+ GNU General Public License Version 2 or later (the "GPL"),
+ http://www.gnu.org/licenses/gpl.html
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the
+ License.
+-->
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<page xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="text/javascript">
+    <![CDATA[
+      window.onload = function() {
+        const Cc = Components.classes;
+        const Ci = Components.interfaces;
+        const SVC = Components.classes['@oy/taboo;1']
+          .getService(Components.interfaces.oyITaboo);
+
+        var url = window.location.search; // query string
+        url = url.slice(1); // remove leading ?
+        url = decodeURIComponent(url); // decode back into a normal url
+
+        // grab the current tab?
+        SVC.openInTab(url, tab);
+      }
+    ]]>
+  </script>
+
+  <hbox>
+    <label value="reloading your tab" />
+  </hbox>
+</page>
