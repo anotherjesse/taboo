@@ -13,6 +13,22 @@
   text-align: center;
   margin: 0 auto;
   border: 1px solid #ccc;
-  background: white;
+  background: url(chrome://taboo/skin/white-90.png);
   -moz-border-radius: 5px;
+}
+
+
+.hue img {
+  display: block;
+  margin: 0 auto;
+}
+
+.hue .title {
+  font-weight: bold;
+}
+
+.hue .description {
+  padding: 5px 20px 0 20px;
+  text-align: left;
+  display: block;
 }
