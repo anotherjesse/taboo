@@ -70,20 +70,28 @@ function Calendar(container) {
       td.onclick = function() {
         var div = DIV({'class': 'tabs'});
         tabs.forEach(function(tab) {
-	  var img = IMG({src: tab.thumbURL});
+          var img = IMG({src: tab.thumbURL});
           img.onclick = function(event) {
             SVC.open(tab.url, whereToOpenLink(event));
           };
 
-	  img.onmouseover = function(event) {
-	    jQuery(document.body).trigger('hue.over', [
-	      IMG({src: tab.imageURL})
-	    ]);
-	  };
 
-	  img.onmouseout = function(event) {
-	    jQuery(document.body).trigger('hue.out');
-	  };
+          img.onmouseover = function(event) {
+            jQuery(document.body).trigger('hue.over', [
+                                            DIV(
+                                              SPAN({'class': 'title'}, (tab.title || 'untitled')),
+                                              IMG({src: tab.imageURL}),
+                                              SPAN({'class': 'description'}, (tab.description || ''))
+                                            ),
+                                            function(event) {
+                                              SVC.open(tab.url, whereToOpenLink(event));
+                                            }
+                                          ]);
+          };
+
+          img.onmouseout = function(event) {
+            jQuery(document.body).trigger('hue.out');
+          };
 
           div.appendChild(img);
         });
