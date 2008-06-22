@@ -43,6 +43,8 @@ function init() {
   }
   searchBox.value = '';
   searchBox.focus();
+
+  jQuery.fn.hue();
 }
 
 window.addEventListener("load", init, false);

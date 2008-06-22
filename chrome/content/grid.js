@@ -71,6 +71,14 @@ function Grid(container, footerControls) {
       )
     );
 
+    box.onmouseover = function(event) {
+      jQuery(document.body).trigger('hue.over', ["<img src='"+tab.imageURL+"' />"]);
+    };
+
+    box.onmouseout = function(event) {
+      jQuery(document.body).trigger('hue.out');
+    };
+
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
         controller.tabDelete(tab, box);
