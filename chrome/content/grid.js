@@ -62,8 +62,8 @@ function Grid(container, footerControls) {
     var box = LI(
       DIV(
         SPAN({'class': 'delete', title: 'delete taboo'}),
-        SPAN({'class': 'title', title: tab.title}, (tab.title || 'untitled')),
-        SPAN({'class': 'url', href: tab.url, title: tab.url}, tab.url),
+        SPAN({'class': 'title'}, (tab.title || 'untitled')),
+        SPAN({'class': 'url', href: tab.url}, tab.url),
         SPAN({'class': 'preview'},
           IMG({'class': 'thumb', src: tab.thumbURL}),
           IMG({'class': 'large', src: tab.imageURL})

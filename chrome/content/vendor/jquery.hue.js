@@ -2,8 +2,9 @@ jQuery.fn.hue = function(options) {
 
   var body = jQuery(document.body);
 
-  var box = $("<div class='hue'>hello world</div>");
-  body.append(box);
+  var outerbox = $("<div class='hue-outer'><div class='hue'></div></div>");
+  body.append(outerbox);
+  var box = $('.hue', outerbox);
 
   var hide = function() {
     clearTimeout(timeout);
@@ -23,7 +24,7 @@ jQuery.fn.hue = function(options) {
     timeout = setTimeout(function() {
 			   if (OVER_ITEM) {
 			     SHOWING = true;
-			     box.show();
+			     outerbox.show();
 			   }
 			 }, 800);
   };
@@ -45,6 +46,8 @@ jQuery.fn.hue = function(options) {
     .bind('hue.hide',
 	  function() {
 	    SHOWING = false;
-	    box.hide();
+	    outerbox.hide();
 	  });
+
+  hide();
 };
