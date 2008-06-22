@@ -73,7 +73,11 @@ function Grid(container, footerControls) {
 
     box.onmouseover = function(event) {
       jQuery(document.body).trigger('hue.over', [
-				      IMG({src: tab.imageURL})
+				      DIV(
+					SPAN({'class': 'title'}, (tab.title || 'untitled')),
+					IMG({src: tab.imageURL}),
+					SPAN({'class': 'description'}, (tab.description || ''))
+				      )
 				    ]);
     };
 
