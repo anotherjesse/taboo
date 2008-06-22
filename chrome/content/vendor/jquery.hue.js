@@ -34,10 +34,12 @@ jQuery.fn.hue = function(options) {
     .click(hide)
     .keypress(hide)
     .bind('hue.over',
-	  function(event, node) {
+	  function(event, node, callback) {
 	    OVER_ITEM = true;
 	    box.empty();
+	    outerbox[0].onclick = null;
 	    box.append(node);
+	    outerbox[0].onclick = callback;
 	  })
     .bind('hue.out',
 	  function() {
