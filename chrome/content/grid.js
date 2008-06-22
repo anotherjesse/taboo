@@ -72,7 +72,9 @@ function Grid(container, footerControls) {
     );
 
     box.onmouseover = function(event) {
-      jQuery(document.body).trigger('hue.over', ["<img src='"+tab.imageURL+"' />"]);
+      jQuery(document.body).trigger('hue.over', [
+				      IMG({src: tab.imageURL})
+				    ]);
     };
 
     box.onmouseout = function(event) {
