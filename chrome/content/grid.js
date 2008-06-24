@@ -61,7 +61,7 @@ function Grid(container, footerControls) {
   this.add = function(tab) {
     var box = LI(
       DIV(
-        SPAN({'class': 'delete', title: 'delete taboo'}),
+        SPAN({'class': 'delete nohue', title: 'delete taboo'}),
         SPAN({'class': 'title'}, (tab.title || 'untitled')),
         SPAN({'class': 'url', href: tab.url}, tab.url),
         SPAN({'class': 'preview'},

@@ -19,8 +19,7 @@ jQuery.fn.hue = function(options) {
 
   var SHOWING;
 
-  var special_hide = function() {
-    hide();
+  var delay_show = function() {
     timeout = setTimeout(function() {
                            if (OVER_ITEM) {
                              SHOWING = true;
@@ -33,8 +32,8 @@ jQuery.fn.hue = function(options) {
 
   body
     .mousemove(function(event) {
-                 // Firefox 2 reports a mousemove when a new div
-                 // gets added underneath the mouse
+                 // Firefox 2 reports a mousemove when a new div gets added
+                 // underneath the mouse, so filter out invalid mousemoves
 
                  if (event.clientX == mouseX &&
                      event.clientY == mouseY) {
@@ -44,7 +43,18 @@ jQuery.fn.hue = function(options) {
                  mouseX = event.clientX;
                  mouseY = event.clientY;
 
-                 special_hide();
+		 // hide the hue due to mouse movement
+
+		 hide();
+
+		 // don't show the hue if we are over an element that
+		 // has a classname that tells us not to
+
+		 if (event.target.className.search('nohue') != -1) {
+		   return;
+		 }
+
+                 delay_show();
                })
     .click(hide)
     .keypress(hide)
