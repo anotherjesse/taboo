@@ -1,6 +1,7 @@
 <html>
 <head>
   <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
+  <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
 </head>
 
 <body class="about">
@@ -23,7 +24,6 @@
   	<td>To view your saved taboos, click on this icon.</td>
   </tr>
   </table>
-
   <h1>Keyboard Shortcuts</h1>
   <table>
     <tr>
@@ -32,22 +32,21 @@
     </tr>
     <tr>
       <td>Save Current Tab</td>
-      <td class="shortcut">Accel-Shift-A</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-A</td>
     </tr>
     <tr>
       <td>Save Current Tab and Close Tab</td>
-      <td class="shortcut">Accel-Shift-C</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-C</td>
     </tr>
     <tr>
       <td>Unsave Current Tab</td>
-      <td class="shortcut">Accel-Shift-U</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-U</td>
     </tr>
     <tr>
       <td>Show Taboos</td>
-      <td class="shortcut">Accel-Shift-F</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
     </tr>
   </table>
-  <p>*<em>Accel means "Apple" on Macs and "Control" on Windows/Linux</em></p>
 
   <br />
   <br />
@@ -57,5 +56,13 @@
                           <a target="_blank" href="http://yosh.org">Manish Singh</a>, and
                           <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>.
   </p>
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      var mac = navigator.appVersion.match(/mac/i);
+      console.log('here');
+      var accel = (mac) ? 'Command' : 'Control';
+      jQuery(".accel").html(accel);
+    });
+  </script>
 </body>
 </html>
