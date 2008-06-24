@@ -25,7 +25,7 @@
       <toolbarbutton id="taboo-toolbarbutton-add"
         label="Add to Taboo"
         tooltiptext="save this tab to read later"
-        command="cmd_addTaboo"
+        command="cmd_toggleTaboo"
         class="toolbarbutton-1 chromeclass-toolbar-additional" />
       <toolbarbutton id="taboo-toolbarbutton-view"
         label="View Taboos"
@@ -60,6 +60,7 @@
   <commandset id="mainCommandSet">
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
+    <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />
     <command id="cmd_addTabooAndClose" oncommand="taboo.addTabooAndClose(event)" />
     <command id="cmd_removeTaboo" oncommand="taboo.removeTaboo(event)" />
   </commandset>
