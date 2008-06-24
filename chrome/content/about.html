@@ -17,7 +17,7 @@
   </tr>
   <tr>
   	<td><span id="taboo-toolbarbutton-add-saved"></span></td>
-  	<td>Saved Taboos display this icon instead. Clicking this again will resave the taboo with current location/history/form fields.</td>
+  	<td>Saved Taboos display this icon instead. Clicking will remove this taboo (it will be in the trash in case you want to undelete it later)</td>
   </tr>
   <tr>
   	<td><span id="taboo-toolbarbutton-view"></span></td>
@@ -57,9 +57,8 @@
                           <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>.
   </p>
   <script type="text/javascript">
-    jQuery(document).ready(function() {
+    jQuery(function() {
       var mac = navigator.appVersion.match(/mac/i);
-      console.log('here');
       var accel = (mac) ? 'Command' : 'Control';
       jQuery(".accel").html(accel);
     });
