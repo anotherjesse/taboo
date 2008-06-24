@@ -61,6 +61,18 @@ function Taboo() {
     }
   };
 
+  this.toggleTaboo = function(event) {
+    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+
+    if (SVC.isSaved(url)) {
+      SVC.delete(url);
+      saved(false);
+    } else {
+      SVC.save(null);
+      saved(true);
+    }
+  };
+
   this.addTaboo = function(event) {
     SVC.save(null);
     saved(true);
