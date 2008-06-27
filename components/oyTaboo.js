@@ -204,6 +204,53 @@ function TabooStorageSQL() {
 }
 
 TabooStorageSQL.prototype = {
+  export: function() {
+
+    var dirSvc = Cc["@mozilla.org/file/directory_service;1"]
+                   .getService(Ci.nsIProperties);
+    var tmpDir = dirSvc.get("TmpD", Ci.nsIFile);
+    var tmpFile = tmpDir.clone();
+    tmpFile.append("taboo.zip");
+    if (tmpFile.exists()) tmpFile.remove(true);
+
+    var zipWriter = Cc["@mozilla.org/zipwriter;1"]
+                      .createInstance(Ci.nsIZipWriter);
+
+    zipWriter.open(tmpFile, PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE);
+
+    var taboos = TabooService.get(null, false);
+
+    while (taboos.hasMoreElements()) {
+      var tab = taboos.getNext();
+      tab.QueryInterface(Components.interfaces.oyITabooInfo);
+
+      var file = tabooDir.clone();
+      var parts = tab.imageURL.split('/');
+      var filename = parts[parts.length-1];
+      file.append(filename);
+
+      zipWriter.addEntryFile(filename, Ci.nsIZipWriter.COMPRESSION_NONE, file, true);
+    }
+
+    var obs = {
+      onStartRequest: function() {},
+        onStopRequest: function() {
+          zipWriter.close();
+        }
+    };
+
+    var dbfile = this._tabooDir.clone();
+    dbfile.append('taboo.sqlite');
+
+    var storageService = Cc['@mozilla.org/storage/service;1']
+      .getService(Ci.mozIStorageService);
+
+    var dbBackup = storageService.backupDatabaseFile(dbFile, 'export.db');
+    zipWriter.addEntryFile('export.db', Ci.nsIZipWriter.COMPRESSION_NONE, dbBackup, true);
+
+    zipWriter.processQueue(obs, null);
+  },
+
   save: function TSSQL_save(url, description, data, fullImage, thumbImage) {
     var title = data.entries[data.index - 1].title;
 
