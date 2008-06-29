@@ -569,6 +569,16 @@ TabooService.prototype = {
 
     var loadInBackground = getBoolPref("browser.tabs.loadInBackground", true);
 
+    if (aWhere == 'tabforeground') {
+      loadInBackground = false;
+      aWhere = 'tab';
+    }
+
+    if (aWhere == 'tabbackground') {
+      loadInBackground = true;
+      aWhere = 'tab';
+    }
+
     var tabbrowser = win.getBrowser();
 
     var tab;
