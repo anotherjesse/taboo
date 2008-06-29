@@ -537,6 +537,9 @@ TabooService.prototype = {
   getRecent: function TB_getRecent(aMaxRecent) {
     return this._tabEnumerator(this._storage.getURLs(null, false, aMaxRecent));
   },
+  getForURL: function TB_getForURL(aURL) {
+    return this._storage.retrieve(aURL);
+  },
 
   _tabEnumerator: function TB__tabEnumerator(aURLs) {
     return {
