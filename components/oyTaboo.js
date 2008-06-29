@@ -564,7 +564,7 @@ TabooService.prototype = {
       .getService(Ci.nsIWindowMediator);
     var win = wm.getMostRecentWindow('navigator:browser');
 
-    var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false);
+    var loadInBackground = getBoolPref("browser.tabs.loadInBackground", true);
 
     var tabbrowser = win.getBrowser();
 
