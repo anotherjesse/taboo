@@ -24,8 +24,8 @@ function Taboo() {
   this.gotoRecent = function(targetNode, event) {
     event.preventDefault();
     event.stopPropagation();
-    SVC.open(targetNode.getAttribute('url'), whereToOpenLink(event));
-  }
+    SVC.open(targetNode.getAttribute('url'), 'tab');
+  };
 
   this.showRecentList = function(domId) {
     var popup = $(domId);
