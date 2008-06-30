@@ -14,6 +14,7 @@
 #include "nsISupports.idl"
 
 interface nsISimpleEnumerator;
+interface nsIFile;
 
 [scriptable, uuid(d08e3217-ea2d-4733-94ba-127ca07331b1)]
 interface oyITabooObserver : nsISupports {
@@ -43,6 +44,9 @@ interface oyITaboo : nsISupports {
 
   void addObserver(in oyITabooObserver aObserver);
   void removeObserver(in oyITabooObserver aObserver);
+
+  void import(in nsIFile aFile);
+  void export(in nsIFile aFile);
 };
 
 [scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
