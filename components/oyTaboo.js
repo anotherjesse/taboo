@@ -384,9 +384,7 @@ TabooStorageSQL.prototype = {
         entry = this._store.new();
       }
       for (var field in this._schema) {
-        if (data[field]) {
-          entry[field] = data[field];
-        }
+        entry[field] = data[field];
       }
       entry.save();
     }
