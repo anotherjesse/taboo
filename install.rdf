@@ -4,7 +4,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest">
     <em:name>Taboo</em:name>
     <em:id>taboo@runningfrombears.com</em:id>
-    <em:version>0.2.1</em:version>
+    <em:version>0.2.3</em:version>
     <em:description>The cure for tabitis</em:description>
     <em:iconURL>chrome://taboo/skin/logo.png</em:iconURL>
     <em:homepageURL>http://runningfrombears.com/taboo</em:homepageURL>
