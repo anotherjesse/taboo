@@ -96,6 +96,10 @@ function DB(dbFile) {
 
   var conn = storageService.openDatabase(dbFile);
 
+  this.close = function() {
+    conn.close();
+  }
+
   // convert sql into a convenience wrapper
 
   function wrap_sql(query) {
