@@ -96,12 +96,9 @@ function DB(dbFile) {
 
   var conn = storageService.openDatabase(dbFile);
 
-  this.close = function() {
-    conn.close();
-  }
-
   // convert sql into a convenience wrapper
 
+  var statements = [];
   function wrap_sql(query) {
     var stmt = conn.createStatement(query);
 
@@ -109,7 +106,13 @@ function DB(dbFile) {
       .createInstance(Ci.mozIStorageStatementWrapper);
 
     wrapper.initialize(stmt);
+    statements.push(stmt);
     return wrapper;
+  }
+
+  this.close = function() {
+    statements.forEach(function(stmt) { stmt.finalize(); });
+    conn.close();
   }
 
   this.Table = function(table_name, schema) {
