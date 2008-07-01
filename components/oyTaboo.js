@@ -390,6 +390,9 @@ TabooStorageSQL.prototype = {
       }
       entry.save();
     }
+
+    importDB.close();
+    dbfile.remove(false);
   },
   export: function TSSQL__export(aFile) {
     if (aFile.exists()) {
