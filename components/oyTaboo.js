@@ -380,7 +380,7 @@ TabooStorageSQL.prototype = {
     var imports = importStore.find(["deleted IS NULL"]);
     for each (var data in imports) {
       var entry = this._store.find(data.url);
-      if (!Boolean(entry)) {
+      if (!entry) {
         entry = this._store.new();
       }
       for (var field in this._schema) {
