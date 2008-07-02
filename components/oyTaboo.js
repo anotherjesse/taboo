@@ -393,6 +393,10 @@ TabooStorageSQL.prototype = {
     dbfile.remove(false);
   },
   export: function TSSQL__export(aFile) {
+    if (!("@mozilla.org/zipwriter;1" in Cc)) {
+      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
+    }
+
     if (aFile.exists()) {
       aFile.remove(true);
     }
