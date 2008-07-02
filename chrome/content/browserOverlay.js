@@ -105,6 +105,54 @@ function Taboo() {
       openUILinkIn('chrome://taboo/content/start.html', 'tab');
     }
   };
+  
+  this.quickShow = function(event) {
+    // FIXME: on showing the popup we should move keyboard focus to this, and
+    // using the cursors selects a taboo then return loads it.
+    
+    // FIXME: some of this code should be combined with showRecentList since
+    // they are almost identical.. this is a hack-and-paste just to
+    // learn how panel worsk
+
+    var panel = document.getElementById('taboo-panel')
+    var box = document.getElementById('tabs-box');
+
+    while (box.firstChild) {
+      box.removeChild(box.firstChild);
+    };
+
+    function addRecent(tab) {
+      var item = document.createElement('image');
+      item.setAttribute('src', tab.thumbURL);
+      item.setAttribute('title', tab.title);
+      item.setAttribute('url', tab.url);
+      item.setAttribute('tooltiptext', tab.url);
+      box.appendChild(item);
+      item.onclick = function(event) {
+        taboo.gotoRecent(this, event);
+        panel.hidePopup();
+      }
+    }
+
+    var taboos = SVC.getRecent(5);
+
+    if (taboos.hasMoreElements()) {
+      while (taboos.hasMoreElements()) {
+        var tab = taboos.getNext();
+        tab.QueryInterface(Components.interfaces.oyITabooInfo);
+        addRecent(tab);
+      }
+    }
+    else {
+      var item = document.createElement('label');
+      item.setAttribute('value', 'No Tabs Saved');
+      box.appendChild(item);
+    }
+    
+    // FIXME - the positioning of the panel is "random" - eg I did something that seems
+    // to work on my browser, but no thought behind any of the parameters
+    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
+  }
 
   this.updateButton = function(url) {
     if (url && SVC.isSaved(url)) {
