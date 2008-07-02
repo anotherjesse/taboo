@@ -454,6 +454,11 @@ TabooStorageSQL.prototype = {
   },
   _saveImage: function TSSQL__saveImage(imageData, file) {
     try {
+      file.remove(false);
+    }
+    catch (e) { }
+
+    try {
       var ostream = Cc['@mozilla.org/network/file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
       ostream.init(file, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 0600, 0);
