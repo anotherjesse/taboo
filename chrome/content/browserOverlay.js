@@ -10,6 +10,8 @@ var prefs;
 function Taboo() {
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
+  const START_URL = 'chrome://taboo/content/start.html';
+
   function saved(state) {
     if ($('taboo-toolbarbutton-add')) {
       if (state) {
@@ -95,15 +97,22 @@ function Taboo() {
   };
 
   this.show = function(event) {
+    var tab = getTabIdxForUrl(START_URL);
+    if (tab !== null) {
+      //var current = gBrowser.mTabContainer.selectedIndex;
+      //dump("tab = "+tab+" ; curr = " + current+"\n");
+      gBrowser.mTabContainer.selectedIndex = tab;
+      return;
+    }
+
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec;
     if (event.shiftKey ||
-        url == 'about:blank' ||
-        url == 'chrome://taboo/content/start.html') {
-      openUILinkIn('chrome://taboo/content/start.html', 'current');
+        url == 'about:blank') {
+      openUILinkIn(START_URL, 'current');
+      return;
     }
-    else {
-      openUILinkIn('chrome://taboo/content/start.html', 'tab');
-    }
+
+    openUILinkIn(START_URL, 'tab');
   };
 
   this.updateButton = function(url) {
@@ -207,6 +216,21 @@ function updateKeybindings() {
     update(key_id, 'key');
     update(key_id, 'modifiers');
   });
+}
+
+function getTabIdxForUrl(aURL) {
+  var num = gBrowser.browsers.length;
+  for (var i = 0; i < num; i++) {
+    var b = gBrowser.getBrowserAtIndex(i);
+    try {
+      if (b.currentURI.spec == aURL) {
+        return i;
+      }
+    } catch(e) {
+      // can't get the URL?
+    }
+  }
+  return null;
 }
 
 })();
