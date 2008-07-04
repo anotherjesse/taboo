@@ -99,8 +99,6 @@ function Taboo() {
   this.show = function(event) {
     var tab = getTabIdxForUrl(START_URL);
     if (tab !== null) {
-      //var current = gBrowser.mTabContainer.selectedIndex;
-      //dump("tab = "+tab+" ; curr = " + current+"\n");
       gBrowser.mTabContainer.selectedIndex = tab;
       return;
     }
