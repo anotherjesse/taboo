@@ -1,0 +1,57 @@
+<html>
+  <script type="text/javascript">
+setTimeout(function() {
+
+  var results = document.getElementById('results');
+
+  function naive(scale) {
+    var canvas = document.createElement('canvas');
+    results.appendChild(canvas);
+    canvas.style.border = '1px solid red';
+    canvas.setAttribute('width', 1024*scale);
+    canvas.setAttribute('height', 768*scale);
+    var ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.drawWindow(window, 0, 0, 2000, 2000, "rgb(0,0,0)");
+  }
+
+  function css(scale) {
+    var canvas = document.createElement('canvas');
+    results.appendChild(canvas);
+    canvas.setAttribute('width', 1024);
+    canvas.setAttribute('height', 768);
+    var ctx = canvas.getContext("2d");
+    ctx.drawWindow(window, 0, 0, 2000, 2000, "rgb(0,0,0)");
+    canvas.style.width = (1024*scale)+'px';
+  }
+
+  function resize(scale) {
+    var canvas = document.createElement('canvas');
+    results.appendChild(canvas);
+    canvas.style.border = '1px solid blue';
+    canvas.setAttribute('width', 1024);
+    canvas.setAttribute('height', 768);
+    var ctx = canvas.getContext("2d");
+    ctx.drawWindow(window, 0, 0, 2000, 2000, "rgb(0,0,0)");
+    canvas.setAttribute('width', 1024*scale);
+    canvas.setAttribute('height', 768*scale);
+  }
+
+  [100, 128, 150, 192, 200, 250, 256, 300, 1024/3, 400, 500,
+  512].forEach(function(width) {
+    var scale = width/1024;
+    var h3 = document.createElement('h3');
+    results.appendChild(h3);
+    h3.innerHTML = 'Width: ' + width;
+    naive(scale);
+    css(scale);
+  });
+
+}, 2000);
+
+  </script>
+
+<iframe src="http://lxr.flock.com/source//flock/mozilla/flock/base/feeds/content/importOPML.xul#L41" width="1024" height="768"
+id="iframe"></iframe>
+
+<div id="results"></div>
