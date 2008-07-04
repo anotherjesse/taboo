@@ -393,54 +393,56 @@ TabooStorageSQL.prototype = {
     dbfile.remove(false);
   },
   export: function TSSQL__export(aFile) {
-    if (!("@mozilla.org/zipwriter;1" in Cc)) {
-      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-    }
-
-    if (aFile.exists()) {
-      aFile.remove(true);
-    }
-
-    var zipWriter = Cc["@mozilla.org/zipwriter;1"]
-                    .createInstance(Ci.nsIZipWriter);
-
-    zipWriter.open(aFile, PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE);
-
-    var results = this._store.find(["deleted IS NULL"]);
-    var md5s = results.map(function(entry) { return entry.md5 });
-
-    for each (var md5 in md5s) {
-      var imageFile = this._getImageFile(md5);
-      zipWriter.addEntryFile(imageFile.leafName,
-                             Ci.nsIZipWriter.COMPRESSION_NONE,
-                             imageFile, true);
-
-      var thumbFile = this._getThumbFile(md5);
-      zipWriter.addEntryFile(thumbFile.leafName,
-                             Ci.nsIZipWriter.COMPRESSION_NONE,
-                             thumbFile, true);
-    }
-
-    var dbfile = this._tabooDir.clone();
-    dbfile.append(TABOO_DB_FILENAME);
-
-    var exportFilename = TABOO_DB_FILENAME + ".export";
-
-    var storageService = Cc['@mozilla.org/storage/service;1']
-                         .getService(Ci.mozIStorageService);
-
-    var dbBackup = storageService.backupDatabaseFile(dbfile, exportFilename);
-    zipWriter.addEntryFile(exportFilename, Ci.nsIZipWriter.COMPRESSION_NONE,
-                           dbBackup, true);
-
-    var obs = {
-      onStartRequest: function() {},
-      onStopRequest: function() {
-        zipWriter.close();
-        dbBackup.remove(false);
+    try {
+      if (aFile.exists()) {
+        aFile.remove(true);
       }
-    };
-    zipWriter.processQueue(obs, null);
+
+      var zipWriter = Cc["@mozilla.org/zipwriter;1"]
+                      .createInstance(Ci.nsIZipWriter);
+
+      zipWriter.open(aFile, PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE);
+
+      var results = this._store.find(["deleted IS NULL"]);
+      var md5s = results.map(function(entry) { return entry.md5 });
+
+      for each (var md5 in md5s) {
+        var imageFile = this._getImageFile(md5);
+        zipWriter.addEntryFile(imageFile.leafName,
+                               Ci.nsIZipWriter.COMPRESSION_NONE,
+                               imageFile, true);
+
+        var thumbFile = this._getThumbFile(md5);
+        zipWriter.addEntryFile(thumbFile.leafName,
+                               Ci.nsIZipWriter.COMPRESSION_NONE,
+                               thumbFile, true);
+      }
+
+      var dbfile = this._tabooDir.clone();
+      dbfile.append(TABOO_DB_FILENAME);
+
+      var exportFilename = TABOO_DB_FILENAME + ".export";
+
+      var storageService = Cc['@mozilla.org/storage/service;1']
+                           .getService(Ci.mozIStorageService);
+
+      var dbBackup = storageService.backupDatabaseFile(dbfile, exportFilename);
+      zipWriter.addEntryFile(exportFilename, Ci.nsIZipWriter.COMPRESSION_NONE,
+                             dbBackup, true);
+
+      var obs = {
+        onStartRequest: function() {},
+        onStopRequest: function() {
+          zipWriter.close();
+          dbBackup.remove(false);
+        }
+      };
+      zipWriter.processQueue(obs, null);
+
+      return true;
+    } catch (ex) {
+      return false;
+    }
   },
   _getImageFile: function TSSQL__getImageFile(id) {
     var file = this._tabooDir.clone();
