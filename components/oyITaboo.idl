@@ -46,7 +46,7 @@ interface oyITaboo : nsISupports {
   void removeObserver(in oyITabooObserver aObserver);
 
   PRUint32 import(in nsIFile aFile);
-  boolean export(in nsIFile aFile);
+  PRUint32 export(in nsIFile aFile);
 };
 
 [scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
