@@ -35,7 +35,7 @@
         class="toolbarbutton-1 chromeclass-toolbar-additional">
         <!-- In FF2, this needs to have onpopupshowing="taboo.showRecentList('taboo-recent-list');" -->
         <menupopup id="taboo-recent-list"
-          onpopupshowing="taboo.showPanel(event);" />
+          onpopupshowing="taboo.showPanel(event); return false;" />
       </toolbarbutton>
     </toolbarpalette>
 
