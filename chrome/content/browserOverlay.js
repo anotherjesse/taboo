@@ -152,6 +152,7 @@ function Taboo() {
   };
 
   var quickShowRows = document.getElementById('tabs-rows');
+  var quickViewPanel = document.getElementById('taboo-quickShow');
 
   var quickShowEnum;
   var quickShowTabs = [];
@@ -191,6 +192,10 @@ function Taboo() {
     }
 
     quickShowTabs[quickShowIdx].removeAttribute('id');
+
+    if (newIdx >= quickShowTabs.length) {
+      newIdx = quickShowTabs.length -1;
+    }
     quickShowIdx = newIdx;
     quickShowTabs[quickShowIdx].setAttribute('id', 'currentTaboo');
 
@@ -219,8 +224,10 @@ function Taboo() {
 
     row.appendChild(item);
     item.onclick = function(event) {
-      taboo.gotoRecent(this, event);
-      panel.hidePopup();
+      event.preventDefault();
+      event.stopPropagation();
+      SVC.open(item.getAttribute('url'), 'current');
+      quickViewPanel.hidePopup();
     };
 
     return item;
@@ -283,10 +290,7 @@ function Taboo() {
   };
 
   this.showPanel = function(event) {
-    // FIXME: on showing the popup we should move keyboard focus to this, and
-    // using the cursors selects a taboo then return loads it.
 
-    var panel = document.getElementById('taboo-quickShow');
     var groupbox = document.getElementById('taboo-groupbox');
     var grid = document.getElementById('taboo-grid');
 
@@ -319,19 +323,12 @@ function Taboo() {
       quickShowRows.appendChild(row);
     }
 
-    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
-    panel.focus();
+    quickViewPanel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
+    quickViewPanel.focus();
   };
 
   this.quickShow = function(event) {
-    // FIXME: on showing the popup we should move keyboard focus to this, and
-    // using the cursors selects a taboo then return loads it.
-
-    // FIXME: some of this code should be combined with showRecentList since
-    // they are almost identical.. this is a hack-and-paste just to
-    // learn how panel worsk
-
-    var panel = document.getElementById('taboo-panel');
+    var quickShowPanel = document.getElementById('taboo-panel');
     var box = document.getElementById('tabs-box');
 
     while (box.firstChild) {
@@ -347,8 +344,8 @@ function Taboo() {
       box.appendChild(item);
       item.onclick = function(event) {
         taboo.gotoRecent(this, event);
-        panel.hidePopup();
-      }
+        quickShowPanel.hidePopup();
+      };
     }
 
     var taboos = SVC.getRecent(5);
@@ -368,8 +365,8 @@ function Taboo() {
 
     // FIXME - the positioning of the panel is "random" - eg I did something that seems
     // to work on my browser, but no thought behind any of the parameters
-    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
-  }
+    quickShowPanel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
+  };
 
   this.updateButton = function(url) {
     if (url && SVC.isSaved(url)) {
