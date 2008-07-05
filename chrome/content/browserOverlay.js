@@ -105,6 +105,105 @@ function Taboo() {
       openUILinkIn('chrome://taboo/content/start.html', 'tab');
     }
   };
+
+  this.showPanel = function(event) {
+    // FIXME: on showing the popup we should move keyboard focus to this, and
+    // using the cursors selects a taboo then return loads it.
+
+    log('showPanel');
+
+    var panel = document.getElementById('taboo-quickShow')
+    var groupbox = document.getElementById('taboo-groupbox');
+    var grid = document.getElementById('taboo-grid');
+    var rows = document.getElementById('tabs-rows');
+
+    log('showPanel: grid, rows', grid, rows);
+
+    var numCols = 2;
+    var numRows = 2;
+
+    //  groupbox.style.maxHeight = (numRows * 150) + 'px';
+
+    var columns = document.createElement('columns');
+
+    for (var i = 0; i < numCols; i++) {
+      var col = document.createElement('column');
+      col.setAttribute('flex', '1');
+      columns.appendChild(col);
+    }
+
+    log('showPanel: here 1');
+
+    while (rows.firstChild) {
+      rows.removeChild(rows.firstChild);
+    }
+
+    log('showPanel: here 2');
+
+    function addRecent(tab, row) {
+      var item = document.createElement('image');
+      item.setAttribute('src', tab.thumbURL);
+      item.setAttribute('title', tab.title);
+      item.setAttribute('url', tab.url);
+      item.setAttribute('tooltiptext', tab.url);
+
+      row.appendChild(item);
+      item.onclick = function(event) {
+        taboo.gotoRecent(this, event);
+        panel.hidePopup();
+      }
+    }
+
+    log('showPanel: here 3');
+
+    var taboos = SVC.get('', false);
+
+    log('showPanel: here 4');
+
+    if (taboos.hasMoreElements()) {
+      var gridCount = 0;
+      var row = null;
+      while (gridCount < numRows * numCols) {
+        if (taboos.hasMoreElements()) {
+          if (gridCount % numRows == 0) {
+            row = document.createElement('row');
+            rows.appendChild(row);
+          }
+          var tab = taboos.getNext();
+          tab.QueryInterface(Components.interfaces.oyITabooInfo);
+          addRecent(tab, row);
+          gridCount++;
+        }
+        else break;
+      }
+    }
+    else {
+      var row = document.createElement('row');
+      var item = document.createElement('label');
+      item.setAttribute('value', 'No Tabs Saved');
+      row.appendChild(item);
+      rows.appendChild(row);
+    }
+
+    var button = document.getElementById('taboo-moreButton');
+
+    button.onclick = function() {
+      if (taboos.hasMoreElements()) {
+        var row = document.createElement('row');
+        for (var i = 0; i < numCols; i++) {
+          if (taboos.hasMoreElements()) {
+            var tab = taboos.getNext();
+            tab.QueryInterface(Components.interfaces.oyITabooInfo);
+            addRecent(tab, row);
+          }
+          else break;
+        }
+        rows.appendChild(row);
+      }
+    }
+    
+    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
+  }
   
   this.quickShow = function(event) {
     // FIXME: on showing the popup we should move keyboard focus to this, and

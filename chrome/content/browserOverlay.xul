@@ -37,7 +37,22 @@
           onpopupshowing="taboo.showRecentList('taboo-recent-list');" />
       </toolbarbutton>
     </toolbarpalette>
-    
+
+    <panel id='taboo-quickShow'>
+     <vbox flex="1">
+
+        <groupbox id='taboo-groupbox' style='max-height: 300px'>
+          <grid id='taboo-grid' style='overflow: auto;'>
+            <rows id='tabs-rows'>
+            </rows>
+          </grid>
+        </groupbox>
+        
+        <button id='taboo-moreButton' flex='1' label='more' oncommand='qs.addRow()' />
+
+      </vbox>
+    </panel>
+
     <panel id="taboo-panel">
       <hbox id="tabs-box" />
     </panel>
@@ -64,7 +79,7 @@
   </keyset>
   
   <commandset id="mainCommandSet">
-    <command id="cmd_showPopup" oncommand="taboo.quickShow(event)" /> 
+    <command id="cmd_showPopup" oncommand="taboo.showPanel(event)" /> 
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
     <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />
