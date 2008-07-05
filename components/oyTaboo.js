@@ -176,6 +176,33 @@ function snapshot(win, outputWidth, outputHeight) {
   return win.atob(imageData.substr('data:image/png;base64,'.length));
 }
 
+function cleanTabState(aState, aClearPrivateData) {
+  var sandbox = new Cu.Sandbox('about:blank');
+  var tabState = Cu.evalInSandbox(aState, sandbox);
+
+  var index = (tabState.index ? tabState.index : tabState.entries.length) - 1;
+  var entry = tabState.entries[index];
+
+  if (aClearPrivateData) {
+    function deletePrivateData(aEntry) {
+      delete aEntry.text;
+      delete aEntry.postdata;
+    }
+
+    deletePrivateData(entry);
+
+    if (entry.children) {
+      entry.children.forEach(deletePrivateData);
+    }
+  }
+
+  tabState.entries = [entry];
+  tabState.index = 1;
+
+  Cu.import("resource://gre/modules/JSON.jsm");
+  return JSON.toString(tabState);
+}
+
 
 function TabooStorageSQL() {
   this._schema = {
@@ -414,8 +441,18 @@ TabooStorageSQL.prototype = {
   },
   export: function TSSQL__export(aFile) {
     if (aFile.exists()) {
-      aFile.remove(true);
+      aFile.remove(false);
     }
+
+    var dbfile = this._tabooDir.clone();
+    dbfile.append(TABOO_EXPORT_DB_FILENAME);
+
+    if (dbfile.exists()) {
+      dbfile.remove(false);
+    }
+
+    var exportDB = this._loadDB(dbfile);
+    var exportStore = exportDB.taboo_data;
 
     var zipWriter = Cc["@mozilla.org/zipwriter;1"]
                     .createInstance(Ci.nsIZipWriter);
@@ -423,37 +460,37 @@ TabooStorageSQL.prototype = {
     zipWriter.open(aFile, PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE);
 
     var results = this._store.find(["deleted IS NULL"]);
-    var md5s = results.map(function(entry) { return entry.md5 });
 
-    for each (var md5 in md5s) {
-      var imageFile = this._getImageFile(md5);
+    for each (var result in results) {
+      var entry = exportStore.new();
+      for (var field in this._schema) {
+        entry[field] = result[field];
+      }
+      entry.full = cleanTabState(result.full, true);
+      entry.save();
+
+      var imageFile = this._getImageFile(result.md5);
       zipWriter.addEntryFile(imageFile.leafName,
                              Ci.nsIZipWriter.COMPRESSION_NONE,
                              imageFile, true);
 
-      var thumbFile = this._getThumbFile(md5);
+      var thumbFile = this._getThumbFile(result.md5);
       zipWriter.addEntryFile(thumbFile.leafName,
                              Ci.nsIZipWriter.COMPRESSION_NONE,
                              thumbFile, true);
     }
 
-    var dbfile = this._tabooDir.clone();
-    dbfile.append(TABOO_DB_FILENAME);
+    exportDB.close();
 
-    var storageService = Cc['@mozilla.org/storage/service;1']
-                         .getService(Ci.mozIStorageService);
-
-    var dbBackup = storageService.backupDatabaseFile(dbfile,
-                                                     TABOO_EXPORT_DB_FILENAME);
     zipWriter.addEntryFile(TABOO_EXPORT_DB_FILENAME,
                            Ci.nsIZipWriter.COMPRESSION_NONE,
-                           dbBackup, true);
+                           dbfile, true);
 
     var obs = {
       onStartRequest: function() {},
       onStopRequest: function() {
         zipWriter.close();
-        dbBackup.remove(false);
+        dbfile.remove(false);
       }
     };
     zipWriter.processQueue(obs, null);
