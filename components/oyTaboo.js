@@ -560,13 +560,6 @@ TabooService.prototype = {
   },
 
   open: function TB_open(aURL, aWhere) {
-    var info = this._storage.retrieve(aURL);
-    if (!info) {
-      throw 'Taboo for ' + aURL + ' does not exist';
-    }
-
-    var tabData = info.data;
-
     var wm = Cc['@mozilla.org/appshell/window-mediator;1']
       .getService(Ci.nsIWindowMediator);
     var win = wm.getMostRecentWindow('navigator:browser');
@@ -601,12 +594,25 @@ TabooService.prototype = {
         return;
     }
 
+    this.openInTab(aURL, tab);
+  },
+
+  openInTab: function TB_openInTab(aURL, aTab) {
+    var info = this._storage.retrieve(aURL);
+    if (!info) {
+      throw 'Taboo for ' + aURL + ' does not exist';
+    }
+
+    var tabData = info.data;
+
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
-      .getService(Ci.nsISessionStore);
+             .getService(Ci.nsISessionStore);
+
     if (newSSApi) {
-      ss.setTabState(tab, tabData);
+      ss.setTabState(aTab, tabData);
     } else {
-      this._setTabStatePrecursor(win, tab, tabData, 0);
+      var win = aTab.ownerDocument.defaultView;
+      this._setTabStatePrecursor(win, aTab, tabData, 0);
     }
   },
 
