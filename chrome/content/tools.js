@@ -16,7 +16,7 @@ function Tools(container) {
 
   var div = document.createElement('div');
   container.appendChild(div);
-  div.innerHTML = '<iframe src="tools.html" style="width: 100%; height: 600px; border: 0;" />';
+  div.innerHTML = '<iframe src="tools.html" style="width: 100%; height: 900px; border: 0;" />';
 
   this.start = function() {}
   this.finish = function() {}
