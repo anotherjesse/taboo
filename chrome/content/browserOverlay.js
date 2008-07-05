@@ -39,11 +39,11 @@ function Taboo() {
     var panel = document.getElementById('taboo-details');
 
     document.getElementById('taboo-image').setAttribute('src', tab.thumbURL);
-    document.getElementById('taboo-title').setAttribute('value', tab.title);
-    document.getElementById('taboo-notes').setAttribute('value', tab.description);
+    document.getElementById('taboo-title').setAttribute('value', (tab.title || ''));
+    document.getElementById('taboo-notes').setAttribute('value', (tab.description || ''));
 
     // FIXME: where should this be positioned???
-    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
+    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', -1, -1);
     panel.focus();
   };
 
