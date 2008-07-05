@@ -13,6 +13,7 @@
       var fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
         fp.init(window, msg, mode);
         fp.defaultExtension = "zip";
+        fp.defaultString = "taboos.zip";
         fp.appendFilter("Taboo Backups (ZIP)", "*.zip");
         var res = fp.show();
         if (res == Ci.nsIFilePicker.returnOK) {
