@@ -16,6 +16,7 @@
 <?xml-stylesheet type="text/css" href="chrome://taboo/skin/overlay.css"?>
 
 <overlay id="tabooOverlay"
+  xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript" src="chrome://taboo/content/browserOverlay.js"/>
@@ -25,7 +26,7 @@
       <toolbarbutton id="taboo-toolbarbutton-add"
         label="Add to Taboo"
         tooltiptext="save this tab to read later"
-        command="cmd_toggleTaboo"
+        command="cmd_addTaboo"
         class="toolbarbutton-1 chromeclass-toolbar-additional" />
       <toolbarbutton id="taboo-toolbarbutton-view"
         label="View Taboos"
@@ -36,12 +37,52 @@
           onpopupshowing="taboo.showRecentList('taboo-recent-list');" />
       </toolbarbutton>
     </toolbarpalette>
+
+    <panel id='taboo-quickShow' 
+           onpopupshown="taboo.focusQuickShow()"
+           onpopuphiding="taboo.hideQuickShow()">
+     <vbox flex="1">
+
+        <groupbox id='taboo-groupbox' style='max-height: 300px'>
+          <grid id='taboo-grid' style='overflow: auto;'>
+            <rows id='tabs-rows' />
+          </grid>
+        </groupbox>
+
+      </vbox>
+    </panel>
+
+    <panel id="taboo-details" onpopupshown="taboo.focusDetails()">
+      <hbox>
+        <image id="taboo-image" />
+        <vbox>
+          <label value="Title" control="taboo-title" accesskey="T" />
+          <textbox id="taboo-title" />
+          <label value="Notes" control="taboo-notes" accesskey="n" />
+          <textbox id="taboo-notes" multiline="true" />
+          <spacer height="10" />
+          <hbox>
+            <spacer flex="1" />
+            <button id="taboo-unsave"
+                    oncommand="taboo.panelDelete();"
+                    label="Delete"
+                    accesskey="D" />
+            <button id="taboo-update"
+                    oncommand="taboo.panelUpdate();"
+                    label="Save"
+                    accesskey="S" />
+          </hbox>
+        </vbox>
+      </hbox>
+    </panel>
+
   </toolbox>
+  
   
   <keyset id="mainKeyset">
       <key id="key_showTaboos"
           key="F"
-          command="cmd_showTaboos"
+          command="cmd_showPopup"
           modifiers="accel shift"/>
       <key id="key_addTaboo"
           key="A"
@@ -58,6 +99,7 @@
   </keyset>
   
   <commandset id="mainCommandSet">
+    <command id="cmd_showPopup" oncommand="taboo.showPanel(event)" /> 
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
     <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />

@@ -55,3 +55,26 @@ toolbar[iconsize="small"] #taboo-toolbarbutton-view:hover,
 #PersonalToolbar          #taboo-toolbarbutton-view:hover {
     -moz-image-region: rect(16px 16px 32px 0px);
 }
+
+/* FIXME: we should use platform specific CSS code - like FF3 does for add bookmark */
+
+#taboo-panel {
+    -moz-appearance: none;
+    background-color: rgba(68,68,68,0.9);
+    border: 1px solid rgba(255,255,255,0.15);
+    -moz-border-radius: 8px;
+    padding: 10px 8px 6px 8px;
+    margin-top: 4px;
+    color: #ffffff;
+}
+
+/* FIXME: this should support a grid of 4 wide, 3 tall of taboos */
+
+#taboo-quickShow image {
+  margin: 5px;
+}
+
+#taboo-quickShow image#currentTaboo {
+  border: 5px solid #f80;
+  margin: 0;
+}

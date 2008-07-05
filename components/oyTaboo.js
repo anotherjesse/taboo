@@ -39,6 +39,9 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
+const TABOO_DB_FILENAME = 'taboo.sqlite';
+const TABOO_EXPORT_DB_FILENAME = TABOO_DB_FILENAME + '.export';
+
 /* from nspr's prio.h */
 const PR_RDONLY      = 0x01;
 const PR_WRONLY      = 0x02;
@@ -175,22 +178,36 @@ function snapshot(win, outputWidth, outputHeight) {
   return win.atob(imageData.substr('data:image/png;base64,'.length));
 }
 
+function cleanTabState(aState, aClearPrivateData) {
+  var sandbox = new Cu.Sandbox('about:blank');
+  var tabState = Cu.evalInSandbox(aState, sandbox);
+
+  var index = (tabState.index ? tabState.index : tabState.entries.length) - 1;
+  var entry = tabState.entries[index];
+
+  if (aClearPrivateData) {
+    function deletePrivateData(aEntry) {
+      delete aEntry.text;
+      delete aEntry.postdata;
+    }
+
+    deletePrivateData(entry);
+
+    if (entry.children) {
+      entry.children.forEach(deletePrivateData);
+    }
+  }
+
+  tabState.entries = [entry];
+  tabState.index = 1;
+
+  Cu.import("resource://gre/modules/JSON.jsm");
+  return JSON.toString(tabState);
+}
+
 
 function TabooStorageSQL() {
-  this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
-    .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
-  this._tabooDir.append('taboo');
-
-  if (!this._tabooDir.exists())
-    this._tabooDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
-
-  var dbfile = this._tabooDir.clone();
-  dbfile.append('taboo.sqlite');
-
-  var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
-  this._db = new DB(dbfile);
-
-  this._db.Table('taboo_data', {
+  this._schema = {
     url         : 'TEXT PRIMARY KEY',
     title       : 'TEXT',
     description : 'TEXT',
@@ -200,8 +217,19 @@ function TabooStorageSQL() {
     created     : 'INTEGER',
     updated     : 'INTEGER',
     deleted     : 'INTEGER'
-  });
+  };
 
+  this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
+    .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
+  this._tabooDir.append('taboo');
+
+  if (!this._tabooDir.exists())
+    this._tabooDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
+
+  var dbfile = this._tabooDir.clone();
+  dbfile.append(TABOO_DB_FILENAME);
+
+  this._db = this._loadDB(dbfile);
   this._store = this._db.taboo_data;
 }
 
@@ -360,6 +388,117 @@ TabooStorageSQL.prototype = {
     var results = this._store.find(condition, sortkey);
     return results.map(function(entry) { return entry.url });
   },
+  import: function TSSQL__import(aFile) {
+    var zipReader = Cc["@mozilla.org/libjar/zip-reader;1"]
+                    .createInstance(Ci.nsIZipReader);
+    zipReader.open(aFile);
+
+    if (!zipReader.hasEntry(TABOO_EXPORT_DB_FILENAME)) {
+      throw "Not a Taboo backup";
+    }
+
+    var filesToExtract = [];
+
+    var dbfile = this._tabooDir.clone();
+    dbfile.append(TABOO_EXPORT_DB_FILENAME);
+
+    zipReader.extract(TABOO_EXPORT_DB_FILENAME, dbfile);
+
+    var importDB = this._loadDB(dbfile);
+    var importStore = importDB.taboo_data;
+
+    var imports = importStore.find(["deleted IS NULL"]);
+    for each (var data in imports) {
+      var entry = this._store.find(data.url);
+      if (entry) {
+        if (entry.updated > data.updated) {
+          continue;
+        }
+      } else {
+        entry = this._store.new();
+      }
+      for (var field in this._schema) {
+        entry[field] = data[field];
+      }
+      entry.save();
+
+      filesToExtract.push([ this._getImageFile(entry.md5),
+                            this._getThumbFile(entry.md5) ]);
+    }
+
+    importDB.close();
+    dbfile.remove(false);
+
+    for each (var fileList in filesToExtract) {
+      for each (var imageFile in fileList) {
+        if (zipReader.hasEntry(imageFile.leafName)) {
+          zipReader.extract(imageFile.leafName, imageFile);
+        }
+      }
+    }
+
+    zipReader.close();
+
+    return filesToExtract.length;
+  },
+  export: function TSSQL__export(aFile) {
+    if (aFile.exists()) {
+      aFile.remove(false);
+    }
+
+    var dbfile = this._tabooDir.clone();
+    dbfile.append(TABOO_EXPORT_DB_FILENAME);
+
+    if (dbfile.exists()) {
+      dbfile.remove(false);
+    }
+
+    var exportDB = this._loadDB(dbfile);
+    var exportStore = exportDB.taboo_data;
+
+    var zipWriter = Cc["@mozilla.org/zipwriter;1"]
+                    .createInstance(Ci.nsIZipWriter);
+
+    zipWriter.open(aFile, PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE);
+
+    var results = this._store.find(["deleted IS NULL"]);
+
+    for each (var result in results) {
+      var entry = exportStore.new();
+      for (var field in this._schema) {
+        entry[field] = result[field];
+      }
+      entry.full = cleanTabState(result.full, true);
+      entry.save();
+
+      var imageFile = this._getImageFile(result.md5);
+      zipWriter.addEntryFile(imageFile.leafName,
+                             Ci.nsIZipWriter.COMPRESSION_NONE,
+                             imageFile, true);
+
+      var thumbFile = this._getThumbFile(result.md5);
+      zipWriter.addEntryFile(thumbFile.leafName,
+                             Ci.nsIZipWriter.COMPRESSION_NONE,
+                             thumbFile, true);
+    }
+
+    exportDB.close();
+
+    zipWriter.addEntryFile(TABOO_EXPORT_DB_FILENAME,
+                           Ci.nsIZipWriter.COMPRESSION_NONE,
+                           dbfile, true);
+
+    var obs = {
+      onStartRequest: function() {},
+      onStopRequest: function() {
+        zipWriter.close();
+        dbfile.remove(false);
+      }
+    };
+    zipWriter.processQueue(obs, null);
+
+    return results.length;
+  },
   _getImageFile: function TSSQL__getImageFile(id) {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
@@ -371,6 +510,11 @@ TabooStorageSQL.prototype = {
     return file;
   },
   _saveImage: function TSSQL__saveImage(imageData, file) {
+    try {
+      file.remove(false);
+    }
+    catch (e) { }
+
     try {
       var ostream = Cc['@mozilla.org/network/file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
@@ -387,6 +531,12 @@ TabooStorageSQL.prototype = {
       entry.deleted = deleted;
       entry.save();
     }
+  },
+  _loadDB: function TSSQL__loadDB(aDBFile) {
+    var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
+    var newDB = new DB(aDBFile);
+    newDB.Table('taboo_data', this._schema);
+    return newDB;
   }
 }
 
@@ -543,6 +693,13 @@ TabooService.prototype = {
   },
   getForURL: function TB_getForURL(aURL) {
     return this._storage.retrieve(aURL);
+  },
+
+  import: function TB_import(aFile) {
+    return this._storage.import(aFile);
+  },
+  export: function TB_export(aFile) {
+    return this._storage.export(aFile);
   },
 
   _tabEnumerator: function TB__tabEnumerator(aURLs) {
