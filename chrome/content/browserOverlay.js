@@ -161,6 +161,21 @@ function Taboo() {
   var displayRows = 3;
   var topRow = 0;
 
+  function visible(idx) {
+    if (idx < 0 || idx >= quickShowTabs.length) {
+      return false;
+    }
+
+    return quickShowTabs[idx].parentNode.style.display != 'none';
+  }
+
+  function setVisibleFor(idx, visible) {
+    if (idx >= 0 || idx < quickShowTabs.length) {
+      var display = visible ? '' : 'none';
+      quickShowTabs[idx].parentNode.style.display = display;
+    }
+  }
+
   function moveTo(newIdx) {
     if (newIdx < 0) {
       return;
@@ -178,6 +193,21 @@ function Taboo() {
     quickShowTabs[quickShowIdx].removeAttribute('id');
     quickShowIdx = newIdx;
     quickShowTabs[quickShowIdx].setAttribute('id', 'currentTaboo');
+
+    if (!visible(quickShowIdx)) {
+      setVisibleFor(quickShowIdx, true);
+    }
+
+    var topIdx = quickShowIdx - (displayRows * displayCols);
+
+    if (visible(topIdx)) {
+      setVisibleFor(topIdx, false);
+    }
+
+    var bottomIdx = quickShowIdx + (displayRows * displayCols);
+    if (visible(bottomIdx)) {
+      setVisibleFor(bottomIdx, false);
+    }
   }
 
   function addQuickViewItem(tab, row) {
