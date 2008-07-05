@@ -5,6 +5,7 @@
     z-index: 20000;
     width: 100%;
     height: 100%;
+    cursor: pointer;
 }
 
 .hue {
