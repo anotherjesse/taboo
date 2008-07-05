@@ -73,12 +73,12 @@
             <spacer flex="1" />
             <button id="taboo-unsave"
                     oncommand="taboo.panelDelete();"
-                    label="Delete Taboo"
-                    accesskey="D" />
+                    label="Remove"
+                    accesskey="R" />
             <button id="taboo-update"
                     oncommand="taboo.panelUpdate();"
-                    label="Update Notes"
-                    accesskey="U" />
+                    label="Done"
+                    accesskey="D" />
           </hbox>
         </vbox>
       </hbox>
