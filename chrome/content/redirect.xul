@@ -29,7 +29,23 @@
         url = url.slice(1); // remove leading ?
         url = decodeURIComponent(url); // decode back into a normal url
 
-        // grab the current tab?
+        var wm = Cc['@mozilla.org/appshell/window-mediator;1']
+          .getService(Ci.nsIWindowMediator);
+        var win = wm.getMostRecentWindow('navigator:browser');
+
+        var tabIndex = win.gBrowser.browsers.length;
+        while (--tabIndex) {
+          var browser = win.gBrowser.getBrowserAtIndex(tabIndex);
+          try {
+            if (browser.currentURI.spec == window.location.href) {
+              break;
+            }
+          } catch (ex) {
+            // can't get eh URL?
+          }
+        }
+
+        var tab = win.getBrowser().mTabs[tabIndex];
         SVC.openInTab(url, tab);
       }
     ]]>

@@ -47,12 +47,36 @@ function init() {
   jQuery.fn.hue();
 }
 
+function uninit() {
+  controller.unload();
+}
+
 window.addEventListener("load", init, false);
+window.addEventListener("unload", uninit, false);
 
 function Controller() {
   var content = document.getElementById('content');
   var footerControls = document.getElementById('footer-controls');
   var view = null;
+  var inst = this;
+
+  this.tabooObserver = {
+    onSave: function (aURL, aIsNew) {
+      inst.display();
+    },
+
+    onDelete: function (aURL) {
+      inst.display();
+    },
+
+    onUndelete: function(aURL) {
+      inst.display();
+    },
+
+    onReallyDelete: function(aURL) {
+      inst.display();
+    }
+  };
 
   this.load = function(view_name) {
     var ViewClass = top[view_name];
@@ -65,7 +89,13 @@ function Controller() {
       tboPrefs.setCharPref("view", view_name);
     }
     this.display();
+
+    SVC.addObserver(this.tabooObserver);
   }
+
+  this.unload = function() {
+    SVC.removeObserver(this.tabooObserver);
+  };
 
   this.filter = function(str) {
     if (this._filterStr == str) {
@@ -84,7 +114,6 @@ function Controller() {
 
   this.tabFinalDelete = function(tab, el) {
     humanMsg.displayMsg("This taboo has been permanently deleted.");
-    el.style.display = "none";
     SVC.reallyDelete(tab.url);
   }
 

@@ -14,6 +14,8 @@
 #include "nsISupports.idl"
 
 interface nsISimpleEnumerator;
+interface nsIDOMNode;
+interface nsIFile;
 
 [scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
 interface oyITabooInfo : nsISupports {
@@ -36,9 +38,10 @@ interface oyITabooObserver : nsISupports {
   void onReallyDelete(in AUTF8String aURL);
 };
 
-[scriptable, uuid(3b2b48b4-26d6-4a0f-b599-184b81d48d06)]
+[scriptable, uuid(1cc276b5-3648-46fe-afc5-3b776b749b86)]
 interface oyITaboo : nsISupports {
   void open(in AUTF8String aURL, in AUTF8String aWhere);
+  void openInTab(in AUTF8String aURL, in nsIDOMNode aTab);
 
   boolean save(in AUTF8String aDescription);
   boolean isSaved(in AUTF8String aURL);
@@ -57,4 +60,7 @@ interface oyITaboo : nsISupports {
 
   void addObserver(in oyITabooObserver aObserver);
   void removeObserver(in oyITabooObserver aObserver);
+
+  PRUint32 import(in nsIFile aFile);
+  PRUint32 export(in nsIFile aFile);
 };
