@@ -60,11 +60,14 @@ taboo {
   -moz-binding: url(chrome://taboo/content/taboo.xml#taboo);
 }
 
-#taboo-quickShow taboo {
+taboo {
   margin: 5px;
 }
 
-#taboo-quickShow taboo#currentTaboo {
-  border: 5px solid #f80;
+taboo.current {
   margin: 0;
+}
+
+taboo.current image {
+  border: 5px solid #f80;
 }

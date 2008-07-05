@@ -196,13 +196,13 @@ function Taboo() {
       }
     }
 
-    quickShowTabs[quickShowIdx].removeAttribute('id');
+    quickShowTabs[quickShowIdx].removeAttribute('class');
 
     if (newIdx >= quickShowTabs.length) {
       newIdx = quickShowTabs.length -1;
     }
     quickShowIdx = newIdx;
-    quickShowTabs[quickShowIdx].setAttribute('id', 'currentTaboo');
+    quickShowTabs[quickShowIdx].setAttribute('class', 'current');
 
     if (!visible(quickShowIdx)) {
       setVisibleFor(quickShowIdx, true);
