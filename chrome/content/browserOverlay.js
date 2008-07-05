@@ -7,6 +7,10 @@ var log = function log(msg) {}; // maybe overridden in init
 var debug = false;
 var prefs;
 
+function currentUrl() {
+  return gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+}
+
 function Taboo() {
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
@@ -20,6 +24,39 @@ function Taboo() {
       }
     }
   }
+
+  this.focusDetails = function() {
+    document.getElementById('taboo-notes').focus();
+  };
+
+  function editDetails(url) {
+    url = url || currentUrl();
+
+    var tab = SVC.getForURL(url);
+
+    var panel = document.getElementById('taboo-details');
+
+    document.getElementById('taboo-image').setAttribute('src', tab.thumbURL);
+    document.getElementById('taboo-title').setAttribute('value', tab.title);
+    document.getElementById('taboo-notes').setAttribute('value', tab.description);
+
+    // FIXME: where should this be positioned???
+    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
+    panel.focus();
+  };
+
+  this.panelRemove = function() {
+    SVC.delete(currentUrl());
+    saved(false);
+    document.getElementById('taboo-details').hidePopup();
+  };
+
+  this.panelUpdate = function() {
+    var title = document.getElementById('taboo-title').value;
+    var notes = document.getElementById('taboo-notes').value;
+    SVC.update(currentUrl(), title, notes);
+    document.getElementById('taboo-details').hidePopup();
+  };
 
   this.gotoRecent = function(targetNode, event) {
     event.preventDefault();
@@ -62,7 +99,7 @@ function Taboo() {
   };
 
   this.toggleTaboo = function(event) {
-    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    var url = currentUrl();
 
     if (SVC.isSaved(url)) {
       SVC.delete(url);
@@ -76,20 +113,21 @@ function Taboo() {
   this.addTaboo = function(event) {
     SVC.save(null);
     saved(true);
+    editDetails();
   };
 
   this.addTabooAndClose = function(event) {
     SVC.save(null);
     saved(true);
 
-    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    var url = currentUrl();
     if (SVC.isSaved(url)) {
       BrowserCloseTabOrWindow();
     }
   };
 
   this.removeTaboo = function(event) {
-    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    var url = currentUrl();
     SVC.delete(url);
     saved(false);
   };
@@ -208,12 +246,12 @@ function Taboo() {
   this.quickShow = function(event) {
     // FIXME: on showing the popup we should move keyboard focus to this, and
     // using the cursors selects a taboo then return loads it.
-    
+
     // FIXME: some of this code should be combined with showRecentList since
     // they are almost identical.. this is a hack-and-paste just to
     // learn how panel worsk
 
-    var panel = document.getElementById('taboo-panel')
+    var panel = document.getElementById('taboo-panel');
     var box = document.getElementById('tabs-box');
 
     while (box.firstChild) {
@@ -247,7 +285,7 @@ function Taboo() {
       item.setAttribute('value', 'No Tabs Saved');
       box.appendChild(item);
     }
-    
+
     // FIXME - the positioning of the panel is "random" - eg I did something that seems
     // to work on my browser, but no thought behind any of the parameters
     panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);

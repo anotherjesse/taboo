@@ -26,7 +26,7 @@
       <toolbarbutton id="taboo-toolbarbutton-add"
         label="Add to Taboo"
         tooltiptext="save this tab to read later"
-        command="cmd_toggleTaboo"
+        command="cmd_addTaboo"
         class="toolbarbutton-1 chromeclass-toolbar-additional" />
       <toolbarbutton id="taboo-toolbarbutton-view"
         label="View Taboos"
@@ -56,6 +56,31 @@
     <panel id="taboo-panel">
       <hbox id="tabs-box" />
     </panel>
+
+    <panel id="taboo-details" onpopupshown="taboo.focusDetails()">
+      <hbox>
+        <image id="taboo-image" />
+        <vbox>
+          <label value="Title" control="taboo-title" accesskey="T" />
+          <textbox id="taboo-title" />
+          <label value="Notes" control="taboo-notes" accesskey="n" />
+          <textbox id="taboo-notes" multiline="true" />
+          <spacer height="10" />
+          <hbox>
+            <spacer flex="1" />
+            <button id="taboo-unsave"
+                    oncommand="taboo.panelRemove();"
+                    label="Delete"
+                    accesskey="D" />
+            <button id="taboo-update"
+                    oncommand="taboo.panelUpdate();"
+                    label="Save"
+                    accesskey="S" />
+          </hbox>
+        </vbox>
+      </hbox>
+    </panel>
+
   </toolbox>
   
   
