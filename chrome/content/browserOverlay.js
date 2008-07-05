@@ -25,6 +25,39 @@ function Taboo() {
     }
   }
 
+  this.focusDetails = function() {
+    document.getElementById('taboo-notes').focus();
+  };
+
+  function editDetails(url) {
+    url = url || currentUrl();
+
+    var tab = SVC.getForURL(url);
+
+    var panel = document.getElementById('taboo-details');
+
+    document.getElementById('taboo-image').setAttribute('src', tab.thumbURL);
+    document.getElementById('taboo-title').setAttribute('value', tab.title);
+    document.getElementById('taboo-notes').setAttribute('value', tab.description);
+
+    // FIXME: where should this be positioned???
+    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
+    panel.focus();
+  };
+
+  this.panelRemove = function() {
+    SVC.delete(currentUrl());
+    saved(false);
+    document.getElementById('taboo-details').hidePopup();
+  };
+
+  this.panelUpdate = function() {
+    var title = document.getElementById('taboo-title').value;
+    var notes = document.getElementById('taboo-notes').value;
+    SVC.update(currentUrl(), title, notes);
+    document.getElementById('taboo-details').hidePopup();
+  };
+
   this.gotoRecent = function(targetNode, event) {
     event.preventDefault();
     event.stopPropagation();
@@ -80,7 +113,7 @@ function Taboo() {
   this.addTaboo = function(event) {
     SVC.save(null);
     saved(true);
-    details();
+    editDetails();
   };
 
   this.addTabooAndClose = function(event) {
