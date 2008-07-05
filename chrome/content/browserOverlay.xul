@@ -90,7 +90,7 @@
           modifiers="accel shift"/>
       <key id="key_addTaboo"
           key="A"
-          command="cmd_addTaboo"
+          command="cmd_addTabooWithDetails"
           modifiers="accel shift"/>
       <key id="key_addTabooAndClose"
           key="C"
@@ -107,6 +107,7 @@
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
     <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />
+    <command id="cmd_addTabooWithDetails" oncommand="taboo.addTabooWithDetails(event)" />
     <command id="cmd_addTabooAndClose" oncommand="taboo.addTabooAndClose(event)" />
     <command id="cmd_removeTaboo" oncommand="taboo.removeTaboo(event)" />
   </commandset>
