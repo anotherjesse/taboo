@@ -367,12 +367,15 @@ function init() {
   installInToolbar();
   updateKeybindings();
 
-  gBrowser.addProgressListener(progressListener,
-                               Ci.nsIWebProgress.NOTIFY_LOCATION);
+  if (gBrowser) {
+    gBrowser.addProgressListener(progressListener,
+                                 Ci.nsIWebProgress.NOTIFY_LOCATION);
+  }
 }
 
 function uninit() {
-  gBrowser.removeProgressListener(progressListener);
+  if (gBrowser)
+    gBrowser.removeProgressListener(progressListener);
 }
 
 window.addEventListener("load", init, false);
