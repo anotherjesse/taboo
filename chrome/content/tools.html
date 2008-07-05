@@ -1,7 +1,9 @@
 <html>
 <head>
   <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
+  <link rel="stylesheet" href="chrome://taboo/content/vendor/humanmsg.css" />
   <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
+  <script type="text/javascript" src="chrome://taboo/content/vendor/humanmsg.js"></script>
   <script type="text/javascript" src="chrome://taboo/content/browserOverlay.js"></script>
   <script type="text/javascript">
 
@@ -23,15 +25,33 @@
 
       function importer() {
         var file = getFile(Ci.nsIFilePicker.modeOpen, "Choose Taboo Backup to Import");
-        if (file) {
-          SVC.import(file);
+        var numImported;
+        try {
+          if (file) {
+            numImported = SVC.import(file);
+            if (numImported) {// > 0) {
+              humanMsg.displayMsg('Successfully imported ' + numImported + ' taboos.');
+            }
+          }
+        }
+        catch (e) {
+          humanMsg.displayMsg('Failed to import taboos.');
         }
       }
 
       function exporter() {
         var file = getFile(Ci.nsIFilePicker.modeSave, "Choose Where to Save Backup");
-        if (file) {
-          SVC.export(file);
+        var numExported;
+        try {
+          if (file) {
+            numExported = SVC.export(file);
+            if (numExported) { // > 0) {
+              humanMsg.displayMsg('Successfully exported ' + numExported + ' taboos.');
+            }
+          }
+        }
+        catch (e) {
+          humanMsg.displayMsg('Failed to export taboos.');
         }
       }
 
