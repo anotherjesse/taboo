@@ -233,6 +233,8 @@ TabooStorageSQL.prototype = {
       entry.md5 = hex_md5(url);
       entry.title = title;
       entry.created = updated;
+    } else if (entry.deleted) {
+      entry.title = title;
     }
 
     if (description != null) {
