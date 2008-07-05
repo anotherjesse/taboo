@@ -16,6 +16,18 @@
 interface nsISimpleEnumerator;
 interface nsIFile;
 
+[scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
+interface oyITabooInfo : nsISupports {
+  attribute AUTF8String title;
+  attribute AUTF8String url;
+  attribute AUTF8String favicon;
+  attribute AUTF8String description;
+  attribute AUTF8String imageURL;
+  attribute AUTF8String thumbURL;
+  attribute PRTime created;
+  attribute PRTime updated;
+};
+
 [scriptable, uuid(d08e3217-ea2d-4733-94ba-127ca07331b1)]
 interface oyITabooObserver : nsISupports {
   void onSave(in AUTF8String aURL, in boolean aIsNew);
@@ -42,21 +54,11 @@ interface oyITaboo : nsISupports {
   nsISimpleEnumerator get(in AUTF8String aFilter, in boolean aDeleted);
   nsISimpleEnumerator getRecent(in long aMaxRecent);
 
+  oyITabooInfo getForURL(in AUTF8String aURL);
+
   void addObserver(in oyITabooObserver aObserver);
   void removeObserver(in oyITabooObserver aObserver);
 
   PRUint32 import(in nsIFile aFile);
   PRUint32 export(in nsIFile aFile);
-};
-
-[scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
-interface oyITabooInfo : nsISupports {
-  attribute AUTF8String title;
-  attribute AUTF8String url;
-  attribute AUTF8String favicon;
-  attribute AUTF8String description;
-  attribute AUTF8String imageURL;
-  attribute AUTF8String thumbURL;
-  attribute PRTime created;
-  attribute PRTime updated;
 };
