@@ -53,24 +53,27 @@
     </panel>
 
     <panel id="taboo-details" onpopupshown="taboo.focusDetails()">
-      <hbox>
-        <image id="taboo-image" />
+      <hbox style="padding: 5px">
         <vbox>
+          <image id="taboo-image" style="padding: 2px" />
+          <spacer flex="1" />
+        </vbox>
+        <vbox width="400">
           <label value="Title" control="taboo-title" accesskey="T" />
           <textbox id="taboo-title" />
           <label value="Notes" control="taboo-notes" accesskey="n" />
-          <textbox id="taboo-notes" multiline="true" />
+          <textbox id="taboo-notes" multiline="true" rows="5" />
           <spacer height="10" />
           <hbox>
             <spacer flex="1" />
             <button id="taboo-unsave"
                     oncommand="taboo.panelDelete();"
-                    label="Delete"
+                    label="Delete Taboo"
                     accesskey="D" />
             <button id="taboo-update"
                     oncommand="taboo.panelUpdate();"
-                    label="Save"
-                    accesskey="S" />
+                    label="Update Notes"
+                    accesskey="U" />
           </hbox>
         </vbox>
       </hbox>
