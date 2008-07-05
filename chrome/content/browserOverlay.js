@@ -151,21 +151,74 @@ function Taboo() {
     openUILinkIn(START_URL, 'tab');
   };
 
+  var quickShowEnum;
+
+  var quickShowTabs = [];
+  var quickShowIdx = 0;
+
+  var numCols = 4;
+  var numRows = 3;
+
+  function moveTo(newIdx) {
+    if (newIdx < 0 || newIdx >= quickShowTabs.length) {
+      return;
+    }
+
+    quickShowTabs[quickShowIdx].removeAttribute('id');
+    quickShowIdx = newIdx;
+    quickShowTabs[quickShowIdx].setAttribute('id', 'currentTaboo');
+  }
+
+  var quickShowListener = function(event) {
+    var current = quickShowTabs[quickShowIdx];
+    switch (event.keyCode) {
+
+    case event.DOM_VK_RETURN:
+      SVC.open(current.getAttribute('url'), 'current');
+      document.getElementById('taboo-quickShow').hidePopup();
+      break;
+    case event.DOM_VK_LEFT:
+      moveTo(quickShowIdx-1);
+      break;
+    case event.DOM_VK_RIGHT:
+      moveTo(quickShowIdx+1);
+      break;
+    case event.DOM_VK_UP:
+      moveTo(quickShowIdx-numCols);
+      break;
+    case event.DOM_VK_DOWN:
+      moveTo(quickShowIdx+numCols);
+      break;
+    default:
+      return;
+    }
+
+    event.preventDefault();
+  };
+
+  this.hideQuickShow = function() {
+    window.removeEventListener('keypress', quickShowListener, true);
+    quickShowTabs = [];
+    quickShowIdx = 0;
+    quickShowEnum = null;
+  };
+
+  this.focusQuickShow = function() {
+    window.addEventListener('keypress', quickShowListener, true);
+  };
+
   this.showPanel = function(event) {
     // FIXME: on showing the popup we should move keyboard focus to this, and
     // using the cursors selects a taboo then return loads it.
 
     log('showPanel');
 
-    var panel = document.getElementById('taboo-quickShow')
+    var panel = document.getElementById('taboo-quickShow');
     var groupbox = document.getElementById('taboo-groupbox');
     var grid = document.getElementById('taboo-grid');
     var rows = document.getElementById('tabs-rows');
 
     log('showPanel: grid, rows', grid, rows);
-
-    var numCols = 2;
-    var numRows = 2;
 
     //  groupbox.style.maxHeight = (numRows * 150) + 'px';
 
@@ -196,27 +249,33 @@ function Taboo() {
       item.onclick = function(event) {
         taboo.gotoRecent(this, event);
         panel.hidePopup();
-      }
+      };
+
+      return item;
     }
 
     log('showPanel: here 3');
 
-    var taboos = SVC.get('', false);
+    var quickShowEnum = SVC.get('', false);
 
     log('showPanel: here 4');
 
-    if (taboos.hasMoreElements()) {
+    if (quickShowEnum.hasMoreElements()) {
       var gridCount = 0;
       var row = null;
       while (gridCount < numRows * numCols) {
-        if (taboos.hasMoreElements()) {
-          if (gridCount % numRows == 0) {
+        if (quickShowEnum.hasMoreElements()) {
+          if (gridCount % numCols == 0) {
             row = document.createElement('row');
             rows.appendChild(row);
           }
-          var tab = taboos.getNext();
+          var tab = quickShowEnum.getNext();
           tab.QueryInterface(Components.interfaces.oyITabooInfo);
-          addRecent(tab, row);
+          var item = addRecent(tab, row);
+          quickShowTabs.push(item);
+          if (gridCount == 0) {
+            item.setAttribute('id', 'currentTaboo');
+          }
           gridCount++;
         }
         else break;
@@ -230,26 +289,27 @@ function Taboo() {
       rows.appendChild(row);
     }
 
-    var button = document.getElementById('taboo-moreButton');
+//     var button = document.getElementById('taboo-moreButton');
 
-    button.onclick = function() {
-      if (taboos.hasMoreElements()) {
-        var row = document.createElement('row');
-        for (var i = 0; i < numCols; i++) {
-          if (taboos.hasMoreElements()) {
-            var tab = taboos.getNext();
-            tab.QueryInterface(Components.interfaces.oyITabooInfo);
-            addRecent(tab, row);
-          }
-          else break;
-        }
-        rows.appendChild(row);
-      }
-    }
-    
-    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
-  }
-  
+//     button.onclick = function() {
+//       if (taboos.hasMoreElements()) {
+//         var row = document.createElement('row');
+//         for (var i = 0; i < numCols; i++) {
+//           if (taboos.hasMoreElements()) {
+//             var tab = taboos.getNext();
+//             tab.QueryInterface(Components.interfaces.oyITabooInfo);
+//             addRecent(tab, row);
+//           }
+//           else break;
+//         }
+//         rows.appendChild(row);
+//       }
+//     };
+
+    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
+    panel.focus();
+  };
+
   this.quickShow = function(event) {
     // FIXME: on showing the popup we should move keyboard focus to this, and
     // using the cursors selects a taboo then return loads it.
@@ -295,7 +355,7 @@ function Taboo() {
 
     // FIXME - the positioning of the panel is "random" - eg I did something that seems
     // to work on my browser, but no thought behind any of the parameters
-    panel.openPopup(document.getElementById('taboo-toolbarbarbutton-add'), 'after_start', 100, 0, false, false);
+    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
   }
 
   this.updateButton = function(url) {

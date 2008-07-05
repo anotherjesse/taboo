@@ -70,9 +70,11 @@ toolbar[iconsize="small"] #taboo-toolbarbutton-view:hover,
 
 /* FIXME: this should support a grid of 4 wide, 3 tall of taboos */
 
-#taboo-panel hbox {
+#taboo-quickShow image {
+  margin: 5px;
 }
 
-#taboo-panel image {
-  padding: 5px;
+#taboo-quickShow image#currentTaboo {
+  border: 5px solid #f80;
+  margin: 0;
 }
