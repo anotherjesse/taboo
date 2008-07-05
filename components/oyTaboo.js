@@ -232,14 +232,16 @@ TabooStorageSQL.prototype = {
       entry = this._store.new();
       entry.url = url;
       entry.md5 = hex_md5(url);
+      entry.title = title;
       entry.created = updated;
+    } else if (entry.deleted) {
+      entry.title = title;
     }
 
-    if (description) {
+    if (description != null) {
       entry.description = description;
     }
 
-    entry.title = title;
     entry.updated = updated;
     entry.deleted = null;
     entry.full = data.toSource();
