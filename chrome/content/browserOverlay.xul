@@ -33,8 +33,9 @@
         tooltiptext="View your Taboos in a new tab"
         command="cmd_showTaboos" type="menu-button"
         class="toolbarbutton-1 chromeclass-toolbar-additional">
+        <!-- In FF2, this needs to have onpopupshowing="taboo.showRecentList('taboo-recent-list');" -->
         <menupopup id="taboo-recent-list"
-          onpopupshowing="taboo.showRecentList('taboo-recent-list');" />
+          onpopupshowing="taboo.showPanel(event); return false;" />
       </toolbarbutton>
     </toolbarpalette>
 

@@ -196,13 +196,13 @@ function Taboo() {
       }
     }
 
-    quickShowTabs[quickShowIdx].removeAttribute('id');
+    quickShowTabs[quickShowIdx].removeAttribute('class');
 
     if (newIdx >= quickShowTabs.length) {
       newIdx = quickShowTabs.length -1;
     }
     quickShowIdx = newIdx;
-    quickShowTabs[quickShowIdx].setAttribute('id', 'currentTaboo');
+    quickShowTabs[quickShowIdx].setAttribute('class', 'current');
 
     if (!visible(quickShowIdx)) {
       setVisibleFor(quickShowIdx, true);
@@ -221,7 +221,7 @@ function Taboo() {
   }
 
   function addQuickViewItem(tab, row) {
-    var item = document.createElement('image');
+    var item = document.createElement('taboo');
     item.setAttribute('src', tab.thumbURL);
     item.setAttribute('title', tab.title);
     item.setAttribute('url', tab.url);
@@ -413,6 +413,26 @@ function installInToolbar() {
   }
 
   prefs.setBoolPref("setup", true); // Done! Never do this again.
+}
+
+function setKeyBinding(keyId, key, modifiers) {
+  try {
+    prefs.setCharPref(key_id + '.key', key);
+    prefs.setCharPref(key_id + '.modifiers', modifiers);
+  } catch (e) {}
+}
+
+function getKeyBinding(keyId) {
+  var binding = {};
+  try {
+    binding.key = prefs.getPrefType(key_id + '.key');
+    binding.mods = prefs.setCharPref(key_id + '.modifiers');
+  } catch (e) {
+    var command = document.getElementById(key_id);
+    binding.key = command.key;
+    binding.mods = command.modifiers;
+  }
+  return binding;
 }
 
 function updateKeybindings() {
