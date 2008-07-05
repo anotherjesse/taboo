@@ -19,6 +19,7 @@ function setText(node, txt) {
 function Mosaic(container) {
   document.body.className = 'mosaic';
 
+  // FIXME: use better variables names for dom nodes
   var img = IMG({id: 'detail_img'});
   var url = DIV({id: 'detail_url'});
   var title = DIV({id: 'detail_title'});
@@ -64,6 +65,7 @@ function Mosaic(container) {
   var currentUrl = null;
 
   this.add = function(tab) {
+
     var box = LI(
       DIV({'class': 'thumb'},
         IMG({src: tab.thumbURL})
@@ -76,10 +78,11 @@ function Mosaic(container) {
 
     box.onclick = function(event) {
       currentUrl = tab.url;
-      img.setAttribute('src', tab.imageURL);
-      $(title).trigger('update', [tab.title]);
-      $(description).trigger('update', [tab.description]);
-      setText(url, tab.url);
+      var updatedTab = SVC.getForURL(tab.url);
+      img.setAttribute('src', updatedTab.imageURL);
+      $(title).trigger('update', [updatedTab.title]);
+      $(description).trigger('update', [updatedTab.description]);
+      setText(url, updatedTab.url);
     };
 
     box.onmouseover = function(event) {
