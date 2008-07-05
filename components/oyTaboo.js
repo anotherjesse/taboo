@@ -362,18 +362,16 @@ TabooStorageSQL.prototype = {
                     .createInstance(Ci.nsIZipReader);
     zipReader.open(aFile);
 
-    var zipEntries = zipReader.findEntries(null);
-    while (zipEntries.hasMore()) {
-      var zipEntry = zipEntries.getNext();
-
-      var target = this._tabooDir.clone();
-      target.append(zipEntry);
-
-      zipReader.extract(zipEntry, target);
+    if (!zipReader.hasEntry(TABOO_EXPORT_DB_FILENAME)) {
+      throw "Not a Taboo backup";
     }
+
+    var filesToExtract = [];
 
     var dbfile = this._tabooDir.clone();
     dbfile.append(TABOO_EXPORT_DB_FILENAME);
+
+    zipReader.extract(TABOO_EXPORT_DB_FILENAME, dbfile);
 
     var importDB = this._loadDB(dbfile);
     var importStore = importDB.taboo_data;
@@ -381,17 +379,36 @@ TabooStorageSQL.prototype = {
     var imports = importStore.find(["deleted IS NULL"]);
     for each (var data in imports) {
       var entry = this._store.find(data.url);
-      if (!entry) {
+      if (entry) {
+        if (entry.updated > data.updated) {
+          continue;
+        }
+      } else {
         entry = this._store.new();
       }
       for (var field in this._schema) {
         entry[field] = data[field];
       }
       entry.save();
+
+      filesToExtract.push([ this._getImageFile(entry.md5),
+                            this._getThumbFile(entry.md5) ]);
     }
 
     importDB.close();
     dbfile.remove(false);
+
+    for each (var fileList in filesToExtract) {
+      for each (var imageFile in fileList) {
+        if (zipReader.hasEntry(imageFile.leafName)) {
+          zipReader.extract(imageFile.leafName, imageFile);
+        }
+      }
+    }
+
+    zipReader.close();
+
+    return filesToExtract.length;
   },
   export: function TSSQL__export(aFile) {
     if (aFile.exists()) {
@@ -635,7 +652,7 @@ TabooService.prototype = {
   },
 
   import: function TB_import(aFile) {
-    this._storage.import(aFile);
+    return this._storage.import(aFile);
   },
   export: function TB_export(aFile) {
     return this._storage.export(aFile);
