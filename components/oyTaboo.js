@@ -59,6 +59,8 @@ const IMAGE_FULL_HEIGHT = 500;
 const IMAGE_THUMB_WIDTH = 125;
 const IMAGE_THUMB_HEIGHT = 125;
 
+const PREF_DEBUG = 'extensions.taboo.debug';
+
 
 function getObserverService() {
   return Cc['@mozilla.org/observer-service;1']
@@ -463,14 +465,14 @@ TabooService.prototype = {
     if (newSSApi) {
       var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
 
-      if (getBoolPref('extensions.taboo.debug', false))
+      if (getBoolPref(PREF_DEBUG, false))
         dump(tabJSON + "\n");
 
       state = Cu.evalInSandbox(tabJSON, sandbox);
     } else {
       var winJSON = "(" + ss.getWindowState(win) + ")";
 
-      if (getBoolPref('extensions.taboo.debug', false))
+      if (getBoolPref(PREF_DEBUG, false))
         dump(winJSON + "\n");
 
       var winState = Cu.evalInSandbox(winJSON, sandbox);
