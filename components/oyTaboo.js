@@ -201,8 +201,8 @@ function cleanTabState(aState, aClearPrivateData) {
   tabState.entries = [entry];
   tabState.index = 1;
 
-  Cu.import("resource://gre/modules/JSON.jsm");
-  return JSON.toString(tabState);
+  var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
+  return nativeJSON.encode(tabState);
 }
 
 

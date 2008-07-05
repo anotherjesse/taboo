@@ -123,6 +123,12 @@ function Taboo() {
     }
   };
 
+  this.addTabooWithDetails = function(event) {
+    SVC.save(null);
+    saved(true);
+    editDetails();
+  };
+
   this.addTabooAndClose = function(event) {
     SVC.save(null);
     saved(true);
