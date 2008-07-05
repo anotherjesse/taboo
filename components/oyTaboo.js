@@ -696,7 +696,14 @@ TabooService.prototype = {
   },
 
   import: function TB_import(aFile) {
-    return this._storage.import(aFile);
+    var numImported = this._storage.import(aFile);
+
+    // FIXME: Call observers on each url imported
+    for (var i = 0; i < this._observers.length; i++) {
+      this._observers[i].onSave(null, false);
+    }
+
+    return numImported;
   },
   export: function TB_export(aFile) {
     return this._storage.export(aFile);
