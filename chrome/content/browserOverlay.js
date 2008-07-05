@@ -264,7 +264,7 @@ function Taboo() {
       return;
     }
 
-    event.stopPropogation();
+    event.stopPropagation();
   };
 
   this.hideQuickShow = function() {
