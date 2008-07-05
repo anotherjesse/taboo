@@ -112,9 +112,15 @@ function Taboo() {
   };
 
   this.addTaboo = function(event) {
+    var url = currentUrl();
+    var alreadySaved = SVC.isSaved(url);
+
     SVC.save(null);
     saved(true);
-    editDetails();
+
+    if (alreadySaved) {
+      editDetails();
+    }
   };
 
   this.addTabooAndClose = function(event) {
