@@ -47,7 +47,7 @@ function Taboo() {
     panel.focus();
   };
 
-  this.panelRemove = function() {
+  this.panelDelete = function() {
     SVC.delete(currentUrl());
     saved(false);
     document.getElementById('taboo-details').hidePopup();
@@ -151,22 +151,92 @@ function Taboo() {
     openUILinkIn(START_URL, 'tab');
   };
 
-  var quickShowEnum;
+  var quickShowRows = document.getElementById('tabs-rows');
 
+  var quickShowEnum;
   var quickShowTabs = [];
   var quickShowIdx = 0;
 
-  var numCols = 4;
-  var numRows = 3;
+  var displayCols = 4;
+  var displayRows = 3;
+  var topRow = 0;
+
+  function visible(idx) {
+    if (idx < 0 || idx >= quickShowTabs.length) {
+      return false;
+    }
+
+    return quickShowTabs[idx].parentNode.style.display != 'none';
+  }
+
+  function setVisibleFor(idx, visible) {
+    if (idx >= 0 || idx < quickShowTabs.length) {
+      var display = visible ? '' : 'none';
+      quickShowTabs[idx].parentNode.style.display = display;
+    }
+  }
 
   function moveTo(newIdx) {
-    if (newIdx < 0 || newIdx >= quickShowTabs.length) {
+    if (newIdx < 0) {
       return;
+    }
+
+    if (newIdx >= quickShowTabs.length) {
+      if (quickShowEnum.hasMoreElements()) {
+        addRow();
+      }
+      else {
+        return;
+      }
     }
 
     quickShowTabs[quickShowIdx].removeAttribute('id');
     quickShowIdx = newIdx;
     quickShowTabs[quickShowIdx].setAttribute('id', 'currentTaboo');
+
+    if (!visible(quickShowIdx)) {
+      setVisibleFor(quickShowIdx, true);
+    }
+
+    var topIdx = quickShowIdx - (displayRows * displayCols);
+
+    if (visible(topIdx)) {
+      setVisibleFor(topIdx, false);
+    }
+
+    var bottomIdx = quickShowIdx + (displayRows * displayCols);
+    if (visible(bottomIdx)) {
+      setVisibleFor(bottomIdx, false);
+    }
+  }
+
+  function addQuickViewItem(tab, row) {
+    var item = document.createElement('image');
+    item.setAttribute('src', tab.thumbURL);
+    item.setAttribute('title', tab.title);
+    item.setAttribute('url', tab.url);
+    item.setAttribute('tooltiptext', tab.url);
+
+    row.appendChild(item);
+    item.onclick = function(event) {
+      taboo.gotoRecent(this, event);
+      panel.hidePopup();
+    };
+
+    return item;
+  }
+
+  function addRow() {
+    var col = 0;
+    var row = document.createElement('row');
+    while (col < displayCols && quickShowEnum.hasMoreElements()) {
+      var tab = quickShowEnum.getNext();
+      tab.QueryInterface(Components.interfaces.oyITabooInfo);
+      var item = addQuickViewItem(tab, row);
+      quickShowTabs.push(item);
+      col++;
+    }
+    quickShowRows.appendChild(row);
   }
 
   var quickShowListener = function(event) {
@@ -174,8 +244,9 @@ function Taboo() {
     switch (event.keyCode) {
 
     case event.DOM_VK_RETURN:
-      SVC.open(current.getAttribute('url'), 'current');
+      var url = current.getAttribute('url');
       document.getElementById('taboo-quickShow').hidePopup();
+      SVC.open(current.getAttribute('url'), 'current');
       break;
     case event.DOM_VK_LEFT:
       moveTo(quickShowIdx-1);
@@ -184,16 +255,16 @@ function Taboo() {
       moveTo(quickShowIdx+1);
       break;
     case event.DOM_VK_UP:
-      moveTo(quickShowIdx-numCols);
+      moveTo(quickShowIdx-displayCols);
       break;
     case event.DOM_VK_DOWN:
-      moveTo(quickShowIdx+numCols);
+      moveTo(quickShowIdx+displayCols);
       break;
     default:
       return;
     }
 
-    event.preventDefault();
+    event.stopPropogation();
   };
 
   this.hideQuickShow = function() {
@@ -201,6 +272,10 @@ function Taboo() {
     quickShowTabs = [];
     quickShowIdx = 0;
     quickShowEnum = null;
+
+    while (quickShowRows.firstChild) {
+      quickShowRows.removeChild(quickShowRows.firstChild);
+    }
   };
 
   this.focusQuickShow = function() {
@@ -211,100 +286,38 @@ function Taboo() {
     // FIXME: on showing the popup we should move keyboard focus to this, and
     // using the cursors selects a taboo then return loads it.
 
-    log('showPanel');
-
     var panel = document.getElementById('taboo-quickShow');
     var groupbox = document.getElementById('taboo-groupbox');
     var grid = document.getElementById('taboo-grid');
-    var rows = document.getElementById('tabs-rows');
-
-    log('showPanel: grid, rows', grid, rows);
 
     //  groupbox.style.maxHeight = (numRows * 150) + 'px';
 
     var columns = document.createElement('columns');
 
-    for (var i = 0; i < numCols; i++) {
+    for (var i = 0; i < displayCols; i++) {
       var col = document.createElement('column');
       col.setAttribute('flex', '1');
       columns.appendChild(col);
     }
 
-    log('showPanel: here 1');
-
-    while (rows.firstChild) {
-      rows.removeChild(rows.firstChild);
-    }
-
-    log('showPanel: here 2');
-
-    function addRecent(tab, row) {
-      var item = document.createElement('image');
-      item.setAttribute('src', tab.thumbURL);
-      item.setAttribute('title', tab.title);
-      item.setAttribute('url', tab.url);
-      item.setAttribute('tooltiptext', tab.url);
-
-      row.appendChild(item);
-      item.onclick = function(event) {
-        taboo.gotoRecent(this, event);
-        panel.hidePopup();
-      };
-
-      return item;
-    }
-
-    log('showPanel: here 3');
-
-    var quickShowEnum = SVC.get('', false);
-
-    log('showPanel: here 4');
+    quickShowEnum = SVC.get('', false);
 
     if (quickShowEnum.hasMoreElements()) {
-      var gridCount = 0;
-      var row = null;
-      while (gridCount < numRows * numCols) {
-        if (quickShowEnum.hasMoreElements()) {
-          if (gridCount % numCols == 0) {
-            row = document.createElement('row');
-            rows.appendChild(row);
-          }
-          var tab = quickShowEnum.getNext();
-          tab.QueryInterface(Components.interfaces.oyITabooInfo);
-          var item = addRecent(tab, row);
-          quickShowTabs.push(item);
-          if (gridCount == 0) {
-            item.setAttribute('id', 'currentTaboo');
-          }
-          gridCount++;
-        }
-        else break;
+      var rows = 0;
+      while (rows < displayRows &&
+             quickShowEnum.hasMoreElements()) {
+        rows++;
+        addRow();
       }
+      moveTo(0);
     }
     else {
       var row = document.createElement('row');
       var item = document.createElement('label');
       item.setAttribute('value', 'No Tabs Saved');
       row.appendChild(item);
-      rows.appendChild(row);
+      quickShowRows.appendChild(row);
     }
-
-//     var button = document.getElementById('taboo-moreButton');
-
-//     button.onclick = function() {
-//       if (taboos.hasMoreElements()) {
-//         var row = document.createElement('row');
-//         for (var i = 0; i < numCols; i++) {
-//           if (taboos.hasMoreElements()) {
-//             var tab = taboos.getNext();
-//             tab.QueryInterface(Components.interfaces.oyITabooInfo);
-//             addRecent(tab, row);
-//           }
-//           else break;
-//         }
-//         rows.appendChild(row);
-//       }
-//     };
 
     panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', 100, 0, false, false);
     panel.focus();

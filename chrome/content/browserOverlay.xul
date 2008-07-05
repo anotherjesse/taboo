@@ -64,7 +64,7 @@
           <hbox>
             <spacer flex="1" />
             <button id="taboo-unsave"
-                    oncommand="taboo.panelRemove();"
+                    oncommand="taboo.panelDelete();"
                     label="Delete"
                     accesskey="D" />
             <button id="taboo-update"
