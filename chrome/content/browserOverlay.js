@@ -221,7 +221,7 @@ function Taboo() {
   }
 
   function addQuickViewItem(tab, row) {
-    var item = document.createElement('image');
+    var item = document.createElement('taboo');
     item.setAttribute('src', tab.thumbURL);
     item.setAttribute('title', tab.title);
     item.setAttribute('url', tab.url);
