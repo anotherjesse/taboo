@@ -37,18 +37,18 @@
         tooltiptext="View your Taboos in a new tab"
         command="cmd_showTaboos" type="menu-button"
         class="toolbarbutton-1 chromeclass-toolbar-additional">
-        <!-- In FF2, this needs to have onpopupshowing="taboo.showRecentList('taboo-recent-list');" -->
         <menupopup id="taboo-recent-list"
-          onpopupshowing="taboo.showPanel(event); return false;" />
+          onpopupshowing="return taboo.showDropdown(event);" />
       </toolbarbutton>
     </toolbarpalette>
 
     <panel id='taboo-quickShow' 
+           hidden="true"
            onpopupshown="taboo.focusQuickShow()"
            onpopuphiding="taboo.hideQuickShow()">
      <vbox flex="1">
 
-        <groupbox id='taboo-groupbox' style='max-height: 300px'>
+        <groupbox id='taboo-groupbox'>
           <grid id='taboo-grid' style='overflow: auto;'>
             <rows id='tabs-rows' />
           </grid>
@@ -57,7 +57,7 @@
       </vbox>
     </panel>
 
-    <panel id="taboo-details" onpopupshown="taboo.focusDetails()">
+    <panel id="taboo-details" onpopupshown="taboo.focusDetails()" hidden="true">
       <hbox style="padding: 5px">
         <vbox>
           <image id="taboo-image" style="padding: 2px" />
@@ -85,8 +85,7 @@
     </panel>
 
   </toolbox>
-  
-  
+
   <keyset id="mainKeyset">
       <key id="key_showTaboos"
           key="F"
