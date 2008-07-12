@@ -22,7 +22,7 @@
           autoCheck="false"
           value="Taboo"
           label="Taboo"
-          topbarHeight="130"
+          topbarHeight="150"
           type="checkbox"
           group="topbar"
           url="chrome://taboo/content/topbar.xul"

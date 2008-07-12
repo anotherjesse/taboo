@@ -7,6 +7,7 @@ var tabooTopbar = {
     var slidey = document.createElement("slideyitem");
     var image = document.createElement("taboo");
     image.setAttribute("src", tab.thumbURL);
+    image.setAttribute("title", tab.title);
     slidey.appendChild(image);
     slidey.onclick = function(event) {
       SVC.open(tab.url, whereToOpenLink(event));
