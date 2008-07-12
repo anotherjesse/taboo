@@ -205,20 +205,20 @@ function Taboo() {
       return;
     }
 
+    // lazy load tabs if more exist
     if (newIdx >= quickShowTabs.length) {
       if (quickShowEnum.hasMoreElements()) {
         addRow();
       }
-      else {
-        return;
-      }
     }
 
+    // unhighlight the current selected tab
     quickShowTabs[quickShowIdx].removeAttribute('class');
 
     if (newIdx >= quickShowTabs.length) {
-      newIdx = quickShowTabs.length -1;
+      newIdx = quickShowTabs.length - 1;
     }
+
     quickShowIdx = newIdx;
     quickShowTabs[quickShowIdx].setAttribute('class', 'current');
 
@@ -227,12 +227,13 @@ function Taboo() {
     }
 
     var topIdx = quickShowIdx - (displayRows * displayCols);
-
+    topIdx = topIdx - (Math.abs(topIdx) % displayCols);
     if (visible(topIdx)) {
       setVisibleFor(topIdx, false);
     }
 
     var bottomIdx = quickShowIdx + (displayRows * displayCols);
+    bottomIdx = bottomIdx - (Math.abs(bottomIdx) % displayCols);
     if (visible(bottomIdx)) {
       setVisibleFor(bottomIdx, false);
     }
