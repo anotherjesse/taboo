@@ -4,6 +4,7 @@ var taboo;
 
 var $ = function $(id) { return document.getElementById(id); };
 var log = function log(msg) {}; // maybe overridden in init
+var FF3 = false; // maybe overridden in init
 var debug = false;
 var prefs;
 
@@ -64,6 +65,17 @@ function Taboo() {
     event.stopPropagation();
     SVC.open(targetNode.getAttribute('url'), 'tabforeground');
   };
+
+  this.showDropdown = function(event) {
+    if (FF3) {
+      taboo.showPanel(event);
+      return false; // cancel default popup
+    }
+    else {
+      taboo.showRecentList('taboo-recent-list');
+      return true;
+    }
+  }
 
   this.showRecentList = function(domId) {
     var popup = $(domId);
@@ -370,6 +382,17 @@ function init() {
   if (gBrowser) {
     gBrowser.addProgressListener(progressListener,
                                  Ci.nsIWebProgress.NOTIFY_LOCATION);
+  }
+  
+  FF3 = (function() {
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
+    return !!ss.getTabState;
+  })()
+
+  if (FF3) {
+    $('taboo-quickShow').removeAttribute('hidden');
+    $('taboo-details').removeAttribute('hidden');
   }
 }
 
