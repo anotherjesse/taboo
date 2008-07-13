@@ -4,6 +4,7 @@ var taboo;
 
 var $ = function $(id) { return document.getElementById(id); };
 var log = function log(msg) {}; // maybe overridden in init
+var FF3 = false; // maybe overridden in init
 var debug = false;
 var prefs;
 
@@ -64,6 +65,17 @@ function Taboo() {
     event.stopPropagation();
     SVC.open(targetNode.getAttribute('url'), 'tabforeground');
   };
+
+  this.showDropdown = function(event) {
+    if (FF3) {
+      taboo.showPanel(event);
+      return false; // cancel default popup
+    }
+    else {
+      taboo.showRecentList('taboo-recent-list');
+      return true;
+    }
+  }
 
   this.showRecentList = function(domId) {
     var popup = $(domId);
@@ -193,20 +205,20 @@ function Taboo() {
       return;
     }
 
+    // lazy load tabs if more exist
     if (newIdx >= quickShowTabs.length) {
       if (quickShowEnum.hasMoreElements()) {
         addRow();
       }
-      else {
-        return;
-      }
     }
 
+    // unhighlight the current selected tab
     quickShowTabs[quickShowIdx].removeAttribute('class');
 
     if (newIdx >= quickShowTabs.length) {
-      newIdx = quickShowTabs.length -1;
+      newIdx = quickShowTabs.length - 1;
     }
+
     quickShowIdx = newIdx;
     quickShowTabs[quickShowIdx].setAttribute('class', 'current');
 
@@ -215,12 +227,13 @@ function Taboo() {
     }
 
     var topIdx = quickShowIdx - (displayRows * displayCols);
-
+    topIdx = topIdx - (Math.abs(topIdx) % displayCols);
     if (visible(topIdx)) {
       setVisibleFor(topIdx, false);
     }
 
     var bottomIdx = quickShowIdx + (displayRows * displayCols);
+    bottomIdx = bottomIdx - (Math.abs(bottomIdx) % displayCols);
     if (visible(bottomIdx)) {
       setVisibleFor(bottomIdx, false);
     }
@@ -370,6 +383,17 @@ function init() {
   if (gBrowser) {
     gBrowser.addProgressListener(progressListener,
                                  Ci.nsIWebProgress.NOTIFY_LOCATION);
+  }
+  
+  FF3 = (function() {
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
+    return !!ss.getTabState;
+  })()
+
+  if (FF3) {
+    $('taboo-quickShow').removeAttribute('hidden');
+    $('taboo-details').removeAttribute('hidden');
   }
 }
 
