@@ -642,11 +642,41 @@ TabooService.prototype = {
     if (faviconURL) {
       var ios = Cc['@mozilla.org/network/io-service;1']
         .getService(Ci.nsIIOService);
-      var chan = ios.newChannel(faviconURL, null, null);
-      var listener = new tabooFavIconLoadListener(url, faviconURL, chan,
-                                                  this._storage);
-      chan.notificationCallbacks = listener;
-      chan.asyncOpen(listener, null);
+      var faviconURI = ios.newURI(faviconURL, null, null);
+
+      if (Ci.nsIFaviconService) {
+        var faviconSvc = Cc['@mozilla.org/browser/favicon-service;1']
+          .getService(Ci.nsIFaviconService);
+
+        var dataURL = null;
+
+        try {
+          if (faviconSvc.getFaviconDataAsDataURL) {
+            dataURL = faviconSvc.getFaviconDataAsDataURL(faviconURI);
+          } else {
+            var mimeType = {};
+            var bytes = faviconSvc.getFaviconData(faviconURI, mimeType, {});
+            if (bytes) {
+              dataURL = 'data:';
+              dataURL += mimeType.value;
+              dataURL += ';base64,';
+              dataURL += btoa(String.fromCharCode.apply(null, bytes));
+            }
+          }
+        } catch (ex) {
+          // do nothing, use default value
+        }
+
+        if (dataURL) {
+          this._storage.saveFavicon(url, dataURL);
+        }
+      } else {
+        var chan = ios.newChannelFromURI(faviconURI);
+        var listener = new tabooFavIconLoadListener(url, faviconURL, chan,
+                                                    this._storage);
+        chan.notificationCallbacks = listener;
+        chan.asyncOpen(listener, null);
+      }
     }
 
     for (var i = 0; i < this._observers.length; i++) {
@@ -1001,8 +1031,8 @@ TabooService.prototype = {
 }
 
 
-/* This is swiped from bookmarks.js in Firefox. In Firefox 3, this *should*
- * be easier, and not require cut'n'pasting
+/* This is swiped from bookmarks.js in Firefox. It's only used when we're
+ * on Gecko 1.8.x, since Gecko 1.9 has nsIFaviconService.
  */
 function tabooFavIconLoadListener(url, faviconurl, channel, storage) {
   this.mURL = url;
