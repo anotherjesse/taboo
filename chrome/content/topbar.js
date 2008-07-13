@@ -6,7 +6,8 @@ var tabooTopbar = {
   add: function(tab) {
     var slidey = document.createElement("slideyitem");
     var image = document.createElement("taboo");
-    image.setAttribute("src", tab.thumbURL);
+    image.setAttribute("image", tab.imageURL);
+    image.setAttribute("thumb", tab.thumbURL);
     image.setAttribute("title", tab.title);
     slidey.appendChild(image);
     slidey.onclick = function(event) {
