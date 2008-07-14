@@ -71,3 +71,15 @@ taboo.current {
 taboo.current image {
   border: 5px solid #f80;
 }
+
+#taboo-search-box {
+  padding: 5px 2px;
+}
+
+#taboo-search-box textbox {
+  font-size: 20px;
+}
+
+#taboo-search-box label {
+  padding-top: 5px;
+}

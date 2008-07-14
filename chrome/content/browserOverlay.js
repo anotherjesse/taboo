@@ -202,7 +202,12 @@ function Taboo() {
 
   function moveTo(newIdx) {
     if (newIdx < 0) {
-      return;
+      if (quickShowIdx == 0) {
+	return;
+      }
+      else {
+	newIdx = 0;
+      }
     }
 
     // lazy load tabs if more exist
@@ -296,42 +301,32 @@ function Taboo() {
     }
 
     event.stopPropagation();
+    event.preventDefault();
   };
 
   this.hideQuickShow = function() {
     window.removeEventListener('keypress', quickShowListener, true);
+    quickShowEnum = null;
+  };
+
+  this.quickShowInput = function(event) {
+    refreshQuickShow();
+  }
+
+  this.focusQuickShow = function() {
+    window.addEventListener('keypress', quickShowListener, true);
+    $('taboo-quickShow-search').focus();
+  };
+
+  function refreshQuickShow() {
     quickShowTabs = [];
     quickShowIdx = 0;
-    quickShowEnum = null;
 
     while (quickShowRows.firstChild) {
       quickShowRows.removeChild(quickShowRows.firstChild);
     }
-  };
-
-  this.focusQuickShow = function() {
-    window.addEventListener('keypress', quickShowListener, true);
-  };
-
-  this.showPanel = function(event) {
-
-    // a horrible proxy for detecting if the panel is already open
-    if (quickShowEnum) {
-      return
-    }
-
-    var groupbox = document.getElementById('taboo-groupbox');
-    var grid = document.getElementById('taboo-grid');
-
-    var columns = document.createElement('columns');
-
-    for (var i = 0; i < displayCols; i++) {
-      var col = document.createElement('column');
-      col.setAttribute('flex', '1');
-      columns.appendChild(col);
-    }
-
-    quickShowEnum = SVC.get('', false);
+    
+    quickShowEnum = SVC.get($('taboo-quickShow-search').value, false);
 
     if (quickShowEnum.hasMoreElements()) {
       var rows = 0;
@@ -345,10 +340,38 @@ function Taboo() {
     else {
       var row = document.createElement('row');
       var item = document.createElement('label');
-      item.setAttribute('value', 'No Tabs Saved');
+      if ($('taboo-quickShow-search').value == '') {
+	item.setAttribute('value', 'No Tabs Saved');
+      }
+      else {
+	item.setAttribute('value', 'No Tabs Matched');
+      }
       row.appendChild(item);
       quickShowRows.appendChild(row);
     }
+  }
+
+  this.showPanel = function(event) {
+
+    // a horrible proxy for detecting if the panel is already open
+    if (quickShowEnum) {
+      return;
+    }
+
+    $('taboo-quickShow-search').value = '';
+
+    var groupbox = document.getElementById('taboo-groupbox');
+    var grid = document.getElementById('taboo-grid');
+
+    var columns = document.createElement('columns');
+
+    for (var i = 0; i < displayCols; i++) {
+      var col = document.createElement('column');
+      col.setAttribute('flex', '1');
+      columns.appendChild(col);
+    }
+
+    refreshQuickShow();
 
     quickViewPanel.openPopup(document.getElementById('taboo-toolbarbutton-view'), 'after_start', -1, -1);
     quickViewPanel.focus();
