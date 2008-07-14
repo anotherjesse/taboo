@@ -255,7 +255,9 @@ function Taboo() {
     item.onclick = function(event) {
       event.preventDefault();
       event.stopPropagation();
-      SVC.open(item.getAttribute('url'), 'current');
+      var where = whereToOpenLink(event);
+      if (where == 'tab') where = 'tabforeground';
+      SVC.open(item.getAttribute('url'), where);
       quickViewPanel.hidePopup();
     };
 
@@ -282,7 +284,9 @@ function Taboo() {
     case event.DOM_VK_RETURN:
       var url = current.getAttribute('url');
       document.getElementById('taboo-quickShow').hidePopup();
-      SVC.open(current.getAttribute('url'), 'current');
+      var where = whereToOpenLink(event);
+      if (where == 'tab') where = 'tabforeground';
+      SVC.open(current.getAttribute('url'), where);
       break;
     case event.DOM_VK_LEFT:
       moveTo(quickShowIdx-1);
