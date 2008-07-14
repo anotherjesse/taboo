@@ -315,10 +315,13 @@ function Taboo() {
 
   this.showPanel = function(event) {
 
+    // a horrible proxy for detecting if the panel is already open
+    if (quickShowEnum) {
+      return
+    }
+
     var groupbox = document.getElementById('taboo-groupbox');
     var grid = document.getElementById('taboo-grid');
-
-    //  groupbox.style.maxHeight = (numRows * 150) + 'px';
 
     var columns = document.createElement('columns');
 
