@@ -17,23 +17,25 @@
     <title>Taboo</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/jquery-1.2.3.min.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/jquery.dimensions.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/jquery.tooltip.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/jquery.inplace.source.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/dombuilder.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/vendor/dombuilder.js"></script>
+
+    <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/vendor/jquery.easing.1.3.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/vendor/jquery.inplace.source.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/vendor/jquery.hue.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/vendor/humanmsg.js"></script>
 
     <script type="text/javascript" src="chrome://taboo/content/start.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/hoverbox.js"></script>
     <script type="text/javascript" src="chrome://taboo/content/sync.js"></script>
     <script type="text/javascript" src="chrome://taboo/content/calendar.js"></script>
-    <script type="text/javascript" src="chrome://taboo/content/grid.js"></script>
     <script type="text/javascript" src="chrome://taboo/content/mosaic.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/grid.js"></script>
     <script type="text/javascript" src="chrome://taboo/content/trash.js"></script>
+    <script type="text/javascript" src="chrome://taboo/content/tools.js"></script>
     <script type="text/javascript" src="chrome://taboo/content/about.js"></script>
 
-    <link rel="stylesheet" href="chrome://taboo/content/jquery.tooltip.css" />
-
+    <link rel="stylesheet" href="chrome://taboo/content/vendor/humanmsg.css" />
+    <link rel="stylesheet" href="chrome://taboo/content/vendor/jquery.hue.css" />
     <link rel="stylesheet" href="chrome://taboo/skin/start.css" />
     <link rel="stylesheet" href="chrome://taboo/skin/calendar.css" />
     <link rel="stylesheet" href="chrome://taboo/skin/mosaic.css" />
@@ -41,6 +43,9 @@
     <link rel="stylesheet" href="chrome://taboo/skin/grid.css" />
     <link rel="stylesheet" href="chrome://taboo/skin/trash.css" />
     <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
+
+    <link rel="icon" type="image/png" href="chrome://taboo/skin/favicon.png" />
+
   </head>
   <body>
     <div id="header">
@@ -48,26 +53,22 @@
         <a href="#" onclick="controller.load('Grid'); return false;" id="grid">grid</a>
         <a href="#" onclick="controller.load('Calendar'); return false;" id="calendar">calendar</a>
         <a href="#" onclick="controller.load('Mosaic'); return false;" id="mosaic">mosaic</a>
-        <a href="#" onclick="controller.load('Hoverbox'); return false;" id="hoverbox">hoverbox</a>
         <a href="#" onclick="controller.load('Sync'); return false;" id="sync">sync</a>
         <a href="#" onclick="controller.load('Trash'); return false;" id="trash">trashcan</a>
+        <a style="display:none" href="#" onclick="controller.load('Tools'); return false;" id="tools">tools</a>
         <a href="#" onclick="controller.load('About'); return false;" id="about">about</a>
       </div>
       <input type="text" id="search" />
     </div>
 
-    <div id="undelete" class="infoWrap">
-      <div id="text" class="info">
-        <a id="undeleteLink" href="#">Click here to undelete your taboo</a>
-      </div>
-    </div>
+    <div id="postheader"></div>
 
     <div id="content"></div>
     <div id="prefooter"></div>
     <div id="footer">
       <div id="footer-controls"></div>
       Questions/Ideas?
-      <a class="button" href="http://groups.google.com/group/taboo-extension">Send Your Feedback</a>
+      <a class="button" href="http://taboo.uservoice.com/">Give your Feedback</a>
     </div>
   </body>
 </html>

@@ -1,0 +1,12 @@
+* Before release 0.20 [0/8]
+  - [ ] null titles break taboo
+  - [ ] make sure re-clicking the taboo button doesn't overwrite data?
+  - [ ] inplace editor doesn't handle escape key correctly:
+    click to edit, save changes, then click escape again to change
+  - [ ] inplace editor breaks if you change textarea while it is in edit mode
+  - [ ] deleting from grid mode doesn't show the undelete box
+  - [ ] undelete / delete all isn't show correctly on trash.js
+  - [ ] use humanized messages on deletion/undelete?
+  - [ ] use favicons on dropdown menu?
+  - [ ] tooltips on grid.js?
+  - [ ] tooltips on calendar.js

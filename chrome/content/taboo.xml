@@ -1,0 +1,28 @@
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <binding id="taboo">
+    <resources>
+      <stylesheet src="chrome://taboo/skin/overlay.css"/>
+    </resources>
+    <content>
+      <xul:vbox flex="1">
+        <xul:spacer flex="1" />
+        <xul:hbox flex="1">
+          <xul:spacer flex="1" />
+          <xul:image anonid="img" />
+          <xul:spacer flex="1" />
+        </xul:hbox>
+        <xul:spacer flex="1" />
+      </xul:vbox>
+    </content>
+    <implementation>
+      <constructor>
+        var img = document.getAnonymousElementByAttribute(this, 'anonid', 'img');
+        img.src = this.getAttribute('src');
+      </constructor>
+    </implementation>
+  </binding>
+</bindings>
+

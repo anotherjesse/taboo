@@ -19,13 +19,28 @@ const SVC = Components.classes['@oy/taboo;1']
 var tboPrefs = Cc['@mozilla.org/preferences-service;1']
   .getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
 
+function FF3() {
+  var ss = Cc['@mozilla.org/browser/sessionstore;1']
+    .getService(Ci.nsISessionStore);
+  return ss.getTabState;
+}
+
 function init() {
+  if (FF3()) {
+    $('#tools').show();
+  }
+
   DomBuilder.apply(window);
 
   controller = new Controller();
 
   try {
     var view = tboPrefs.getCharPref("view");
+    var taboos = SVC.get('', view.trash);
+    if (!view.trash && !view.info && !taboos.hasMoreElements()) {
+      controller.load('About');
+      return;
+    }
     controller.load(view);
   }
   catch (e) {
@@ -38,14 +53,40 @@ function init() {
   }
   searchBox.value = '';
   searchBox.focus();
+
+  jQuery.fn.hue();
+}
+
+function uninit() {
+  controller.unload();
 }
 
 window.addEventListener("load", init, false);
+window.addEventListener("unload", uninit, false);
 
 function Controller() {
   var content = document.getElementById('content');
   var footerControls = document.getElementById('footer-controls');
   var view = null;
+  var inst = this;
+
+  this.tabooObserver = {
+    onSave: function (aURL, aIsNew) {
+      inst.display();
+    },
+
+    onDelete: function (aURL) {
+      inst.display();
+    },
+
+    onUndelete: function(aURL) {
+      inst.display();
+    },
+
+    onReallyDelete: function(aURL) {
+      inst.display();
+    }
+  };
 
   this.load = function(view_name) {
     var ViewClass = top[view_name];
@@ -58,7 +99,13 @@ function Controller() {
       tboPrefs.setCharPref("view", view_name);
     }
     this.display();
+
+    SVC.addObserver(this.tabooObserver);
   }
+
+  this.unload = function() {
+    SVC.removeObserver(this.tabooObserver);
+  };
 
   this.filter = function(str) {
     if (this._filterStr == str) {
@@ -76,40 +123,24 @@ function Controller() {
   }
 
   this.tabFinalDelete = function(tab, el) {
-    el.style.display = "none";
+    humanMsg.displayMsg("This taboo has been permanently deleted.");
     SVC.reallyDelete(tab.url);
   }
 
   this.tabUndelete = function(tab) {
+    humanMsg.displayMsg("This taboo has been restored.");
     SVC.undelete(tab.url);
   }
 
   this.displayUndelete = function(tab, el) {
-    var a = document.getElementById('undeleteLink');
-    var div = document.getElementById('undelete');
-    a.onclick = function() {
-      el.style.display = '';
-      div.style.visibility = 'hidden';
-      SVC.undelete(tab.url);
-    };
-    div.url = tab.url;
-    div.style.visibility = 'visible';
-    setTimeout(function() {
-      if (div.url == tab.url) {
-        div.style.visibility = 'hidden';
-      }
-    }, 30000);
+    humanMsg.displayMsg("This taboo has been deleted.<br /><small>View the trashcan to restore or permanently delete taboos.</small>");
+    return;
   }
 
   this.display = function(searchTxt) {
     view.start();
 
     var taboos = SVC.get(searchTxt, view.trash);
-
-    if (!searchTxt && !view.trash && !view.info && !taboos.hasMoreElements()) {
-      controller.load(DisplayInfo);
-      return;
-    }
 
     while (taboos.hasMoreElements()) {
       var tab = taboos.getNext();

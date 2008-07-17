@@ -5,5 +5,9 @@ CVS
 .cvsignore
 .project
 '
+<<<<<<< HEAD:.gitignore
 *.pyc
 taboosync/index.yaml
+=======
+*#
+>>>>>>> master:.gitignore

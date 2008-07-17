@@ -16,14 +16,16 @@ function Trash(container) {
   document.body.className = 'trash';
 
   var deleted = [];
-  
-  document.getElementById('undelete').style.visibility = 'hidden';
-  
-  var deleteAll = DIV({id: 'deleteAll', class: 'infoWrap', style: 'visibility: visible; width: 255px'},
-    "Click here to delete all of these taboos."
-    );
 
-  deleteAll.onclick = function() {
+  var deleteAll = DIV({id: 'deleteAll',
+                       style: 'visibility: visible; width: 275px; padding-top: 10px; margin: 0 auto 0 auto;'});
+
+  var deleteButton = BUTTON({id: 'deleteButton', style: 'padding: 3px;'},
+                            "Permanently delete all of these taboos");
+
+  deleteAll.appendChild(deleteButton);
+
+  deleteButton.onclick = function() {
     for (var i in deleted) {
       // if parentNode doesn't exist, it has already been removed from page
       // eg - it has been undeleted or deleted - but we don't keep deleted
@@ -35,30 +37,23 @@ function Trash(container) {
   };
   container.appendChild(deleteAll);
 
-
-  var undeleted = DIV({class: 'infoWrap', style: 'width: 400px'},
-    'This taboo has been restored.'
-  )
-
-  container.appendChild(undeleted);
-
   var ul = UL();
   container.appendChild(ul);
 
   this.start = function() {
     ul.innerHTML = '';
-  }
+  };
 
-  this.finish = function() {}
+  this.finish = function() {};
 
   this.add = function(tab) {
     var box = LI({},
-      DIV({}, 
-        SPAN({class: 'delete', title: 'permenantly delete taboo'}),
-        SPAN({class: 'title', title: tab.title}, tab.title),
-        SPAN({class: 'url', title: tab.url}, tab.url),
-        SPAN({class: 'preview'},
-          IMG({class: 'thumb', src: tab.thumbURL})
+      DIV({},
+        SPAN({'class': 'delete', title: 'Permenantly delete this taboo'}),
+        SPAN({'class': 'title', title: tab.title}, tab.title),
+        SPAN({'class': 'url', title: tab.url}, tab.url),
+        SPAN({'class': 'preview'},
+          IMG({'class': 'thumb', src: tab.thumbURL})
         )
       )
     );
@@ -71,10 +66,10 @@ function Trash(container) {
         controller.tabUndelete(tab);
         box.parentNode.removeChild(box);
         undeleted.style.visibility = 'visible';
-        setTimeout(function() { undeleted.style.display = 'none'; }, 30000);   
+        setTimeout(function() { undeleted.style.display = 'none'; }, 30000);
       }
-    }
+    };
     ul.appendChild(box);
     deleted.push({'tab':tab, 'el':box});
-  }
+  };
 }

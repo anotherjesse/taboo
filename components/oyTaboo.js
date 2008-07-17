@@ -1,15 +1,15 @@
 /*
  * Copyright 2007 Jesse Andrews and Manish Singh
- *  
+ *
  * This file may be used under the terms of of the
  * GNU General Public License Version 2 or later (the "GPL"),
  * http://www.gnu.org/licenses/gpl.html
- *  
+ *
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
- * 
+ *
  * Portions are derived from the Mozilla nsSessionStore component:
  *
  * Copyright (C) 2006 Simon Bünzli <zeniko@gmail.com>
@@ -34,11 +34,13 @@ const TB_CONTRACTID = '@oy/taboo;1';
 const TB_CLASSID    = Components.ID('{962a9516-b177-4083-bbe8-e10f47cf8570}');
 const TB_CLASSNAME  = 'Taboo Service';
 
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
+
+const TABOO_DB_FILENAME = 'taboo.sqlite';
+const TABOO_EXPORT_DB_FILENAME = TABOO_DB_FILENAME + '.export';
 
 /* from nspr's prio.h */
 const PR_RDONLY      = 0x01;
@@ -59,6 +61,8 @@ const IMAGE_FULL_HEIGHT = 500;
 
 const IMAGE_THUMB_WIDTH = 125;
 const IMAGE_THUMB_HEIGHT = 125;
+
+const PREF_DEBUG = 'extensions.taboo.debug';
 
 
 function getObserverService() {
@@ -174,22 +178,36 @@ function snapshot(win, outputWidth, outputHeight) {
   return win.atob(imageData.substr('data:image/png;base64,'.length));
 }
 
+function cleanTabState(aState, aClearPrivateData) {
+  var sandbox = new Cu.Sandbox('about:blank');
+  var tabState = Cu.evalInSandbox(aState, sandbox);
+
+  var index = (tabState.index ? tabState.index : tabState.entries.length) - 1;
+  var entry = tabState.entries[index];
+
+  if (aClearPrivateData) {
+    function deletePrivateData(aEntry) {
+      delete aEntry.text;
+      delete aEntry.postdata;
+    }
+
+    deletePrivateData(entry);
+
+    if (entry.children) {
+      entry.children.forEach(deletePrivateData);
+    }
+  }
+
+  tabState.entries = [entry];
+  tabState.index = 1;
+
+  var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
+  return nativeJSON.encode(tabState);
+}
+
 
 function TabooStorageSQL() {
-  this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
-    .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
-  this._tabooDir.append('taboo');
-
-  if (!this._tabooDir.exists())
-    this._tabooDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
-
-  var dbfile = this._tabooDir.clone();
-  dbfile.append('taboo.sqlite');
-
-  var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
-  this._db = new DB(dbfile);
-
-  this._db.Table('taboo_data', {
+  this._schema = {
     url         : 'TEXT PRIMARY KEY',
     title       : 'TEXT',
     description : 'TEXT',
@@ -199,8 +217,19 @@ function TabooStorageSQL() {
     created     : 'INTEGER',
     updated     : 'INTEGER',
     deleted     : 'INTEGER'
-  });
+  };
 
+  this._tabooDir = Cc['@mozilla.org/file/directory_service;1']
+    .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
+  this._tabooDir.append('taboo');
+
+  if (!this._tabooDir.exists())
+    this._tabooDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0700);
+
+  var dbfile = this._tabooDir.clone();
+  dbfile.append(TABOO_DB_FILENAME);
+
+  this._db = this._loadDB(dbfile);
   this._store = this._db.taboo_data;
 }
 
@@ -232,14 +261,16 @@ TabooStorageSQL.prototype = {
       entry = this._store.new();
       entry.url = url;
       entry.md5 = hex_md5(url);
+      entry.title = title;
       entry.created = updated;
+    } else if (entry.deleted) {
+      entry.title = title;
     }
 
-    if (description) {
+    if (description != null) {
       entry.description = description;
     }
 
-    entry.title = title;
     entry.updated = updated;
     entry.deleted = null;
     entry.full = data.toSource();
@@ -268,12 +299,12 @@ TabooStorageSQL.prototype = {
       return false;
     }
 
-    if (aTitle || aDescription) {
-      if (aTitle) {
+    if (aTitle != null || aDescription != null) {
+      if (aTitle != null) {
         entry.title = aTitle;
       }
 
-      if (aDescription) {
+      if (aDescription != null) {
         entry.description = aDescription;
       }
 
@@ -357,6 +388,117 @@ TabooStorageSQL.prototype = {
     var results = this._store.find(condition, sortkey);
     return results.map(function(entry) { return entry.url });
   },
+  import: function TSSQL__import(aFile) {
+    var zipReader = Cc["@mozilla.org/libjar/zip-reader;1"]
+                    .createInstance(Ci.nsIZipReader);
+    zipReader.open(aFile);
+
+    if (!zipReader.hasEntry(TABOO_EXPORT_DB_FILENAME)) {
+      throw "Not a Taboo backup";
+    }
+
+    var filesToExtract = [];
+
+    var dbfile = this._tabooDir.clone();
+    dbfile.append(TABOO_EXPORT_DB_FILENAME);
+
+    zipReader.extract(TABOO_EXPORT_DB_FILENAME, dbfile);
+
+    var importDB = this._loadDB(dbfile);
+    var importStore = importDB.taboo_data;
+
+    var imports = importStore.find(["deleted IS NULL"]);
+    for each (var data in imports) {
+      var entry = this._store.find(data.url);
+      if (entry) {
+        if (entry.updated > data.updated) {
+          continue;
+        }
+      } else {
+        entry = this._store.new();
+      }
+      for (var field in this._schema) {
+        entry[field] = data[field];
+      }
+      entry.save();
+
+      filesToExtract.push([ this._getImageFile(entry.md5),
+                            this._getThumbFile(entry.md5) ]);
+    }
+
+    importDB.close();
+    dbfile.remove(false);
+
+    for each (var fileList in filesToExtract) {
+      for each (var imageFile in fileList) {
+        if (zipReader.hasEntry(imageFile.leafName)) {
+          zipReader.extract(imageFile.leafName, imageFile);
+        }
+      }
+    }
+
+    zipReader.close();
+
+    return filesToExtract.length;
+  },
+  export: function TSSQL__export(aFile) {
+    if (aFile.exists()) {
+      aFile.remove(false);
+    }
+
+    var dbfile = this._tabooDir.clone();
+    dbfile.append(TABOO_EXPORT_DB_FILENAME);
+
+    if (dbfile.exists()) {
+      dbfile.remove(false);
+    }
+
+    var exportDB = this._loadDB(dbfile);
+    var exportStore = exportDB.taboo_data;
+
+    var zipWriter = Cc["@mozilla.org/zipwriter;1"]
+                    .createInstance(Ci.nsIZipWriter);
+
+    zipWriter.open(aFile, PR_RDWR | PR_CREATE_FILE | PR_TRUNCATE);
+
+    var results = this._store.find(["deleted IS NULL"]);
+
+    for each (var result in results) {
+      var entry = exportStore.new();
+      for (var field in this._schema) {
+        entry[field] = result[field];
+      }
+      entry.full = cleanTabState(result.full, true);
+      entry.save();
+
+      var imageFile = this._getImageFile(result.md5);
+      zipWriter.addEntryFile(imageFile.leafName,
+                             Ci.nsIZipWriter.COMPRESSION_NONE,
+                             imageFile, true);
+
+      var thumbFile = this._getThumbFile(result.md5);
+      zipWriter.addEntryFile(thumbFile.leafName,
+                             Ci.nsIZipWriter.COMPRESSION_NONE,
+                             thumbFile, true);
+    }
+
+    exportDB.close();
+
+    zipWriter.addEntryFile(TABOO_EXPORT_DB_FILENAME,
+                           Ci.nsIZipWriter.COMPRESSION_NONE,
+                           dbfile, true);
+
+    var obs = {
+      onStartRequest: function() {},
+      onStopRequest: function() {
+        zipWriter.close();
+        dbfile.remove(false);
+      }
+    };
+    zipWriter.processQueue(obs, null);
+
+    return results.length;
+  },
   _getImageFile: function TSSQL__getImageFile(id) {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
@@ -368,6 +510,11 @@ TabooStorageSQL.prototype = {
     return file;
   },
   _saveImage: function TSSQL__saveImage(imageData, file) {
+    try {
+      file.remove(false);
+    }
+    catch (e) { }
+
     try {
       var ostream = Cc['@mozilla.org/network/file-output-stream;1']
         .createInstance(Ci.nsIFileOutputStream);
@@ -384,9 +531,16 @@ TabooStorageSQL.prototype = {
       entry.deleted = deleted;
       entry.save();
     }
+  },
+  _loadDB: function TSSQL__loadDB(aDBFile) {
+    var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
+    var newDB = new DB(aDBFile);
+    newDB.Table('taboo_data', this._schema);
+    return newDB;
   }
 }
 
+var newSSApi = false;
 
 function TabooService() {
   this._observers = [];
@@ -398,6 +552,17 @@ function TabooService() {
 TabooService.prototype = {
   _init: function TB__init() {
     this._storage = new TabooStorageSQL();
+
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
+    var extMgr = Cc['@mozilla.org/extensions/manager;1']
+      .getService(Ci.nsIExtensionManager);
+
+    var TorButtonGUID = '{e0204bd5-9d31-402b-a99d-a6aa8ffebdca}';
+
+    if (!extMgr.getItemForID(TorButtonGUID) && ss.getTabState) {
+      newSSApi = true;
+    }
   },
   observe: function TB_observe(subject, topic, state) {
     var obs = getObserverService();
@@ -447,17 +612,17 @@ TabooService.prototype = {
     var state;
     var sandbox = new Cu.Sandbox('about:blank');
 
-    if (ss.getTabState) {
+    if (newSSApi) {
       var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
 
-      if (getBoolPref('extensions.taboo.debug', false))
+      if (getBoolPref(PREF_DEBUG, false))
         dump(tabJSON + "\n");
 
       state = Cu.evalInSandbox(tabJSON, sandbox);
     } else {
       var winJSON = "(" + ss.getWindowState(win) + ")";
 
-      if (getBoolPref('extensions.taboo.debug', false))
+      if (getBoolPref(PREF_DEBUG, false))
         dump(winJSON + "\n");
 
       var winState = Cu.evalInSandbox(winJSON, sandbox);
@@ -499,7 +664,7 @@ TabooService.prototype = {
       throw 'Taboo for ' + aURL + ' does not exist';
     }
   },
-  delete: function TB_delete(aURL) {
+  'delete': function TB_delete(aURL) {
     this._storage.delete(aURL);
 
     for (var i = 0; i < this._observers.length; i++) {
@@ -526,6 +691,23 @@ TabooService.prototype = {
   getRecent: function TB_getRecent(aMaxRecent) {
     return this._tabEnumerator(this._storage.getURLs(null, false, aMaxRecent));
   },
+  getForURL: function TB_getForURL(aURL) {
+    return this._storage.retrieve(aURL);
+  },
+
+  import: function TB_import(aFile) {
+    var numImported = this._storage.import(aFile);
+
+    // FIXME: Call observers on each url imported
+    for (var i = 0; i < this._observers.length; i++) {
+      this._observers[i].onSave(null, false);
+    }
+
+    return numImported;
+  },
+  export: function TB_export(aFile) {
+    return this._storage.export(aFile);
+  },
 
   _tabEnumerator: function TB__tabEnumerator(aURLs) {
     return {
@@ -542,18 +724,21 @@ TabooService.prototype = {
   },
 
   open: function TB_open(aURL, aWhere) {
-    var info = this._storage.retrieve(aURL);
-    if (!info) {
-      throw 'Taboo for ' + aURL + ' does not exist';
-    }
-
-    var tabData = info.data;
-
     var wm = Cc['@mozilla.org/appshell/window-mediator;1']
       .getService(Ci.nsIWindowMediator);
     var win = wm.getMostRecentWindow('navigator:browser');
 
-    var loadInBackground = getBoolPref("browser.tabs.loadBookmarksInBackground", false);
+    var loadInBackground = getBoolPref("browser.tabs.loadInBackground", true);
+
+    if (aWhere == 'tabforeground') {
+      loadInBackground = false;
+      aWhere = 'tab';
+    }
+
+    if (aWhere == 'tabbackground') {
+      loadInBackground = true;
+      aWhere = 'tab';
+    }
 
     var tabbrowser = win.getBrowser();
 
@@ -573,12 +758,25 @@ TabooService.prototype = {
         return;
     }
 
+    this.openInTab(aURL, tab);
+  },
+
+  openInTab: function TB_openInTab(aURL, aTab) {
+    var info = this._storage.retrieve(aURL);
+    if (!info) {
+      throw 'Taboo for ' + aURL + ' does not exist';
+    }
+
+    var tabData = info.data;
+
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
-      .getService(Ci.nsISessionStore);
-    if (ss.setTabState) {
-      ss.setTabState(tab, tabData);
+             .getService(Ci.nsISessionStore);
+
+    if (newSSApi) {
+      ss.setTabState(aTab, tabData);
     } else {
-      this._setTabStatePrecursor(win, tab, tabData, 0);
+      var win = aTab.ownerDocument.defaultView;
+      this._setTabStatePrecursor(win, aTab, tabData, 0);
     }
   },
 
@@ -597,7 +795,7 @@ TabooService.prototype = {
       if (aCount < 10) {
         var setTabStateFunc = function(self) {
           self._setTabStatePrecursor(aWindow, aTab, aState, aCount + 1);
-        }
+        };
       }
       aWindow.setTimeout(setTabStateFunc, 100, this);
       return;
@@ -669,14 +867,14 @@ TabooService.prototype = {
   _deserializeHistoryEntry: function TB__deserializeHistoryEntry(aEntry, aIdMap) {
     var shEntry = Cc["@mozilla.org/browser/session-history-entry;1"].
                   createInstance(Ci.nsISHEntry);
-    
+
     var ioService = Cc["@mozilla.org/network/io-service;1"].
                     getService(Ci.nsIIOService);
     shEntry.setURI(ioService.newURI(aEntry.url, null, null));
     shEntry.setTitle(aEntry.title || aEntry.url);
     shEntry.setIsSubFrame(aEntry.subframe || false);
     shEntry.loadType = Ci.nsIDocShellLoadInfo.loadHistory;
-    
+
     if (aEntry.cacheKey) {
       var cacheKey = Cc["@mozilla.org/supports-PRUint32;1"].
                      createInstance(Ci.nsISupportsPRUint32);
@@ -694,11 +892,11 @@ TabooService.prototype = {
       }
       shEntry.ID = id;
     }
-    
+
     var scrollPos = (aEntry.scroll || "0,0").split(",");
     scrollPos = [parseInt(scrollPos[0]) || 0, parseInt(scrollPos[1]) || 0];
     shEntry.setScrollPosition(scrollPos[0], scrollPos[1]);
-    
+
     if (aEntry.postdata) {
       var stream = Cc["@mozilla.org/io/string-input-stream;1"].
                    createInstance(Ci.nsIStringInputStream);
@@ -712,13 +910,13 @@ TabooService.prototype = {
     {
       shEntry.ownerURI = ioService.newURI(aEntry.ownerURI, null, null);
     }
-    
+
     if (aEntry.children && shEntry instanceof Ci.nsISHContainer) {
       for (var i = 0; i < aEntry.children.length; i++) {
         shEntry.AddChild(this._deserializeHistoryEntry(aEntry.children[i], aIdMap), i);
       }
     }
-    
+
     return shEntry;
   },
   restoreDocument_proxy: function TB_restoreDocument_proxy(aEvent) {
@@ -726,7 +924,7 @@ TabooService.prototype = {
     if (!aEvent || !aEvent.originalTarget || !aEvent.originalTarget.defaultView || aEvent.originalTarget.defaultView != aEvent.originalTarget.defaultView.top) {
       return;
     }
-    
+
     var textArray = this.__SS_restore_text ? this.__SS_restore_text.split(" ") : [];
     function restoreTextData(aContent, aPrefix) {
       textArray.forEach(function(aEntry) {
@@ -735,7 +933,7 @@ TabooService.prototype = {
           var node = RegExp.$2 ? document.getElementById(RegExp.$3) : document.getElementsByName(RegExp.$3)[0] || null;
           if (node && "value" in node) {
             node.value = decodeURI(RegExp.$4);
-            
+
             var event = document.createEvent("UIEvents");
             event.initUIEvent("input", true, true, aContent, 0);
             node.dispatchEvent(event);
@@ -743,7 +941,7 @@ TabooService.prototype = {
         }
       });
     }
-    
+
     function restoreTextDataAndScrolling(aContent, aData, aPrefix) {
       restoreTextData(aContent, aPrefix);
       if (aData.innerHTML) {
@@ -758,7 +956,7 @@ TabooService.prototype = {
         }
       }
     }
-    
+
     var content = XPCNativeWrapper(aEvent.originalTarget).defaultView;
     if (this.currentURI.spec == "about:config") {
       // unwrap the document for about:config because otherwise the properties
@@ -766,12 +964,12 @@ TabooService.prototype = {
       content = content.wrappedJSObject;
     }
     restoreTextDataAndScrolling(content, this.__SS_restore_data, "");
-    
+
     // notify the tabbrowser that this document has been completely restored
     var event = this.ownerDocument.createEvent("Events");
     event.initEvent("SSTabRestored", true, false);
     this.__SS_restore_tab.dispatchEvent(event);
-    
+
     this.removeEventListener("load", this.__SS_restore, true);
     delete this.__SS_restore_data;
     delete this.__SS_restore_text;
@@ -873,7 +1071,7 @@ tabooFavIconLoadListener.prototype = {
           var sniffer = Components.classes[snifferCID].getService(nsIContentSniffer);
 
           try {
-            mimeType = sniffer.getMIMETypeFromContent (this.mBytes, this.mCountRead);
+            mimeType = sniffer.getMIMETypeFromContent(aRequest, this.mBytes, this.mCountRead);
           } catch (e) {
             mimeType = null;
             // ignore
@@ -884,7 +1082,7 @@ tabooFavIconLoadListener.prototype = {
       if (this.mBytes && this.mCountRead > 0 && mimeType != null) {
         var data = 'data:';
         data += mimeType;
-        data += ';base64;';
+        data += ';base64,';
 
         var iconData = String.fromCharCode.apply(null, this.mBytes);
         data += base64Encode(iconData);

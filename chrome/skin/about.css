@@ -31,19 +31,19 @@
   background-position: bottom;
 }
 
-.about h1 {
+.about #content h1 {
 	text-align: center;
   width: 500px;
   font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
   font-size: medium;
 }
 
-.about p {
+.about #content p {
   padding: 15px;
   width: 500px;
 }
 
-.about table {
+.about #content table {
   padding: 10px;
   background: #fff;
   width: 500px;
@@ -51,11 +51,11 @@
   border: 1px solid #bbb;
 }
 
-.about td {
+.about #content td {
   padding: 10px 0;
 }
 
-.about th {
+.about #content th {
   text-align: left;
 }
 

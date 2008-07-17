@@ -1,6 +1,7 @@
 <html>
 <head>
   <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
+  <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
 </head>
 
 <body class="about">
@@ -16,14 +17,14 @@
   </tr>
   <tr>
   	<td><span id="taboo-toolbarbutton-add-saved"></span></td>
-  	<td>Saved Taboos display this icon instead. Clicking this again will resave the taboo with current location/history/form fields.</td>
+  	<td>Saved Taboos display this icon instead. Clicking will open an edit details panel where you can change the title of the taboo and add notes.  You can also delete the taboo from here (it will be moved to the trash where you can recover it later).</td>
   </tr>
   <tr>
   	<td><span id="taboo-toolbarbutton-view"></span></td>
-  	<td>To view your saved taboos, click on this icon.</td>
+  	<td>To view your saved taboos, click on this icon.  Clicking the arrow next to it will show the QuickView panel.</td>
   </tr>
-  </table>
-
+  </table><br/>
+  <p>In the grid view, you can increase and decrease the size of your Taboos by clicking the "Zoom In" and "Zoom Out" buttons at the bottom of the page.</p>
   <h1>Keyboard Shortcuts</h1>
   <table>
     <tr>
@@ -32,30 +33,38 @@
     </tr>
     <tr>
       <td>Save Current Tab</td>
-      <td class="shortcut">Accel-Shift-A</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-A</td>
     </tr>
     <tr>
       <td>Save Current Tab and Close Tab</td>
-      <td class="shortcut">Accel-Shift-C</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-C</td>
     </tr>
     <tr>
       <td>Unsave Current Tab</td>
-      <td class="shortcut">Accel-Shift-U</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-U</td>
     </tr>
     <tr>
-      <td>Show Taboos</td>
-      <td class="shortcut">Accel-Shift-F</td>
+      <td>Quick View Taboo Panel</td>
+      <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
     </tr>
   </table>
-  <p>*<em>Accel means "Apple" on Macs and "Control" on Windows/Linux</em></p>
 
   <br />
   <br />
 
   <h1>About Taboo</h1>
   <p>Taboo was created by <a target="_blank" href="http://overstimulate.com">Jesse Andrews</a>,
-                          <a target="_blank" href="http://yosh.org">Manish Singh</a>, and
-                          <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>.
+                          <a target="_blank" href="http://yosh.org">Manish Singh</a>,
+                          <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>,
+                          <a target="_blank" href="http://jakedahn.com">Jake Dahn</a>, and
+                          <a target="_blank" href="http://www.loisant.org">Erwan Loisant</a>.
   </p>
+  <script type="text/javascript">
+    jQuery(function() {
+      var mac = navigator.appVersion.match(/mac/i);
+      var accel = (mac) ? 'Command' : 'Control';
+      jQuery(".accel").html(accel);
+    });
+  </script>
 </body>
 </html>

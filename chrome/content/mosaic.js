@@ -19,6 +19,7 @@ function setText(node, txt) {
 function Mosaic(container) {
   document.body.className = 'mosaic';
 
+  // FIXME: use better variables names for dom nodes
   var img = IMG({id: 'detail_img'});
   var url = DIV({id: 'detail_url'});
   var title = DIV({id: 'detail_title'});
@@ -26,23 +27,22 @@ function Mosaic(container) {
 
   container.appendChild(DIV({id: 'main'}, img, url, title, description));
 
-  $(title).editInPlace({
-    callback: function(original_element, html) {
-      SVC.update(currentUrl, html, null);
-      return html.replace(/</g, '&lt;');
-    }
-  });
+  $(title).editInPlace();
+
+  $(title).bind('callback', function(e, value) {
+		  SVC.update(currentUrl, value, null);
+		});
 
   $(description).editInPlace({
-    field_type: "textarea",
-    textarea_rows: "8",
-    textarea_cols: "35",
-    bg_out: '#fff',
-    callback: function(original_element, html) {
-      SVC.update(currentUrl, null, html);
-      return html.replace(/</g, '&lt;');
-    }
-  });
+			       field_type: "textarea",
+			       textarea_rows: "5",
+			       textarea_cols: "35",
+			       bg_out: '#fff'
+			     });
+
+  $(description).bind('callback', function(e, value) {
+			SVC.update(currentUrl, null, value);
+		      });
 
   function openCurrent(event) {
     SVC.open(currentUrl, whereToOpenLink(event));
@@ -53,31 +53,46 @@ function Mosaic(container) {
 
   var list = document.createElement('div');
   list.setAttribute('id', 'list');
-  container.appendChild(list)
+  container.appendChild(list);
 
   this.start = function() {
     currentUrl = null;
     list.innerHTML = '';
-  }
+  };
 
-  this.finish = function() {}
+  this.finish = function() {};
 
   var currentUrl = null;
 
   this.add = function(tab) {
-    var tile = IMG({src: tab.thumbURL, full: tab.imageURL, title: tab.title});
-    list.appendChild(tile)
 
-    tile.onclick = function(event) {
+    var box = LI(
+      DIV({'class': 'thumb'},
+        IMG({src: tab.thumbURL})
+      ),
+      DIV({'class': 'preview'},
+        IMG({src: tab.imageURL}),
+        SPAN(tab.title || '')
+      )
+    );
+
+    box.onclick = function(event) {
       currentUrl = tab.url;
-      img.setAttribute('src', tab.imageURL);
-      setText(url, tab.url);
-      setText(title, tab.title);
-      setText(description, tab.description);
-    }
+      var updatedTab = SVC.getForURL(tab.url);
+      img.setAttribute('src', updatedTab.imageURL);
+      $(title).trigger('update', [updatedTab.title]);
+      $(description).trigger('update', [updatedTab.description]);
+      setText(url, updatedTab.url);
+    };
+
+    box.onmouseover = function(event) {
+      $('.preview', this).css('top', (box.clientHeight/2-$('.preview', this)[0].clientHeight/2)+'px');
+    };
+
+    list.appendChild(box);
 
     if (!currentUrl) {
-      tile.onclick();
+      box.onclick();
     }
-  }
+  };
 }

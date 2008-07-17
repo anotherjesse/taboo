@@ -11,12 +11,12 @@
  * License.
  */
 
-function About(container) {
-  document.body.className = 'about';
+function Tools(container) {
+  document.body.className = 'tools';
 
   var div = document.createElement('div');
   container.appendChild(div);
-  div.innerHTML = '<iframe src="about.html" style="width: 100%; height: 800px; border: 0;" />';
+  div.innerHTML = '<iframe src="tools.html" style="width: 100%; height: 900px; border: 0;" />';
 
   this.start = function() {}
   this.finish = function() {}

@@ -1,29 +1,55 @@
-.calendar .nav {
+.calendar #content .nav {
   padding: 5px;
   margin: 5px;
   cursor: pointer;
 }
 
-.calendar td {
+.calendar #content td {
     width: 100px;
     height: 100px;
-    border: 1px solid black;
+    border: 1px solid #666;
+    vertical-align: top;
+    padding: 0;
+    background: #fff;
 }
 
-.calendar td img {
+.calendar #content td.empty {
+    background: transparent; 
+    border-color: #888;
+}
+
+.calendar #content td.empty .date {
+    background: #888;
+}
+
+.calendar #content .date {
+    font-size: 10px;
+    float: right;
+    width: 2em;
+    text-align: center;
+    background: #666;
+    padding-top: 0;
+    color: white;
+}
+
+.calendar #content .qty {
+    float: left;
+    font-size: 12px;
+}
+
+.calendar #content td img {
     max-width: 100px;
     max-height: 100px;
+    padding: 2px;
+    cursor: pointer;
 }
 
-.calendar td.empty {
-    color: #ccc;
-}
 
-.calendar td.blank {
+.calendar #content td.blank {
     border: none;
 }
 
-.calendar .tabs {
+.calendar #content .tabs {
     position: fixed;
     top: 100px;
     left: 100px;
@@ -35,27 +61,26 @@
     border: 1px solid #888;
 }
 
-.calendar .tabs img {
+.calendar #content .tabs img {
     max-width: 125px;
     max-height: 125px;
     border: 1px solid #ccc;
     margin: 5px;
 }
 
-.calendar .tabs img:hover {
+.calendar #content .tabs img:hover {
     border-color: #888;
 }
 
-.calendar table {
-    margin: 30px auto;
+.calendar #content table {
+    margin: 10px auto;
 }
 
-.calendar th#date_nav {
+.calendar #content th#date_nav {
     padding-bottom: 20px;
 }
 
-#nav_right,
-#nav_left {
+#nav_right,#nav_left {
     padding: 10px;
     cursor: pointer;
 }

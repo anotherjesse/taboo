@@ -1,52 +1,53 @@
 /* setup the grid */
 
-.grid ul {
+.grid #content ul {
   padding: 0 5px;
   list-style: none;
 }
 
-.grid li {
+.grid #content li {
   float: left;
   display: block;
 }
 
-.grid li div {
+.grid #content li div {
   overflow: hidden;
 }
 
 /* handle the different sizes */
 
-.grid .s100 li div { width: 100px; height: 105px; }
-.grid .s125 li div { width: 125px; height: 123px; }
-.grid .s150 li div { width: 150px; height: 142px; }
-.grid .s175 li div { width: 175px; height: 161px; }
-.grid .s200 li div { width: 200px; height: 180px; }
-.grid .s225 li div { width: 225px; height: 198px; }
-.grid .s250 li div { width: 250px; height: 217px; }
-.grid .s275 li div { width: 275px; height: 236px; }
-.grid .s300 li div { width: 300px; height: 255px; }
-.grid .s325 li div { width: 325px; height: 273px; }
-.grid .s350 li div { width: 350px; height: 292px; }
-.grid .s375 li div { width: 375px; height: 311px; }
-.grid .s400 li div { width: 400px; height: 330px; }
-.grid .s425 li div { width: 425px; height: 348px; }
-.grid .s450 li div { width: 450px; height: 367px; }
-.grid .s475 li div { width: 475px; height: 386px; }
-.grid .s500 li div { width: 500px; height: 405px; }
+.grid #content .s100 li div { width: 100px; height: 105px; }
+.grid #content .s125 li div { width: 125px; height: 123px; }
+.grid #content .s150 li div { width: 150px; height: 142px; }
+.grid #content .s175 li div { width: 175px; height: 161px; }
+.grid #content .s200 li div { width: 200px; height: 180px; }
+.grid #content .s225 li div { width: 225px; height: 198px; }
+.grid #content .s250 li div { width: 250px; height: 217px; }
+.grid #content .s275 li div { width: 275px; height: 236px; }
+.grid #content .s300 li div { width: 300px; height: 255px; }
+.grid #content .s325 li div { width: 325px; height: 273px; }
+.grid #content .s350 li div { width: 350px; height: 292px; }
+.grid #content .s375 li div { width: 375px; height: 311px; }
+.grid #content .s400 li div { width: 400px; height: 330px; }
+.grid #content .s425 li div { width: 425px; height: 348px; }
+.grid #content .s450 li div { width: 450px; height: 367px; }
+.grid #content .s475 li div { width: 475px; height: 386px; }
+.grid #content .s500 li div { width: 500px; height: 405px; }
 
-.grid .large .preview .large { display: inherit; }
-.grid .large .preview .thumb { display: none; }
+.grid #content .large .preview .large { display: inherit; }
+.grid #content .large .preview .thumb { display: none; }
 
-.grid .small .preview .thumb { display: inherit; }
-.grid .small .preview .large { display: none; }
+.grid #content .small .preview .thumb { display: inherit; }
+.grid #content .small .preview .large { display: none; }
 
 /* Handle details */
 
-.grid .preview img {
+.grid #content .preview img {
   width: 100%;
+  border: none;
 }
 
-.grid li span.title {
+.grid #content li span.title {
   overflow: hidden;
   font-size: 12px;
   font-weight: bold;
@@ -55,7 +56,7 @@
   white-space: nowrap;
 }
 
-.grid li span.url {
+.grid #content li span.url {
   display:block;
   overflow: hidden;
   font-size: 11px;
@@ -64,7 +65,7 @@
   white-space: nowrap;
 }
 
-.grid li {
+.grid #content li {
   margin: 5px;
   padding: 5px;
   -moz-border-radius: 10px;
@@ -77,19 +78,19 @@
 
 /* Handle hover over the grid item */
 
-.grid li:hover {
+.grid #content li:hover {
   border-color: #ddd;
   background: #fff;
   color: black;
 }
 
-.grid li:hover .url {
+.grid #content li:hover .url {
   color: #f80;
 }
 
 /* display the delete buttom */
 
-.grid li .delete {
+.grid #content li .delete {
   display: none;
   background: transparent url("close.png") top no-repeat;
   width: 14px !important;
@@ -99,11 +100,11 @@
   right: -5px;
 }
 
-.grid li:hover .delete {
+.grid #content li:hover .delete {
   display: inherit;
 }
 
-.grid li .delete:hover {
+.grid #content li .delete:hover {
   background: transparent url("close.png") bottom no-repeat;
 }
 

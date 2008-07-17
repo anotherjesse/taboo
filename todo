@@ -30,3 +30,6 @@ This release:
   undelete link isn't visible any more (deleting in grid)
   unable to delete from mosaic
   save/cancel on textarea are at wrong place
+
+Idea from Johan
+- when bookmarking an image (visiting the image url), snapshot to fit the image dimensions, instead of the browser width, with white padding on the right and bottom

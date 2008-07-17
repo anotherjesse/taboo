@@ -2,13 +2,20 @@ var taboo;
 
 (function() { // keep our privates to ourselves
 
-var $ = function $(id) { return document.getElementById(id); }
+var $ = function $(id) { return document.getElementById(id); };
 var log = function log(msg) {}; // maybe overridden in init
+var FF3 = false; // maybe overridden in init
 var debug = false;
 var prefs;
 
+function currentUrl() {
+  return gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+}
+
 function Taboo() {
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
+
+  const START_URL = 'chrome://taboo/content/start.html';
 
   function saved(state) {
     if ($('taboo-toolbarbutton-add')) {
@@ -21,10 +28,53 @@ function Taboo() {
     }
   }
 
+  this.focusDetails = function() {
+    document.getElementById('taboo-notes').focus();
+  };
+
+  function editDetails(url) {
+    url = url || currentUrl();
+
+    var tab = SVC.getForURL(url);
+
+    var panel = document.getElementById('taboo-details');
+
+    document.getElementById('taboo-image').setAttribute('src', tab.thumbURL);
+    document.getElementById('taboo-title').value = (tab.title || '');
+    document.getElementById('taboo-notes').value = (tab.description || '');
+
+    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', -1, -1);
+    panel.focus();
+  };
+
+  this.panelDelete = function() {
+    SVC.delete(currentUrl());
+    saved(false);
+    document.getElementById('taboo-details').hidePopup();
+  };
+
+  this.panelUpdate = function() {
+    var title = document.getElementById('taboo-title').value;
+    var notes = document.getElementById('taboo-notes').value;
+    SVC.update(currentUrl(), title, notes);
+    document.getElementById('taboo-details').hidePopup();
+  };
+
   this.gotoRecent = function(targetNode, event) {
     event.preventDefault();
     event.stopPropagation();
-    SVC.open(targetNode.getAttribute('url'), whereToOpenLink(event));
+    SVC.open(targetNode.getAttribute('url'), 'tabforeground');
+  };
+
+  this.showDropdown = function(event) {
+    if (FF3) {
+      taboo.showPanel(event);
+      return false; // cancel default popup
+    }
+    else {
+      taboo.showRecentList('taboo-recent-list');
+      return true;
+    }
   }
 
   this.showRecentList = function(domId) {
@@ -35,9 +85,11 @@ function Taboo() {
 
     function addRecent(tab) {
       var item = document.createElement('menuitem');
+      item.setAttribute('class', 'menuitem-iconic');
       item.setAttribute('label', tab.title);
       item.setAttribute('oncommand', 'taboo.gotoRecent(this, event);');
-      item.setAttribute('url', tab.url)
+      item.setAttribute('url', tab.url);
+      item.setAttribute('image', tab.favicon);
       item.setAttribute('tooltiptext', tab.url);
       popup.appendChild(item);
     }
@@ -54,43 +106,250 @@ function Taboo() {
     else {
       var item = document.createElement('menuitem');
       item.setAttribute('label', 'No Tabs Saved');
-      item.setAttribute('disabled', true)
+      item.setAttribute('disabled', true);
       popup.appendChild(item);
     }
-  }
+  };
+
+  this.toggleTaboo = function(event) {
+    var url = currentUrl();
+
+    if (SVC.isSaved(url)) {
+      SVC.delete(url);
+      saved(false);
+    } else {
+      SVC.save(null);
+      saved(true);
+    }
+  };
 
   this.addTaboo = function(event) {
+    var url = currentUrl();
+    var alreadySaved = SVC.isSaved(url);
+
     SVC.save(null);
     saved(true);
-  }
+
+    if (alreadySaved) {
+      editDetails();
+    }
+  };
+
+  this.addTabooWithDetails = function(event) {
+    SVC.save(null);
+    saved(true);
+    editDetails();
+  };
 
   this.addTabooAndClose = function(event) {
     SVC.save(null);
     saved(true);
 
-    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    var url = currentUrl();
     if (SVC.isSaved(url)) {
       BrowserCloseTabOrWindow();
     }
-  }
+  };
 
   this.removeTaboo = function(event) {
-    var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
+    var url = currentUrl();
     SVC.delete(url);
     saved(false);
-  }
+  };
 
   this.show = function(event) {
+    var tab = getTabIdxForUrl(START_URL);
+    if (tab !== null) {
+      gBrowser.mTabContainer.selectedIndex = tab;
+      return;
+    }
+
     var url = gBrowser.selectedBrowser.webNavigation.currentURI.spec;
     if (event.shiftKey ||
-        url == 'about:blank' ||
-        url == 'chrome://taboo/content/start.html') {
-      openUILinkIn('chrome://taboo/content/start.html', 'current');
+        url == 'about:blank') {
+      openUILinkIn(START_URL, 'current');
+      return;
     }
-    else {
-      openUILinkIn('chrome://taboo/content/start.html', 'tab');
+
+    openUILinkIn(START_URL, 'tab');
+  };
+
+  var quickShowRows = document.getElementById('tabs-rows');
+  var quickViewPanel = document.getElementById('taboo-quickShow');
+
+  var quickShowEnum;
+  var quickShowTabs = [];
+  var quickShowIdx = 0;
+
+  var displayCols = 4;
+  var displayRows = 3;
+  var topRow = 0;
+
+  function visible(idx) {
+    if (idx < 0 || idx >= quickShowTabs.length) {
+      return false;
+    }
+
+    return quickShowTabs[idx].parentNode.style.display != 'none';
+  }
+
+  function setVisibleFor(idx, visible) {
+    if (idx >= 0 || idx < quickShowTabs.length) {
+      var display = visible ? '' : 'none';
+      quickShowTabs[idx].parentNode.style.display = display;
     }
   }
+
+  function moveTo(newIdx) {
+    if (newIdx < 0) {
+      return;
+    }
+
+    // lazy load tabs if more exist
+    if (newIdx >= quickShowTabs.length) {
+      if (quickShowEnum.hasMoreElements()) {
+        addRow();
+      }
+    }
+
+    // unhighlight the current selected tab
+    quickShowTabs[quickShowIdx].removeAttribute('class');
+
+    if (newIdx >= quickShowTabs.length) {
+      newIdx = quickShowTabs.length - 1;
+    }
+
+    quickShowIdx = newIdx;
+    quickShowTabs[quickShowIdx].setAttribute('class', 'current');
+
+    if (!visible(quickShowIdx)) {
+      setVisibleFor(quickShowIdx, true);
+    }
+
+    var topIdx = quickShowIdx - (displayRows * displayCols);
+    topIdx = topIdx - (Math.abs(topIdx) % displayCols);
+    if (visible(topIdx)) {
+      setVisibleFor(topIdx, false);
+    }
+
+    var bottomIdx = quickShowIdx + (displayRows * displayCols);
+    bottomIdx = bottomIdx - (Math.abs(bottomIdx) % displayCols);
+    if (visible(bottomIdx)) {
+      setVisibleFor(bottomIdx, false);
+    }
+  }
+
+  function addQuickViewItem(tab, row) {
+    var item = document.createElement('taboo');
+    item.setAttribute('src', tab.thumbURL);
+    item.setAttribute('title', tab.title);
+    item.setAttribute('url', tab.url);
+    item.setAttribute('tooltiptext', tab.url);
+
+    row.appendChild(item);
+    item.onclick = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      SVC.open(item.getAttribute('url'), 'current');
+      quickViewPanel.hidePopup();
+    };
+
+    return item;
+  }
+
+  function addRow() {
+    var col = 0;
+    var row = document.createElement('row');
+    while (col < displayCols && quickShowEnum.hasMoreElements()) {
+      var tab = quickShowEnum.getNext();
+      tab.QueryInterface(Components.interfaces.oyITabooInfo);
+      var item = addQuickViewItem(tab, row);
+      quickShowTabs.push(item);
+      col++;
+    }
+    quickShowRows.appendChild(row);
+  }
+
+  var quickShowListener = function(event) {
+    var current = quickShowTabs[quickShowIdx];
+    switch (event.keyCode) {
+
+    case event.DOM_VK_RETURN:
+      var url = current.getAttribute('url');
+      document.getElementById('taboo-quickShow').hidePopup();
+      SVC.open(current.getAttribute('url'), 'current');
+      break;
+    case event.DOM_VK_LEFT:
+      moveTo(quickShowIdx-1);
+      break;
+    case event.DOM_VK_RIGHT:
+      moveTo(quickShowIdx+1);
+      break;
+    case event.DOM_VK_UP:
+      moveTo(quickShowIdx-displayCols);
+      break;
+    case event.DOM_VK_DOWN:
+      moveTo(quickShowIdx+displayCols);
+      break;
+    default:
+      return;
+    }
+
+    event.stopPropagation();
+  };
+
+  this.hideQuickShow = function() {
+    window.removeEventListener('keypress', quickShowListener, true);
+    quickShowTabs = [];
+    quickShowIdx = 0;
+    quickShowEnum = null;
+
+    while (quickShowRows.firstChild) {
+      quickShowRows.removeChild(quickShowRows.firstChild);
+    }
+  };
+
+  this.focusQuickShow = function() {
+    window.addEventListener('keypress', quickShowListener, true);
+  };
+
+  this.showPanel = function(event) {
+
+    var groupbox = document.getElementById('taboo-groupbox');
+    var grid = document.getElementById('taboo-grid');
+
+    //  groupbox.style.maxHeight = (numRows * 150) + 'px';
+
+    var columns = document.createElement('columns');
+
+    for (var i = 0; i < displayCols; i++) {
+      var col = document.createElement('column');
+      col.setAttribute('flex', '1');
+      columns.appendChild(col);
+    }
+
+    quickShowEnum = SVC.get('', false);
+
+    if (quickShowEnum.hasMoreElements()) {
+      var rows = 0;
+      while (rows < displayRows &&
+             quickShowEnum.hasMoreElements()) {
+        rows++;
+        addRow();
+      }
+      moveTo(0);
+    }
+    else {
+      var row = document.createElement('row');
+      var item = document.createElement('label');
+      item.setAttribute('value', 'No Tabs Saved');
+      row.appendChild(item);
+      quickShowRows.appendChild(row);
+    }
+
+    quickViewPanel.openPopup(document.getElementById('taboo-toolbarbutton-view'), 'after_start', -1, -1);
+    quickViewPanel.focus();
+  };
 
   this.updateButton = function(url) {
     if (url && SVC.isSaved(url)) {
@@ -99,7 +358,7 @@ function Taboo() {
     else {
       saved(false);
     }
-  }
+  };
 }
 
 function init() {
@@ -109,7 +368,7 @@ function init() {
     } else {
       var t = Cc['@mozilla.org/consoleservice;1'].
         getService(Ci.nsIConsoleService);
-      log = function log(x) { t.logStringMessage(x); }
+      log = function log(x) { t.logStringMessage(x); };
     }
   }
 
@@ -121,12 +380,26 @@ function init() {
   installInToolbar();
   updateKeybindings();
 
-  gBrowser.addProgressListener(progressListener,
-                               Ci.nsIWebProgress.NOTIFY_LOCATION);
+  if (gBrowser) {
+    gBrowser.addProgressListener(progressListener,
+                                 Ci.nsIWebProgress.NOTIFY_LOCATION);
+  }
+  
+  FF3 = (function() {
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
+    return !!ss.getTabState;
+  })()
+
+  if (FF3) {
+    $('taboo-quickShow').removeAttribute('hidden');
+    $('taboo-details').removeAttribute('hidden');
+  }
 }
 
 function uninit() {
-  gBrowser.removeProgressListener(progressListener);
+  if (gBrowser)
+    gBrowser.removeProgressListener(progressListener);
 }
 
 window.addEventListener("load", init, false);
@@ -175,6 +448,26 @@ function installInToolbar() {
   prefs.setBoolPref("setup", true); // Done! Never do this again.
 }
 
+function setKeyBinding(keyId, key, modifiers) {
+  try {
+    prefs.setCharPref(key_id + '.key', key);
+    prefs.setCharPref(key_id + '.modifiers', modifiers);
+  } catch (e) {}
+}
+
+function getKeyBinding(keyId) {
+  var binding = {};
+  try {
+    binding.key = prefs.getPrefType(key_id + '.key');
+    binding.mods = prefs.setCharPref(key_id + '.modifiers');
+  } catch (e) {
+    var command = document.getElementById(key_id);
+    binding.key = command.key;
+    binding.mods = command.modifiers;
+  }
+  return binding;
+}
+
 function updateKeybindings() {
 
   function update(key_id, attribute) {
@@ -193,6 +486,21 @@ function updateKeybindings() {
     update(key_id, 'key');
     update(key_id, 'modifiers');
   });
+}
+
+function getTabIdxForUrl(aURL) {
+  var num = gBrowser.browsers.length;
+  for (var i = 0; i < num; i++) {
+    var b = gBrowser.getBrowserAtIndex(i);
+    try {
+      if (b.currentURI.spec == aURL) {
+        return i;
+      }
+    } catch(e) {
+      // can't get the URL?
+    }
+  }
+  return null;
 }
 
 })();

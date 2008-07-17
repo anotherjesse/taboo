@@ -4,20 +4,21 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest">
     <em:name>Taboo</em:name>
     <em:id>taboo@runningfrombears.com</em:id>
-    <em:version>0.1.5</em:version>
+    <em:version>0.3.1</em:version>
     <em:description>The cure for tabitis</em:description>
     <em:iconURL>chrome://taboo/skin/logo.png</em:iconURL>
     <em:homepageURL>http://runningfrombears.com/taboo</em:homepageURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
     <em:contributor>Manish Singh; http://yosh.org</em:contributor>
     <em:contributor>Ian Fischer; http://iantriesagain.com</em:contributor>
+    <em:contributor>Jake Dahn; http://jakedahn.com</em:contributor>
 
     <!-- firefox -->
     <em:targetApplication>
       <RDF:Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>2.0b1</em:minVersion>
-        <em:maxVersion>3.0pre</em:maxVersion>
+        <em:maxVersion>3.0.*</em:maxVersion>
       </RDF:Description>
     </em:targetApplication>
 

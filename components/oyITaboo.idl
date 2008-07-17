@@ -14,6 +14,20 @@
 #include "nsISupports.idl"
 
 interface nsISimpleEnumerator;
+interface nsIDOMNode;
+interface nsIFile;
+
+[scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
+interface oyITabooInfo : nsISupports {
+  attribute AUTF8String title;
+  attribute AUTF8String url;
+  attribute AUTF8String favicon;
+  attribute AUTF8String description;
+  attribute AUTF8String imageURL;
+  attribute AUTF8String thumbURL;
+  attribute PRTime created;
+  attribute PRTime updated;
+};
 
 [scriptable, uuid(d08e3217-ea2d-4733-94ba-127ca07331b1)]
 interface oyITabooObserver : nsISupports {
@@ -24,9 +38,10 @@ interface oyITabooObserver : nsISupports {
   void onReallyDelete(in AUTF8String aURL);
 };
 
-[scriptable, uuid(7df4aa26-a511-4b05-a1f2-a1402f6b3e5d)]
+[scriptable, uuid(1cc276b5-3648-46fe-afc5-3b776b749b86)]
 interface oyITaboo : nsISupports {
   void open(in AUTF8String aURL, in AUTF8String aWhere);
+  void openInTab(in AUTF8String aURL, in nsIDOMNode aTab);
 
   boolean save(in AUTF8String aDescription);
   boolean isSaved(in AUTF8String aURL);
@@ -41,18 +56,11 @@ interface oyITaboo : nsISupports {
   nsISimpleEnumerator get(in AUTF8String aFilter, in boolean aDeleted);
   nsISimpleEnumerator getRecent(in long aMaxRecent);
 
+  oyITabooInfo getForURL(in AUTF8String aURL);
+
   void addObserver(in oyITabooObserver aObserver);
   void removeObserver(in oyITabooObserver aObserver);
-};
 
-[scriptable, uuid(46a873a2-e3b2-4438-9265-65464033d830)]
-interface oyITabooInfo : nsISupports {
-  attribute AUTF8String title;
-  attribute AUTF8String url;
-  attribute AUTF8String favicon;
-  attribute AUTF8String description;
-  attribute AUTF8String imageURL;
-  attribute AUTF8String thumbURL;
-  attribute PRTime created;
-  attribute PRTime updated;
+  PRUint32 import(in nsIFile aFile);
+  PRUint32 export(in nsIFile aFile);
 };

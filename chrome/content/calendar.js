@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2007 Jesse Andrews, Manish Singh, Ian Fischer
  *
@@ -32,18 +33,18 @@ function calDB() {
     if (!_db[Y][M])    { _db[Y][M]    = {}; }
     if (!_db[Y][M][D]) { _db[Y][M][D] = []; }
     _db[Y][M][D].push(tab);
-  }
+  };
 
   this.clear = function() {
     _db = {};
-  }
+  };
 
   this.get = function(Y,M,D) {
     try {
       return _db[Y][M][D];
     }
     catch (e) {}
-  }
+  };
 }
 
 function Calendar(container) {
@@ -58,17 +59,40 @@ function Calendar(container) {
   var db = new calDB();
 
   function addTabsToTD(year, month, date, td) {
+    td.appendChild(SPAN({'class': 'date'}, "" + date));
     var tabs = db.get(year, month, date);
     if (tabs && tabs.length > 0) {
       var img = IMG({src: tabs[0].thumbURL});
+      td.appendChild(SPAN({'class': 'qty'}, 'tabs: ' + tabs.length));
+
       td.appendChild(img);
+
       td.onclick = function() {
-        var div = DIV({class: 'tabs'});
+        var div = DIV({'class': 'tabs'});
         tabs.forEach(function(tab) {
-          var img = IMG({src: tab.thumbURL, title: tab.title})
+          var img = IMG({src: tab.thumbURL});
           img.onclick = function(event) {
             SVC.open(tab.url, whereToOpenLink(event));
-          }
+          };
+
+
+          img.onmouseover = function(event) {
+            jQuery(document.body).trigger('hue.over', [
+                                            DIV(
+                                              SPAN({'class': 'title'}, (tab.title || 'untitled')),
+                                              IMG({src: tab.imageURL}),
+                                              SPAN({'class': 'description'}, (tab.description || ''))
+                                            ),
+                                            function(event) {
+                                              SVC.open(tab.url, whereToOpenLink(event));
+                                            }
+                                          ]);
+          };
+
+          img.onmouseout = function(event) {
+            jQuery(document.body).trigger('hue.out');
+          };
+
           div.appendChild(img);
         });
         container.appendChild(div);
@@ -77,19 +101,18 @@ function Calendar(container) {
             container.removeChild(div);
             document.removeEventListener('click', remover, true);
           }
-        }
+        };
         document.addEventListener('click', remover, true);
-      }
+      };
     }
     else {
-      td.setAttribute('class', 'empty')
-      td.appendChild(document.createTextNode(date));
+      td.setAttribute('class', 'empty');
     }
   }
 
   this.start = function() {
     db.clear();
-  }
+  };
 
   this.finish = function() {
     container.removeChild(table);
@@ -97,8 +120,8 @@ function Calendar(container) {
     container.appendChild(table);
     var days = daysOf(self.year, self.month);
 
-    var previous = SPAN({class: 'nav'}, '<');
-    var next = SPAN({class: 'nav'}, '>');
+    var previous = SPAN({'class': 'nav'}, '<');
+    var next = SPAN({'class': 'nav'}, '>');
 
     var header = TR(TH({colspan: 7},
       previous,
@@ -106,7 +129,7 @@ function Calendar(container) {
       next
     ));
 
-    table.appendChild(header)
+    table.appendChild(header);
 
     table.appendChild(TR(
       TH('SUN'), TH('MON'), TH('TUES'), TH('WED'), TH('THUR'), TH('FRI'), TH('SAT')));
@@ -118,7 +141,7 @@ function Calendar(container) {
         self.year--;
       }
       self.finish();
-    }
+    };
 
     next.onclick = function() {
       self.month++;
@@ -127,7 +150,7 @@ function Calendar(container) {
         self.year++;
       }
       self.finish();
-    }
+    };
 
     var tr = null;
 
@@ -137,7 +160,7 @@ function Calendar(container) {
       if (!tr) {
         tr = TR();
         for (var i=0; i<curDate.getDay(); i++) {
-          tr.appendChild(TD({class: 'blank'}));
+          tr.appendChild(TD({'class': 'blank'}));
         }
         table.appendChild(tr);
       }
@@ -151,9 +174,9 @@ function Calendar(container) {
         tr = null;
       }
     }
-  }
+  };
 
   this.add = function(tab) {
     db.add(tab);
-  }
+  };
 }

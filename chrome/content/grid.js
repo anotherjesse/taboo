@@ -13,7 +13,7 @@
 
 function Grid(container, footerControls) {
   document.body.className = 'grid';
-  
+
   if (!tboPrefs.getPrefType('grid-size')) {
     tboPrefs.setIntPref('grid-size', 125);
   }
@@ -23,16 +23,16 @@ function Grid(container, footerControls) {
   function setSize(newSize) {
     if (newSize < 100) return;
     if (newSize > 500) return;
-    
-    var class = 's'+newSize+' ';
+
+    var className = 's'+newSize+' ';
     if (newSize < 200) {
-      class += 'small'
+      className += 'small';
     }
     else {
-      class += 'large'
+      className += 'large';
     }
-    
-    ul.className = class
+
+    ul.className = className;
     size = newSize;
     tboPrefs.setIntPref('grid-size', size);
   }
@@ -53,32 +53,49 @@ function Grid(container, footerControls) {
 
   this.start = function() {
     ul.innerHTML = '';
-    setSize(size)
-  }
+    setSize(size);
+  };
 
-  this.finish = function() {}
+  this.finish = function() {};
 
   this.add = function(tab) {
     var box = LI(
       DIV(
-        SPAN({class: 'delete', title: 'delete taboo'}),
-        SPAN({class: 'title', title: tab.title}, tab.title),
-        SPAN({class: 'url', href: tab.url, title: tab.url}, tab.url),
-        SPAN({class: 'preview'},
-          IMG({class: 'thumb', src: tab.thumbURL}),
-          IMG({class: 'large', src: tab.imageURL})
+        SPAN({'class': 'delete nohue', title: 'delete taboo'}),
+        SPAN({'class': 'title'}, (tab.title || 'untitled')),
+        SPAN({'class': 'url', href: tab.url}, tab.url),
+        SPAN({'class': 'preview'},
+          IMG({'class': 'thumb', src: tab.thumbURL}),
+          IMG({'class': 'large', src: tab.imageURL})
         )
       )
     );
 
+    box.onmouseover = function(event) {
+      jQuery(document.body).trigger('hue.over', [
+                                      DIV(
+                                          SPAN({'class': 'title'}, (tab.title || 'untitled')),
+                                          IMG({src: tab.imageURL}),
+                                          SPAN({'class': 'description'}, (tab.description || ''))
+                                      ),
+				      function(event) {
+					SVC.open(tab.url, whereToOpenLink(event));
+                                      }
+                                      ]);
+    };
+
+    box.onmouseout = function(event) {
+      jQuery(document.body).trigger('hue.out');
+    };
+
     box.onclick = function(event) {
-      if (event.originalTarget.className == 'delete') {
+      if (event.originalTarget.className.search('delete') != -1) {
         controller.tabDelete(tab, box);
       }
       else {
         SVC.open(tab.url, whereToOpenLink(event));
       }
-    }
+    };
     ul.appendChild(box);
-  }
+  };
 }
