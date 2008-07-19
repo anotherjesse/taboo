@@ -61,15 +61,36 @@ taboo {
 }
 
 taboo {
-  margin: 5px;
+  margin: 4px;
 }
 
 taboo.current {
   margin: 0;
 }
 
-taboo.current image {
+taboo.current stack {
   border: 5px solid #f80;
+}
+
+taboo.current {
+  -moz-opacity: 1;
+}
+
+taboo {
+  -moz-opacity: 0.5;
+}
+
+taboo stack {
+   border: 1px solid #888;
+}
+
+taboo label {
+  margin: 0;
+  max-width: 125px;
+  padding: 2px;
+  width: 125px;
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.5);
 }
 
 #taboo-search-box {
@@ -82,4 +103,14 @@ taboo.current image {
 
 #taboo-search-box label {
   padding-top: 5px;
+}
+
+#taboo-quickShow {
+  -moz-appearance: none;
+  background-color: rgba(68,68,68,0.9);
+  border: 1px solid rgba(255,255,255,0.15);
+  -moz-border-radius: 8px;
+  padding: 10px 8px 6px 8px;
+  margin-top: 4px;
+  color: #ffffff;
 }

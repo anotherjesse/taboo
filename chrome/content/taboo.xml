@@ -11,7 +11,16 @@
         <xul:spacer flex="1" />
         <xul:hbox flex="1">
           <xul:spacer flex="1" />
-          <xul:image anonid="img" />
+          <xul:stack>
+            <xul:image anonid="img" />
+            <xul:vbox>
+              <xul:hbox>
+                <xul:label value="title" anonid="title" crop="end" />
+                <xul:spacer flex='1' />
+              </xul:hbox>
+              <xul:spacer flex="1" />
+            </xul:vbox>
+          </xul:stack>
           <xul:spacer flex="1" />
         </xul:hbox>
         <xul:spacer flex="1" />
@@ -21,6 +30,8 @@
       <constructor>
         var img = document.getAnonymousElementByAttribute(this, 'anonid', 'img');
         img.src = this.getAttribute('src');
+        var title = document.getAnonymousElementByAttribute(this, 'anonid', 'title');
+        title.value = this.getAttribute('title');
       </constructor>
     </implementation>
   </binding>

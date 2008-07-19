@@ -48,7 +48,7 @@
            onpopuphiding="taboo.hideQuickShow()">
       <vbox flex="1">
 	<hbox id="taboo-search-box">
-	  <label value="Filter:" />
+	  <label value="Search" />
 	  <textbox id="taboo-quickShow-search" value="" oninput="taboo.quickShowInput(event)" class="plain" flex="1" />
 	</hbox>
 	<groupbox id='taboo-groupbox'>
@@ -56,7 +56,6 @@
 	    <rows id='tabs-rows' />
 	  </grid>
 	</groupbox>
-	
       </vbox>
     </panel>
 
