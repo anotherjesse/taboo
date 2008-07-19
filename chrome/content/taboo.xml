@@ -43,8 +43,10 @@
         </xul:hbox>
         <xul:spacer flex="1" />
         <xul:tooltip anonid="tooltip">
-          <xul:label anonid="tooltipTitle"/>
-          <xul:image anonid="tooltipImage"/>
+          <xul:vbox>
+            <xul:label anonid="tooltipTitle"/>
+            <xul:image anonid="tooltipImage"/>
+          </xul:vbox>
         </xul:tooltip>
       </xul:vbox>
     </content>

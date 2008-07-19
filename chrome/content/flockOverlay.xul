@@ -26,7 +26,7 @@
           type="checkbox"
           group="topbar"
           url="chrome://taboo/content/topbar.xul"
-          oncommand="FlockTopbar.selectById('tabooTopbarBroadcaster');"/>
+          oncommand="taboo.toggleTopbar(event);"/>
   </broadcasterset>
 
   <toolbox id="navigator-toolbox">

@@ -123,6 +123,17 @@ function Taboo() {
     }
   };
 
+  // This is a Flock only function (called in flockOverlay.xul)
+  this.toggleTopbar = function(event) {
+    if ("undefined" != typeof FlockTopbar) {
+      // Flock 2.0
+      FlockTopbar.selectById("tabooTopbarBroadcaster");
+    } else {
+      // Flock 1.2
+      flock_topbarSelectById("tabooTopbarBroadcaster");
+    }
+  };
+
   this.addTaboo = function(event) {
     var url = currentUrl();
     var alreadySaved = SVC.isSaved(url);
