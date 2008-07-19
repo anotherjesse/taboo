@@ -29,6 +29,18 @@
   <!-- We don't use DND (yet) but Flock's slideybox is buggy without that -->
   <script type="application/x-javascript" src="chrome://global/content/nsDragAndDrop.js" />
 
+  <toolbar id="taboo-toolbar">
+    <spacer flex="1" />
+    <toolbaritem>
+      <textbox id="search-box"
+               emptytext="Search"
+               type="timed"
+               oncommand="tabooTopbar.refresh();"
+               timeout="100"
+               />
+    </toolbaritem>
+    <spacer width="50px" />
+  </toolbar>
   <deck id="taboo-deck" flex="1">
     <slideybox id="taboo-slideybox"
                align="center"

@@ -24,7 +24,8 @@ var tabooTopbar = {
 
   refresh: function() {
     this.clear();
-    var taboos = SVC.get(null, false);
+    var searchTerm = this._search.value;
+    var taboos = SVC.get(searchTerm, false);
     if (taboos.hasMoreElements()) {
       this._deck.selectedIndex = 0;
     } else {
@@ -43,6 +44,7 @@ var tabooTopbar = {
     this._slideybox = document.getElementById("taboo-slideybox");
     this._deck = document.getElementById("taboo-deck");
     this._emptyMsg = document.getElementById("taboo-bannermessage");
+    this._search = document.getElementById("search-box");
     this.refresh();
 
     var inst = this;

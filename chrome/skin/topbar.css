@@ -49,9 +49,15 @@ label.title {
 }
 
 .slideyScrollBoxBG {
-    background-color: #232323;
-    background-image: url("chrome://flock/skin/photo/mediabar-slidey-background.png");
-    background-repeat: repeat-x;
+  background-color: #232323;
+  background-image: url("chrome://taboo/skin/slidey-bg.png");
+  background-repeat: repeat-x;
+  border: 1px solid black;
+}
+
+#taboo-slideybox {
+  border: 1px solid black;
+  margin: 0;
 }
 
 #taboo-slideybox #scroll-left-button {
@@ -66,4 +72,21 @@ label.title {
   border: 0px !important;
   width: 14px;
   background-color: transparent;
+}
+
+#search-box {
+  width: 150px;
+  font-size: 10px;
+}
+
+#taboo-toolbar {
+  -moz-appearance: none;
+  -moz-box-align: center;
+  -moz-box-pack: start;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  height: 33px;
+  max-height: 33px;
+  background: url("chrome://taboo/skin/topbar-toolbar-bg.png");
 }
