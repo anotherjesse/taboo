@@ -47,3 +47,23 @@ label.title {
   background-color: black;
   -moz-opacity: .8;
 }
+
+.slideyScrollBoxBG {
+    background-color: #232323;
+    background-image: url("chrome://flock/skin/photo/mediabar-slidey-background.png");
+    background-repeat: repeat-x;
+}
+
+#taboo-slideybox #scroll-left-button {
+  list-style-image: url("chrome://taboo/skin/slidey-scroll-left.png") !important;
+  border: 0px !important;
+  width: 14px;
+  background-color: transparent;
+}
+
+#taboo-slideybox #scroll-right-button {
+  list-style-image: url("chrome://taboo/skin/slidey-scroll-right.png") !important;
+  border: 0px !important;
+  width: 14px;
+  background-color: transparent;
+}
