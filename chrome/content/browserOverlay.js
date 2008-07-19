@@ -448,6 +448,20 @@ function installInToolbar() {
     document.persist(toolbar.id, "currentset");
   }
 
+  // The topbar button is Flock-only (if we're not in Flock, personalbar == null)
+  var topbarid = "taboo-toolbarbutton-topbar";
+  var personalbar = $("PersonalToolbar");
+  if (personalbar && "function" == typeof personalbar.insertItem) {
+    before = $("photos-button");
+    if (!before)
+      before = null;
+
+    personalbar.insertItem(topbarid, before, null, false);
+
+    personalbar.setAttribute("currentset", personalbar.currentSet);
+    document.persist(personalbar.id, "currentset");
+  }
+
   prefs.setBoolPref("setup", true); // Done! Never do this again.
 }
 

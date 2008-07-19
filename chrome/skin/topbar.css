@@ -36,3 +36,14 @@ label.title {
   height: 123px;
   max-height: 123px;
 }
+
+#taboo-bannermessage {
+  padding: 20px;
+  color: lightgray;
+  text-align: center;
+  font-size: 1.2em;
+  font-family: arial, sans;
+  font-weight: bold;
+  background-color: black;
+  -moz-opacity: .8;
+}

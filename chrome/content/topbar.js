@@ -13,18 +13,62 @@ var tabooTopbar = {
     slidey.onclick = function(event) {
       SVC.open(tab.url, whereToOpenLink(event));
     };
-    this.slideybox.appendChild(slidey);
+    this._slideybox.appendChild(slidey);
   },
 
-  onLoad: function() {
-    this.slideybox = document.getElementById("taboo-slideybox");
-    var taboos = SVC.get(null, false);
+  clear: function() {
+    while (this._slideybox.lastChild) {
+      this._slideybox.removeChild(this._slideybox.lastChild);
+    }
+  },
 
+  refresh: function() {
+    this.clear();
+    var taboos = SVC.get(null, false);
+    if (taboos.hasMoreElements()) {
+      this._deck.selectedIndex = 0;
+    } else {
+      this._deck.selectedIndex = 1;
+      this._emptyMsg.message = "You don't have any taboo. Click the + icon to save a web page.";
+      this._emptyMsg.show();
+    }
     while (taboos.hasMoreElements()) {
       var tab = taboos.getNext();
       tab.QueryInterface(Components.interfaces.oyITabooInfo);
       this.add(tab);
     }
+  },
+
+  load: function() {
+    this._slideybox = document.getElementById("taboo-slideybox");
+    this._deck = document.getElementById("taboo-deck");
+    this._emptyMsg = document.getElementById("taboo-bannermessage");
+    this.refresh();
+
+    var inst = this;
+    this.tabooObserver = {
+      onSave: function (aURL, aIsNew) {
+        inst.refresh();
+      },
+
+      onDelete: function (aURL) {
+        inst.refresh();
+      },
+
+      onUndelete: function(aURL) {
+        inst.refresh();
+      },
+
+      onReallyDelete: function(aURL) {
+        inst.refresh();
+      }
+    };
+
+    SVC.addObserver(this.tabooObserver);
+  },
+
+  unload: function() {
+    SVC.removeObserver(this.tabooObserver);
   }
 
 }

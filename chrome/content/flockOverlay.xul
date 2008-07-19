@@ -28,4 +28,15 @@
           url="chrome://taboo/content/topbar.xul"
           oncommand="FlockTopbar.selectById('tabooTopbarBroadcaster');"/>
   </broadcasterset>
+
+  <toolbox id="navigator-toolbox">
+    <toolbarpalette id="BrowserToolbarPalette">
+      <toolbarbutton id="taboo-toolbarbutton-topbar"
+        class="toolbarbutton-1 chromeclass-toolbar-additional statefultooltip"
+        tooltiptext="Open the Taboo Topbar"
+        label="Taboo Topbar"
+        observes="tabooTopbarBroadcaster"/>
+    </toolbarpalette>
+  </toolbox>
+
 </overlay>
