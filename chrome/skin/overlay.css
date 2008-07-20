@@ -56,18 +56,88 @@ toolbar[iconsize="small"] #taboo-toolbarbutton-view:hover,
     -moz-image-region: rect(16px 16px 32px 0px);
 }
 
+#taboo-toolbarbutton-topbar {
+    list-style-image: url("chrome://taboo/skin/toolbar-topbar.png");
+    -moz-image-region: rect( 0px 24px 24px 0px);
+}
+
+#taboo-toolbarbutton-topbar:hover {
+    -moz-image-region: rect(24px 24px 48px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-topbar,
+#PersonalToolbar          #taboo-toolbarbutton-topbar {
+    list-style-image: url("chrome://taboo/skin/toolbar-topbar-16.png");
+    -moz-image-region: rect( 0px 16px 16px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-topbar:hover,
+#PersonalToolbar          #taboo-toolbarbutton-topbar:hover {
+    -moz-image-region: rect(16px 16px 32px 0px);
+}
+
 taboo {
   -moz-binding: url(chrome://taboo/content/taboo.xml#taboo);
 }
 
 taboo {
-  margin: 5px;
+  margin: 4px;
 }
 
 taboo.current {
   margin: 0;
 }
 
-taboo.current image {
+taboo.current stack {
   border: 5px solid #f80;
 }
+
+taboo.current {
+  -moz-opacity: 1;
+}
+
+taboo {
+  -moz-opacity: 0.5;
+}
+
+taboo stack {
+   border: 1px solid #888;
+}
+
+taboo label {
+  margin: 0;
+  max-width: 125px;
+  font-size: 11px;
+  padding: 2px;
+  width: 125px;
+  color: white;
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.5);
+}
+
+#taboo-search-box {
+  padding: 5px 2px;
+}
+
+#taboo-search-box textbox {
+  font-size: 20px;
+}
+
+#taboo-search-box label {
+  padding-top: 5px;
+}
+
+#taboo-quickShow {
+  -moz-appearance: menupopup;
+  padding: 10px 8px 6px 8px;
+  margin-top: 4px;
+}
+
+#taboo-quickShow[OS=Darwin] {
+  -moz-appearance: none;
+  background-color: rgba(68,68,68,0.9);
+  border: 1px solid rgba(255,255,255,0.15);
+  -moz-border-radius: 8px;
+  color: #ffffff;
+}
+

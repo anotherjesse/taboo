@@ -1,0 +1,92 @@
+taboo {
+  -moz-binding: url(chrome://taboo/content/taboo.xml#fulltaboo);
+}
+
+taboo {
+  margin: 5px;
+}
+
+taboo.current {
+  margin: 0;
+}
+
+taboo.current image {
+  border: 5px solid #f80;
+}
+
+label.title {
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: bold;
+  color: #777;
+  display: block;
+  white-space: nowrap;
+}
+
+.ftbbox {
+  margin: 10px 0px 10px 0px;
+  padding: 5px 0px 5px 0px;
+  -moz-border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  background: #f8f8f8;
+  cursor: pointer;
+  color: #333;
+  width: 125px;
+  max-width: 125px;
+  height: 123px;
+  max-height: 123px;
+}
+
+#taboo-bannermessage {
+  padding: 20px;
+  color: lightgray;
+  text-align: center;
+  font-size: 1.2em;
+  font-family: arial, sans;
+  font-weight: bold;
+  background-color: black;
+  -moz-opacity: .8;
+}
+
+.slideyScrollBoxBG {
+  background-color: #232323;
+  background-image: url("chrome://taboo/skin/slidey-bg.png");
+  background-repeat: repeat-x;
+  border: 1px solid black;
+}
+
+#taboo-slideybox {
+  border: 1px solid black;
+  margin: 0;
+}
+
+#taboo-slideybox #scroll-left-button {
+  list-style-image: url("chrome://taboo/skin/slidey-scroll-left.png") !important;
+  border: 0px !important;
+  width: 14px;
+  background-color: transparent;
+}
+
+#taboo-slideybox #scroll-right-button {
+  list-style-image: url("chrome://taboo/skin/slidey-scroll-right.png") !important;
+  border: 0px !important;
+  width: 14px;
+  background-color: transparent;
+}
+
+#search-box {
+  width: 150px;
+  font-size: 10px;
+}
+
+#taboo-toolbar {
+  -moz-appearance: none;
+  -moz-box-align: center;
+  -moz-box-pack: start;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  height: 33px;
+  max-height: 33px;
+  background: url("chrome://taboo/skin/topbar-toolbar-bg.png");
+}

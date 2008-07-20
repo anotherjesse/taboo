@@ -123,6 +123,17 @@ function Taboo() {
     }
   };
 
+  // This is a Flock only function (called in flockOverlay.xul)
+  this.toggleTopbar = function(event) {
+    if ("undefined" != typeof FlockTopbar) {
+      // Flock 2.0
+      FlockTopbar.selectById("tabooTopbarBroadcaster");
+    } else {
+      // Flock 1.2
+      flock_topbarSelectById("tabooTopbarBroadcaster");
+    }
+  };
+
   this.addTaboo = function(event) {
     var url = currentUrl();
     var alreadySaved = SVC.isSaved(url);
@@ -202,7 +213,12 @@ function Taboo() {
 
   function moveTo(newIdx) {
     if (newIdx < 0) {
-      return;
+      if (quickShowIdx == 0) {
+	return;
+      }
+      else {
+	newIdx = 0;
+      }
     }
 
     // lazy load tabs if more exist
@@ -250,7 +266,9 @@ function Taboo() {
     item.onclick = function(event) {
       event.preventDefault();
       event.stopPropagation();
-      SVC.open(item.getAttribute('url'), 'current');
+      var where = whereToOpenLink(event);
+      if (where == 'tab') where = 'tabforeground';
+      SVC.open(item.getAttribute('url'), where);
       quickViewPanel.hidePopup();
     };
 
@@ -277,7 +295,9 @@ function Taboo() {
     case event.DOM_VK_RETURN:
       var url = current.getAttribute('url');
       document.getElementById('taboo-quickShow').hidePopup();
-      SVC.open(current.getAttribute('url'), 'current');
+      var where = whereToOpenLink(event);
+      if (where == 'tab') where = 'tabforeground';
+      SVC.open(current.getAttribute('url'), where);
       break;
     case event.DOM_VK_LEFT:
       moveTo(quickShowIdx-1);
@@ -296,42 +316,39 @@ function Taboo() {
     }
 
     event.stopPropagation();
+    event.preventDefault();
   };
 
   this.hideQuickShow = function() {
     window.removeEventListener('keypress', quickShowListener, true);
+    quickShowEnum = null;
+
+    // force redraw after closing the panel
+    var win = window;
+    setTimeout(function() {
+                 var wu = win.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+                 wu.redraw();
+               }, 10);
+  };
+
+  this.quickShowInput = function(event) {
+    refreshQuickShow();
+  }
+
+  this.focusQuickShow = function() {
+    window.addEventListener('keypress', quickShowListener, true);
+    $('taboo-quickShow-search').focus();
+  };
+
+  function refreshQuickShow() {
     quickShowTabs = [];
     quickShowIdx = 0;
-    quickShowEnum = null;
 
     while (quickShowRows.firstChild) {
       quickShowRows.removeChild(quickShowRows.firstChild);
     }
-  };
 
-  this.focusQuickShow = function() {
-    window.addEventListener('keypress', quickShowListener, true);
-  };
-
-  this.showPanel = function(event) {
-
-    // a horrible proxy for detecting if the panel is already open
-    if (quickShowEnum) {
-      return
-    }
-
-    var groupbox = document.getElementById('taboo-groupbox');
-    var grid = document.getElementById('taboo-grid');
-
-    var columns = document.createElement('columns');
-
-    for (var i = 0; i < displayCols; i++) {
-      var col = document.createElement('column');
-      col.setAttribute('flex', '1');
-      columns.appendChild(col);
-    }
-
-    quickShowEnum = SVC.get('', false);
+    quickShowEnum = SVC.get($('taboo-quickShow-search').value, false);
 
     if (quickShowEnum.hasMoreElements()) {
       var rows = 0;
@@ -345,10 +362,38 @@ function Taboo() {
     else {
       var row = document.createElement('row');
       var item = document.createElement('label');
-      item.setAttribute('value', 'No Tabs Saved');
+      if ($('taboo-quickShow-search').value == '') {
+	item.setAttribute('value', 'No Tabs Saved');
+      }
+      else {
+	item.setAttribute('value', 'No Tabs Matched');
+      }
       row.appendChild(item);
       quickShowRows.appendChild(row);
     }
+  }
+
+  this.showPanel = function(event) {
+
+    // a horrible proxy for detecting if the panel is already open
+    if (quickShowEnum) {
+      return;
+    }
+
+    $('taboo-quickShow-search').value = '';
+
+    var groupbox = document.getElementById('taboo-groupbox');
+    var grid = document.getElementById('taboo-grid');
+
+    var columns = document.createElement('columns');
+
+    for (var i = 0; i < displayCols; i++) {
+      var col = document.createElement('column');
+      col.setAttribute('flex', '1');
+      columns.appendChild(col);
+    }
+
+    refreshQuickShow();
 
     quickViewPanel.openPopup(document.getElementById('taboo-toolbarbutton-view'), 'after_start', -1, -1);
     quickViewPanel.focus();
@@ -387,7 +432,7 @@ function init() {
     gBrowser.addProgressListener(progressListener,
                                  Ci.nsIWebProgress.NOTIFY_LOCATION);
   }
-  
+
   FF3 = (function() {
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
@@ -397,6 +442,9 @@ function init() {
   if (FF3) {
     $('taboo-quickShow').removeAttribute('hidden');
     $('taboo-details').removeAttribute('hidden');
+    var runtime = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULRuntime);
+    $('taboo-quickShow').setAttribute('OS', runtime.OS);
+    $('taboo-details').setAttribute('OS', runtime.OS);
   }
 }
 
@@ -446,6 +494,20 @@ function installInToolbar() {
 
     toolbar.setAttribute("currentset", toolbar.currentSet);
     document.persist(toolbar.id, "currentset");
+  }
+
+  // The topbar button is Flock-only (if we're not in Flock, personalbar == null)
+  var topbarid = "taboo-toolbarbutton-topbar";
+  var personalbar = $("PersonalToolbar");
+  if (personalbar && "function" == typeof personalbar.insertItem) {
+    before = $("photos-button");
+    if (!before)
+      before = null;
+
+    personalbar.insertItem(topbarid, before, null, false);
+
+    personalbar.setAttribute("currentset", personalbar.currentSet);
+    document.persist(personalbar.id, "currentset");
   }
 
   prefs.setBoolPref("setup", true); // Done! Never do this again.
