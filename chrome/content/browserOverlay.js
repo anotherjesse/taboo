@@ -123,6 +123,17 @@ function Taboo() {
     }
   };
 
+  // This is a Flock only function (called in flockOverlay.xul)
+  this.toggleTopbar = function(event) {
+    if ("undefined" != typeof FlockTopbar) {
+      // Flock 2.0
+      FlockTopbar.selectById("tabooTopbarBroadcaster");
+    } else {
+      // Flock 1.2
+      flock_topbarSelectById("tabooTopbarBroadcaster");
+    }
+  };
+
   this.addTaboo = function(event) {
     var url = currentUrl();
     var alreadySaved = SVC.isSaved(url);
@@ -476,6 +487,20 @@ function installInToolbar() {
 
     toolbar.setAttribute("currentset", toolbar.currentSet);
     document.persist(toolbar.id, "currentset");
+  }
+
+  // The topbar button is Flock-only (if we're not in Flock, personalbar == null)
+  var topbarid = "taboo-toolbarbutton-topbar";
+  var personalbar = $("PersonalToolbar");
+  if (personalbar && "function" == typeof personalbar.insertItem) {
+    before = $("photos-button");
+    if (!before)
+      before = null;
+
+    personalbar.insertItem(topbarid, before, null, false);
+
+    personalbar.setAttribute("currentset", personalbar.currentSet);
+    document.persist(personalbar.id, "currentset");
   }
 
   prefs.setBoolPref("setup", true); // Done! Never do this again.

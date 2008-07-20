@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <bindings xmlns="http://www.mozilla.org/xbl"
           xmlns:html="http://www.w3.org/1999/xhtml"
           xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -27,13 +29,51 @@
       </xul:vbox>
     </content>
     <implementation>
-      <constructor>
+      <constructor><![CDATA[
         var img = document.getAnonymousElementByAttribute(this, 'anonid', 'img');
         img.src = this.getAttribute('src');
         var title = document.getAnonymousElementByAttribute(this, 'anonid', 'title');
         title.value = this.getAttribute('title');
+      ]]>
       </constructor>
     </implementation>
   </binding>
-</bindings>
 
+  <binding id="fulltaboo">
+    <resources>
+      <stylesheet src="chrome://taboo/skin/overlay.css"/>
+    </resources>
+    <content>
+      <xul:vbox flex="1" class="ftbbox" anonid="controlBox" tooltip="_child">
+        <xul:spacer flex="1" />
+        <xul:label anonid="lbl" class="title" crop="end" />
+        <xul:hbox flex="1">
+          <xul:spacer flex="1" />
+          <xul:image anonid="img" />
+          <xul:spacer flex="1" />
+        </xul:hbox>
+        <xul:spacer flex="1" />
+        <xul:tooltip anonid="tooltip">
+          <xul:vbox>
+            <xul:label anonid="tooltipTitle"/>
+            <xul:image anonid="tooltipImage"/>
+          </xul:vbox>
+        </xul:tooltip>
+      </xul:vbox>
+    </content>
+
+    <implementation>
+      <constructor>
+        var img = document.getAnonymousElementByAttribute(this, 'anonid', 'img');
+        img.src = this.getAttribute('thumb');
+        var lbl = document.getAnonymousElementByAttribute(this, 'anonid', 'lbl');
+        lbl.value = this.getAttribute('title');
+        var tooltiplbl = document.getAnonymousElementByAttribute(this, 'anonid', 'tooltipTitle');
+        tooltiplbl.value = this.getAttribute('title');
+        var tooltipimg = document.getAnonymousElementByAttribute(this, 'anonid', 'tooltipImage');
+        tooltipimg.src = this.getAttribute('image');
+      </constructor>
+    </implementation>
+  </binding>
+
+</bindings>

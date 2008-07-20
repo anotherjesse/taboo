@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2008 Erwan Loisant
+
+ This file may be used under the terms of of the
+ GNU General Public License Version 2 or later (the "GPL"),
+ http://www.gnu.org/licenses/gpl.html
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the
+ License.
+-->
+
+<overlay id="tabooFlockOverlay"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"> 
+
+  <broadcasterset id="flock_TopbarBroadcasterSet">
+      <broadcaster id="tabooTopbarBroadcaster"
+          autoCheck="false"
+          value="Taboo"
+          label="Taboo"
+          topbarHeight="190"
+          type="checkbox"
+          group="topbar"
+          url="chrome://taboo/content/topbar.xul"
+          oncommand="taboo.toggleTopbar(event);"/>
+  </broadcasterset>
+
+  <toolbox id="navigator-toolbox">
+    <toolbarpalette id="BrowserToolbarPalette">
+      <toolbarbutton id="taboo-toolbarbutton-topbar"
+        class="toolbarbutton-1 chromeclass-toolbar-additional statefultooltip"
+        tooltiptext="Open the Taboo Topbar"
+        label="Taboo Topbar"
+        observes="tabooTopbarBroadcaster"/>
+    </toolbarpalette>
+  </toolbox>
+
+</overlay>

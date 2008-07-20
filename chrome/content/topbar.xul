@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2009 Erwan Loisant
+
+ This file may be used under the terms of of the
+ GNU General Public License Version 2 or later (the "GPL"),
+ http://www.gnu.org/licenses/gpl.html
+
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the
+ License.
+-->
+
+<?xml-stylesheet type="text/css" href="chrome://flock/skin/common/slideybox.css"?>
+<?xml-stylesheet type="text/css" href="chrome://flock/skin/bindings/bannermessage.css"?>
+<?xml-stylesheet type="text/css" href="chrome://taboo/skin/overlay.css"?>
+<?xml-stylesheet type="text/css" href="chrome://taboo/skin/topbar.css"?>
+
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        onload="tabooTopbar.load();"
+        onunload="tabooTopbar.unload();">
+
+  <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
+  <script type="text/javascript" src="chrome://taboo/content/topbar.js"></script>
+  <!-- We don't use DND (yet) but Flock's slideybox is buggy without that -->
+  <script type="application/x-javascript" src="chrome://global/content/nsDragAndDrop.js" />
+
+  <toolbar id="taboo-toolbar">
+    <spacer flex="1" />
+    <toolbaritem>
+      <textbox id="search-box"
+               emptytext="Search"
+               type="timed"
+               oncommand="tabooTopbar.refresh();"
+               timeout="100"
+               />
+    </toolbaritem>
+    <spacer width="50px" />
+  </toolbar>
+  <deck id="taboo-deck" flex="1">
+    <slideybox id="taboo-slideybox"
+               align="center"
+               pack="center"
+               flex="1"
+               inneralign="center"
+               >
+    </slideybox>
+    <bannermessage id="taboo-bannermessage"
+                   flex="1"
+                   timerLength="10000" />
+  </deck>
+
+</window>

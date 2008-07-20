@@ -56,6 +56,26 @@ toolbar[iconsize="small"] #taboo-toolbarbutton-view:hover,
     -moz-image-region: rect(16px 16px 32px 0px);
 }
 
+#taboo-toolbarbutton-topbar {
+    list-style-image: url("chrome://taboo/skin/toolbar-topbar.png");
+    -moz-image-region: rect( 0px 24px 24px 0px);
+}
+
+#taboo-toolbarbutton-topbar:hover {
+    -moz-image-region: rect(24px 24px 48px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-topbar,
+#PersonalToolbar          #taboo-toolbarbutton-topbar {
+    list-style-image: url("chrome://taboo/skin/toolbar-topbar-16.png");
+    -moz-image-region: rect( 0px 16px 16px 0px);
+}
+
+toolbar[iconsize="small"] #taboo-toolbarbutton-topbar:hover,
+#PersonalToolbar          #taboo-toolbarbutton-topbar:hover {
+    -moz-image-region: rect(16px 16px 32px 0px);
+}
+
 taboo {
   -moz-binding: url(chrome://taboo/content/taboo.xml#taboo);
 }
