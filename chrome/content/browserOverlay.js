@@ -329,7 +329,7 @@ function Taboo() {
     while (quickShowRows.firstChild) {
       quickShowRows.removeChild(quickShowRows.firstChild);
     }
-    
+
     quickShowEnum = SVC.get($('taboo-quickShow-search').value, false);
 
     if (quickShowEnum.hasMoreElements()) {
@@ -414,7 +414,7 @@ function init() {
     gBrowser.addProgressListener(progressListener,
                                  Ci.nsIWebProgress.NOTIFY_LOCATION);
   }
-  
+
   FF3 = (function() {
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
@@ -424,6 +424,9 @@ function init() {
   if (FF3) {
     $('taboo-quickShow').removeAttribute('hidden');
     $('taboo-details').removeAttribute('hidden');
+    var runtime = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULRuntime);
+    $('taboo-quickShow').setAttribute('OS', runtime.OS);
+    $('taboo-details').setAttribute('OS', runtime.OS);
   }
 }
 
