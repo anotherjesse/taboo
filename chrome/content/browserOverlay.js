@@ -322,6 +322,13 @@ function Taboo() {
   this.hideQuickShow = function() {
     window.removeEventListener('keypress', quickShowListener, true);
     quickShowEnum = null;
+
+    // force redraw after closing the panel
+    var win = window;
+    setTimeout(function() {
+                 var wu = win.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+                 wu.redraw();
+               }, 10);
   };
 
   this.quickShowInput = function(event) {
