@@ -60,30 +60,37 @@
     </panel>
 
     <panel id="taboo-details" onpopupshown="taboo.focusDetails()" hidden="true">
-      <hbox style="padding: 5px">
-        <vbox>
-          <image id="taboo-image" style="padding: 2px" />
-          <spacer flex="1" />
-        </vbox>
-        <vbox width="400">
-          <label value="Title" control="taboo-title" accesskey="T" />
-          <textbox id="taboo-title" />
-          <label value="Notes" control="taboo-notes" accesskey="n" />
-          <textbox id="taboo-notes" multiline="true" rows="5" />
-          <spacer height="10" />
-          <hbox>
+      <vbox style="padding: 5px">
+        <label value="Edit Taboo" style="font-size: 150%" />
+        <hbox>
+          <vbox>
+            <image id="taboo-image" style="padding: 2px" />
             <spacer flex="1" />
-            <button id="taboo-unsave"
-                    oncommand="taboo.panelDelete();"
-                    label="Remove"
-                    accesskey="R" />
-            <button id="taboo-update"
-                    oncommand="taboo.panelUpdate();"
-                    label="Done"
-                    accesskey="D" />
-          </hbox>
-        </vbox>
-      </hbox>
+          </vbox>
+          <vbox width="400">
+            <label value="Title" control="taboo-title" accesskey="T" />
+            <textbox id="taboo-title" />
+            <label value="Notes" control="taboo-notes" accesskey="n" />
+            <textbox id="taboo-notes" multiline="true" rows="5" />
+            <spacer height="10" />
+            <hbox>
+              <button id="taboo-unsave"
+                      oncommand="taboo.panelDelete();"
+                      label="Remove Taboo"
+                      accesskey="R" />
+              <spacer flex="1" />
+              <button id="taboo-close-panel"
+                      oncommand="taboo.panelClose();"
+                      label="Cancel"
+                      accessKey="C" />
+              <button id="taboo-update"
+                      oncommand="taboo.panelUpdate();"
+                      label="Done"
+                      accesskey="D" />
+            </hbox>
+          </vbox>
+        </hbox>
+      </vbox>
     </panel>
 
   </toolbox>

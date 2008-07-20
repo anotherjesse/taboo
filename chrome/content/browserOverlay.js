@@ -60,6 +60,10 @@ function Taboo() {
     document.getElementById('taboo-details').hidePopup();
   };
 
+  this.panelClose = function() {
+    document.getElementById('taboo-details').hidePopup();
+  };
+
   this.gotoRecent = function(targetNode, event) {
     event.preventDefault();
     event.stopPropagation();
