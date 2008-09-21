@@ -122,8 +122,7 @@ function Controller() {
     SVC.delete(tab.url);
   }
 
-  this.tabFinalDelete = function(tab, el) {
-    humanMsg.displayMsg("This taboo has been permanently deleted.");
+  this.tabFinalDelete = function(tab) {
     SVC.reallyDelete(tab.url);
   }
 
