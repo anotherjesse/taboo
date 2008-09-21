@@ -180,7 +180,7 @@ function snapshot(win, outputWidth, outputHeight) {
 
 function cleanTabState(aState, aClearPrivateData) {
   var sandbox = new Cu.Sandbox('about:blank');
-  var tabState = Cu.evalInSandbox(aState, sandbox);
+  var tabState = Cu.evalInSandbox('('+aState+')', sandbox);
 
   var index = (tabState.index ? tabState.index : tabState.entries.length) - 1;
   var entry = tabState.entries[index];
