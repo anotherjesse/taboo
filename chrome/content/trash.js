@@ -27,13 +27,9 @@ function Trash(container) {
 
   deleteButton.onclick = function() {
     for (var i in deleted) {
-      // if parentNode doesn't exist, it has already been removed from page
-      // eg - it has been undeleted or deleted - but we don't keep deleted
-      // array up to date so we need to check.
-      if (deleted[i].el.parentNode) {
-        controller.tabFinalDelete(deleted[i].tab, deleted[i].el);
-      }
+      controller.tabFinalDelete(deleted[i]);
     }
+    humanMsg.displayMsg("All taboo in trash have been permanently deleted.");
   };
   container.appendChild(deleteAll);
 
@@ -41,6 +37,7 @@ function Trash(container) {
   container.appendChild(ul);
 
   this.start = function() {
+    deleted = [];
     ul.innerHTML = '';
   };
 
@@ -60,16 +57,14 @@ function Trash(container) {
 
     box.onclick = function(event) {
       if (event.originalTarget.className == 'delete') {
-        controller.tabFinalDelete(tab, box);
+        controller.tabFinalDelete(tab);
       }
       else {
         controller.tabUndelete(tab);
-        box.parentNode.removeChild(box);
-        undeleted.style.visibility = 'visible';
-        setTimeout(function() { undeleted.style.display = 'none'; }, 30000);
+        controller.display();
       }
     };
     ul.appendChild(box);
-    deleted.push({'tab':tab, 'el':box});
+    deleted.push(tab);
   };
 }
