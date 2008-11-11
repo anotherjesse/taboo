@@ -8,6 +8,6 @@ end
 
 task :xpi do
   rm_f 'taboo.xpi'
-  `find chrome chrome.manifest components install.rdf -type f \
+  `find chrome chrome.manifest components defaults install.rdf -type f \
    | egrep -v "(#|~)" | egrep -v "\.idl$" | xargs zip taboo.xpi`
 end 

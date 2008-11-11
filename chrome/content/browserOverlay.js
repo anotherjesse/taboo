@@ -443,6 +443,23 @@ function init() {
     return !!ss.getTabState;
   })()
 
+  var version = Cc["@mozilla.org/extensions/manager;1"]
+           .getService(Ci.nsIExtensionManager)
+           .getItemForID("taboo@runningfrombears.com").version;
+  var STARTUP_SHOW_DELAY = 500;
+  var pageURL;
+  var lastVersion = prefs.getCharPref("lastversion");
+  if (lastVersion == "firstrun") {
+    if (prefs.getPrefType("firstRunURL")) pageURL = prefs.getCharPref("firstRunURL");
+  } else if (lastVersion != version) {
+    if (prefs.getPrefType("upgradeURL")) pageURL = prefs.getCharPref("upgradeURL");
+  }
+
+  prefs.setCharPref("lastversion", version);
+  if (pageURL && pageURL != "null") {
+    setTimeout(function(){window.openUILinkIn(pageURL, "tab")}, SHOW_DELAY);
+  }
+
   if (FF3) {
     $('taboo-quickShow').removeAttribute('hidden');
     $('taboo-details').removeAttribute('hidden');
