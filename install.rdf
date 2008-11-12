@@ -7,11 +7,12 @@
     <em:version>0.5.6</em:version>
     <em:description>The cure for tabitis</em:description>
     <em:iconURL>chrome://taboo/skin/logo.png</em:iconURL>
-    <em:homepageURL>http://runningfrombears.com/taboo</em:homepageURL>
+    <em:homepageURL>http://overstimulate.com/projects/taboo</em:homepageURL>
     <em:creator>Jesse Andrews; http://overstimulate.com</em:creator>
     <em:contributor>Manish Singh; http://yosh.org</em:contributor>
     <em:contributor>Ian Fischer; http://iantriesagain.com</em:contributor>
     <em:contributor>Jake Dahn; http://jakedahn.com</em:contributor>
+    <em:contributor>Joshua McKenty; http://www.cognition.ca</em:contributor>
 
     <!-- firefox -->
     <em:targetApplication>
