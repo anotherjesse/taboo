@@ -89,7 +89,7 @@ function Controller() {
   };
 
   this.load = function(view_name) {
-    var ViewClass = top[view_name];
+    var ViewClass = window.top[view_name];
 
     content.innerHTML = '';
     footerControls.innerHTML = '';

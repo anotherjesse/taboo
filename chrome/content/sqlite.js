@@ -100,14 +100,19 @@ function DB(dbFile) {
 
   var statements = [];
   function wrap_sql(query) {
-    var stmt = conn.createStatement(query);
+    try {
+      var stmt = conn.createStatement(query);
 
-    var wrapper = Cc["@mozilla.org/storage/statement-wrapper;1"]
-      .createInstance(Ci.mozIStorageStatementWrapper);
+      var wrapper = Cc["@mozilla.org/storage/statement-wrapper;1"]
+        .createInstance(Ci.mozIStorageStatementWrapper);
 
-    wrapper.initialize(stmt);
-    statements.push(stmt);
-    return wrapper;
+      wrapper.initialize(stmt);
+      statements.push(stmt);
+      return wrapper;    
+    } catch (ex) {
+      throw (conn.lastErrorString); 
+      return null;
+    }
   }
 
   this.close = function() {
