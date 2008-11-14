@@ -33,8 +33,8 @@
                      command="cmd_addTaboo"
                      type="menu-button"
                      class="toolbarbutton-1 chromeclass-toolbar-additional">
-        <menupopup id="taboo-add-options" onpopupshowing="taboo.updateContext(event)">
-          <menuitem class="unsaved" label="Add Taboo" command="cmd_addTabooWithDetails" />
+        <menupopup id="taboo-add-options" onpopupshowing="taboo.updateContext(this)">
+          <menuitem class="unsaved" label="Save Tab" command="cmd_addTabooWithDetails" />
           <menuitem class="saved" label="Edit Notes" command="cmd_addTabooWithDetails" />
           <menuitem class="saved" label="Remove Taboo" command="cmd_removeTaboo" />
         </menupopup>
@@ -42,7 +42,8 @@
       <toolbarbutton id="taboo-toolbarbutton-view"
                      label="View Taboos"
                      tooltiptext="View your Taboos in a new tab"
-                     command="cmd_showTaboos" type="menu-button"
+                     command="cmd_showTaboos"
+                     type="menu-button"
                      class="toolbarbutton-1 chromeclass-toolbar-additional">
         <menupopup id="taboo-recent-list"
                    onpopupshowing="return taboo.showDropdown(event);" />
@@ -128,6 +129,7 @@
   <commandset id="mainCommandSet">
     <command id="cmd_showPopup" oncommand="taboo.showPanel(event)" />
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
+    <command id="cmd_addAllTaboo" oncommand="taboo.addAllTaboo(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
     <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />
     <command id="cmd_addTabooWithDetails" oncommand="taboo.addTabooWithDetails(event)" />

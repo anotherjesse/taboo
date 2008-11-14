@@ -138,10 +138,9 @@ function Taboo() {
     }
   };
 
-  this.updateContext = function(event) {
+  this.updateContext = function(popup) {
     var url = currentUrl();
     var alreadySaved = SVC.isSaved(url);
-    var popup = $('taboo-add-options');
     for (var i=0; i<popup.childNodes.length; i++) {
       var node = popup.childNodes[i];
       if (node.getAttribute('class') == 'saved') {
@@ -179,6 +178,10 @@ function Taboo() {
     if (SVC.isSaved(url)) {
       BrowserCloseTabOrWindow();
     }
+  };
+
+  this.addAllTaboo = function(event) {
+    alert('foo')
   };
 
   this.removeTaboo = function(event) {
