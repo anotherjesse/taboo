@@ -194,7 +194,9 @@ function cleanTabState(aState, aClearPrivateData) {
     deletePrivateData(entry);
 
     if (entry.children) {
-      entry.children.forEach(deletePrivateData);
+      for (var i=0; i<entry.children.length; i++) {
+        deletePrivateData(entry.children[i]);
+      }
     }
   }
 
