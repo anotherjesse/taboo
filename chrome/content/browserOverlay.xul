@@ -2,11 +2,11 @@
 
 <!--
  Copyright 2007 Jesse Andrews and Manish Singh
- 
+
  This file may be used under the terms of of the
  GNU General Public License Version 2 or later (the "GPL"),
  http://www.gnu.org/licenses/gpl.html
- 
+
  Software distributed under the License is distributed on an "AS IS" basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  for the specific language governing rights and limitations under the
@@ -16,8 +16,8 @@
 <?xml-stylesheet type="text/css" href="chrome://taboo/skin/overlay.css"?>
 
 <overlay id="tabooOverlay"
-  xmlns:html="http://www.w3.org/1999/xhtml"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns:html="http://www.w3.org/1999/xhtml"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript" src="chrome://taboo/content/browserOverlay.js"/>
 
@@ -28,34 +28,46 @@
   <toolbox id="navigator-toolbox">
     <toolbarpalette id="BrowserToolbarPalette">
       <toolbarbutton id="taboo-toolbarbutton-add"
-        label="Add to Taboo"
-        tooltiptext="save this tab to read later"
-        command="cmd_addTaboo"
-        class="toolbarbutton-1 chromeclass-toolbar-additional" />
+                     label="Add to Taboo"
+                     tooltiptext="save this tab to read later"
+                     command="cmd_addTaboo"
+                     type="menu-button"
+                     class="toolbarbutton-1 chromeclass-toolbar-additional">
+        <menupopup id="taboo-add-options" onpopupshowing="taboo.updateContext(this)">
+          <menuitem class="unsaved" label="Save Tab" command="cmd_addTabooWithDetails" />
+          <menuitem class="saved" label="Edit Notes" command="cmd_addTabooWithDetails" />
+          <menuitem class="saved" label="Remove Taboo" command="cmd_removeTaboo" />
+        </menupopup>
+      </toolbarbutton>
       <toolbarbutton id="taboo-toolbarbutton-view"
-        label="View Taboos"
-        tooltiptext="View your Taboos in a new tab"
-        command="cmd_showTaboos" type="menu-button"
-        class="toolbarbutton-1 chromeclass-toolbar-additional">
+                     label="View Taboos"
+                     tooltiptext="View your Taboos in a new tab"
+                     command="cmd_showTaboos"
+                     type="menu-button"
+                     class="toolbarbutton-1 chromeclass-toolbar-additional">
         <menupopup id="taboo-recent-list"
-          onpopupshowing="return taboo.showDropdown(event);" />
+                   onpopupshowing="return taboo.showDropdown(event);" />
       </toolbarbutton>
     </toolbarpalette>
 
-    <panel id='taboo-quickShow' 
+    <panel id='taboo-quickShow'
            hidden="true"
            onpopupshown="taboo.focusQuickShow()"
            onpopuphiding="taboo.hideQuickShow()">
       <vbox flex="1">
-	<hbox id="taboo-search-box">
-	  <label value="Search" />
-	  <textbox id="taboo-quickShow-search" value="" oninput="taboo.quickShowInput(event)" class="plain" flex="1" />
-	</hbox>
-	<groupbox id='taboo-groupbox'>
-	  <grid id='taboo-grid'>
-	    <rows id='tabs-rows' />
-	  </grid>
-	</groupbox>
+        <hbox id="taboo-search-box">
+          <label value="Search" />
+          <textbox id="taboo-quickShow-search"
+                   value=""
+                   oninput="taboo.quickShowInput(event)"
+                   class="plain"
+                   flex="1" />
+        </hbox>
+        <groupbox id='taboo-groupbox'>
+          <grid id='taboo-grid'>
+            <rows id='tabs-rows' />
+          </grid>
+        </groupbox>
       </vbox>
     </panel>
 
@@ -113,10 +125,11 @@
           command="cmd_removeTaboo"
           modifiers="accel shift"/>
   </keyset>
-  
+
   <commandset id="mainCommandSet">
-    <command id="cmd_showPopup" oncommand="taboo.showPanel(event)" /> 
+    <command id="cmd_showPopup" oncommand="taboo.showPanel(event)" />
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
+    <command id="cmd_addAllTaboo" oncommand="taboo.addAllTaboo(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
     <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />
     <command id="cmd_addTabooWithDetails" oncommand="taboo.addTabooWithDetails(event)" />
