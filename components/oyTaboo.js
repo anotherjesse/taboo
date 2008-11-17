@@ -592,18 +592,33 @@ TabooService.prototype = {
   saveAll: function TB_saveAll() {
     var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
       .getService(Ci.nsIWindowMediator);
-    var window = wm.getMostRecentWindow('navigator:browser');
+    var win = wm.getMostRecentWindow('navigator:browser');
 
-    var tabbrowser = window.getBrowser();
+    var ss = Cc['@mozilla.org/browser/sessionstore;1']
+      .getService(Ci.nsISessionStore);
 
+    var winJSON = "(" + ss.getWindowState(win) + ")";
+
+    if (getBoolPref(PREF_DEBUG, false))
+      dump(winJSON + "\n");
+
+    var sandbox = new Cu.Sandbox('about:blank');
+    var winState = Cu.evalInSandbox(winJSON, sandbox);
+    var tabStates = winState.windows[0].tabs;
+
+    var tabbrowser = win.getBrowser();
+
+    var tabs = tabbrowser.tabContainer.childNodes;
     var browsers = tabbrowser.browsers;
     for (var i = 0; i < browsers.length; i++) {
-      var win = browsers[i].contentWindow;
-
+      var tab = tabs[i];
+      var tabWin = browsers[i].contentWindow;
+      var state = tabStates[i];
+      this._saveTab(state, tabWin, tab, null);    
     }
 
+    return true;
   },
-
   save: function TB_save(aDescription) {
     var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
       .getService(Ci.nsIWindowMediator);
@@ -646,16 +661,19 @@ TabooService.prototype = {
       state = winState.windows[0].tabs[currentTab];
     }
 
-    var url = state.entries[state.index - 1].url;
+    return this._saveTab(state, win, selectedTab, aDescription);
+  },
+  _saveTab: function TB__saveTab(aState, aWindow, aTab, aDescription) {
+    var url = aState.entries[aState.index - 1].url;
     url = url.replace(/#.*$/, '');
 
-    var fullImage = snapshot(win, IMAGE_FULL_WIDTH, IMAGE_FULL_HEIGHT);
-    var thumbImage = snapshot(win, IMAGE_THUMB_WIDTH, IMAGE_THUMB_HEIGHT);
+    var fullImage = snapshot(aWindow, IMAGE_FULL_WIDTH, IMAGE_FULL_HEIGHT);
+    var thumbImage = snapshot(aWindow, IMAGE_THUMB_WIDTH, IMAGE_THUMB_HEIGHT);
 
-    var exists = this._storage.save(url, aDescription, state,
+    var exists = this._storage.save(url, aDescription, aState,
                                     fullImage, thumbImage);
 
-    var faviconURL = selectedTab.getAttribute('image');
+    var faviconURL = aTab.getAttribute('image');
     if (faviconURL) {
       var ios = Cc['@mozilla.org/network/io-service;1']
         .getService(Ci.nsIIOService);

@@ -38,12 +38,13 @@ interface oyITabooObserver : nsISupports {
   void onReallyDelete(in AUTF8String aURL);
 };
 
-[scriptable, uuid(1cc276b5-3648-46fe-afc5-3b776b749b86)]
+[scriptable, uuid(2fc0961d-8408-465d-866d-ea8e1f21c17b)]
 interface oyITaboo : nsISupports {
   void open(in AUTF8String aURL, in AUTF8String aWhere);
   void openInTab(in AUTF8String aURL, in nsIDOMNode aTab);
 
   boolean save(in AUTF8String aDescription);
+  boolean saveAll();
   boolean isSaved(in AUTF8String aURL);
 
   void update(in AUTF8String aURL, in AUTF8String aTitle,
