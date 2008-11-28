@@ -181,7 +181,8 @@ function Taboo() {
   };
 
   this.addAllTaboo = function(event) {
-    alert('foo')
+    SVC.saveAll();
+    saved(true);
   };
 
   this.removeTaboo = function(event) {

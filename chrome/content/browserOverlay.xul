@@ -37,6 +37,8 @@
           <menuitem class="unsaved" label="Save Tab" command="cmd_addTabooWithDetails" />
           <menuitem class="saved" label="Edit Notes" command="cmd_addTabooWithDetails" />
           <menuitem class="saved" label="Remove Taboo" command="cmd_removeTaboo" />
+          <menuseparator />
+          <menuitem label="Save All Tabs" command="cmd_tabooAll" />
         </menupopup>
       </toolbarbutton>
       <toolbarbutton id="taboo-toolbarbutton-view"
@@ -129,7 +131,7 @@
   <commandset id="mainCommandSet">
     <command id="cmd_showPopup" oncommand="taboo.showPanel(event)" />
     <command id="cmd_showTaboos" oncommand="taboo.show(event)" />
-    <command id="cmd_addAllTaboo" oncommand="taboo.addAllTaboo(event)" />
+    <command id="cmd_tabooAll" oncommand="taboo.addAllTaboo(event)" />
     <command id="cmd_addTaboo" oncommand="taboo.addTaboo(event)" />
     <command id="cmd_toggleTaboo" oncommand="taboo.toggleTaboo(event)" />
     <command id="cmd_addTabooWithDetails" oncommand="taboo.addTabooWithDetails(event)" />

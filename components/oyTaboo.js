@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Jesse Andrews and Manish Singh
+ * Copyright 2007-2008 Jesse Andrews and Manish Singh
  *
  * This file may be used under the terms of of the
  * GNU General Public License Version 2 or later (the "GPL"),
@@ -144,16 +144,10 @@ TabooInfo.prototype = {
 
 
 function snapshot(win, outputWidth, outputHeight) {
-  var content = win.content;
-
   var canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
 
-  var realW = content.document.body ? content.document.body.clientWidth
-                                    : content.innerWidth;
-  if (!realW || realW == 0) {
-    realW = content.innerWidth;
-  }
-  var realH = content.innerHeight;
+  var realW = win.innerWidth;
+  var realH = win.innerHeight;
 
   var pW = outputWidth * 1.0 / realW;
   var pH = outputHeight * 1.0 / realH;
@@ -172,7 +166,7 @@ function snapshot(win, outputWidth, outputHeight) {
 
   var ctx = canvas.getContext("2d");
   ctx.scale(p, p);
-  ctx.drawWindow(content, content.scrollX, content.scrollY, realW, realH, "rgb(0,0,0)");
+  ctx.drawWindow(win, win.scrollX, win.scrollY, realW, realH, "rgb(0,0,0)");
 
   var imageData = canvas.toDataURL();
   return win.atob(imageData.substr('data:image/png;base64,'.length));
@@ -614,7 +608,7 @@ TabooService.prototype = {
       var tab = tabs[i];
       var tabWin = browsers[i].contentWindow;
       var state = tabStates[i];
-      this._saveTab(state, tabWin, tab, null);    
+      this._saveTab(state, tabWin, tab, null);
     }
 
     return true;
@@ -661,7 +655,7 @@ TabooService.prototype = {
       state = winState.windows[0].tabs[currentTab];
     }
 
-    return this._saveTab(state, win, selectedTab, aDescription);
+    return this._saveTab(state, win.content, selectedTab, aDescription);
   },
   _saveTab: function TB__saveTab(aState, aWindow, aTab, aDescription) {
     var url = aState.entries[aState.index - 1].url;
