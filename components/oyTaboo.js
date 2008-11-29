@@ -346,11 +346,13 @@ TabooStorageSQL.prototype = {
 
     var imageFile = this._getImageFile(entry.md5);
     var imageURL = fileHandler.getURLSpecFromFile(imageFile);
+    imageURL += '?' + entry.updated;
 
     var thumbFile = this._getThumbFile(entry.md5);
     var thumbURL;
     if (thumbFile.exists()) {
       thumbURL = fileHandler.getURLSpecFromFile(thumbFile);
+      thumbURL += '?' + entry.updated;
     } else {
       thumbURL = imageURL;
     }
