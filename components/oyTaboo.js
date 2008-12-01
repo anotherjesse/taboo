@@ -9,13 +9,6 @@
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
- *
- * Portions are derived from the Mozilla nsSessionStore component:
- *
- * Copyright (C) 2006 Simon Bünzli <zeniko@gmail.com>
- *
- * Contributor(s):
- * Dietrich Ayala <autonome@gmail.com>
  */
 
 const TB_CONTRACTID = '@oy/taboo;1';
@@ -526,8 +519,6 @@ TabooStorageSQL.prototype = {
   }
 }
 
-var newSSApi = false;
-
 function TabooService() {
   this._observers = [];
 
@@ -538,17 +529,6 @@ function TabooService() {
 TabooService.prototype = {
   _init: function TB__init() {
     this._storage = new TabooStorageSQL();
-
-    var ss = Cc['@mozilla.org/browser/sessionstore;1']
-      .getService(Ci.nsISessionStore);
-    var extMgr = Cc['@mozilla.org/extensions/manager;1']
-      .getService(Ci.nsIExtensionManager);
-
-    var TorButtonGUID = '{e0204bd5-9d31-402b-a99d-a6aa8ffebdca}';
-
-    if (!extMgr.getItemForID(TorButtonGUID) && ss.getTabState) {
-      newSSApi = true;
-    }
   },
   observe: function TB_observe(subject, topic, state) {
     var obs = getObserverService();
@@ -625,25 +605,13 @@ TabooService.prototype = {
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
 
-    var state;
+    var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
+
+    if (getBoolPref(PREF_DEBUG, false))
+      dump(tabJSON + "\n");
+
     var sandbox = new Cu.Sandbox('about:blank');
-
-    if (newSSApi) {
-      var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
-
-      if (getBoolPref(PREF_DEBUG, false))
-        dump(tabJSON + "\n");
-
-      state = Cu.evalInSandbox(tabJSON, sandbox);
-    } else {
-      var winJSON = "(" + ss.getWindowState(win) + ")";
-
-      if (getBoolPref(PREF_DEBUG, false))
-        dump(winJSON + "\n");
-
-      var winState = Cu.evalInSandbox(winJSON, sandbox);
-      state = winState.windows[0].tabs[currentTab];
-    }
+    var state = Cu.evalInSandbox(tabJSON, sandbox);
 
     return this._saveTab(state, win.content, selectedTab, aDescription);
   },
@@ -812,211 +780,8 @@ TabooService.prototype = {
 
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
              .getService(Ci.nsISessionStore);
-
-    if (newSSApi) {
-      ss.setTabState(aTab, tabData);
-    } else {
-      var win = aTab.ownerDocument.defaultView;
-      this._setTabStatePrecursor(win, aTab, tabData, 0);
-    }
+    ss.setTabState(aTab, tabData);
   },
-
-  /* Because Firefox 2's sessionstore doesn't let us restore a single tab,
-   * we cut'n'paste a bunch of code here
-   */
-  _setTabStatePrecursor: function TB__setTabStatePrecursor(aWindow, aTab, aState, aCount) {
-    var tabbrowser = aWindow.getBrowser();
-
-    try {
-      if (!tabbrowser.getBrowserForTab(aTab).markupDocumentViewer) {
-       throw "Tab not ready";
-     }
-    }
-    catch (ex) {
-      if (aCount < 10) {
-        var setTabStateFunc = function(self) {
-          self._setTabStatePrecursor(aWindow, aTab, aState, aCount + 1);
-        };
-      }
-      aWindow.setTimeout(setTabStateFunc, 100, this);
-      return;
-    }
-
-    this._setTabState(aWindow, aTab, aState);
-  },
-
-  _setTabState: function TB__setTabState(aWindow, aTab, aState) {
-    var sandbox = new Cu.Sandbox('about:blank');
-    var tabData = Cu.evalInSandbox(aState, sandbox);
-
-    // helper hash for ensuring unique frame IDs
-    var idMap = { used: {} };
-
-    var _this = this;
-
-    var tab = aTab;
-    var browser = aWindow.getBrowser().getBrowserForTab(tab);
-    var history = browser.webNavigation.sessionHistory;
-
-    if (history.count > 0) {
-      history.PurgeHistory(history.count);
-    }
-    history.QueryInterface(Ci.nsISHistoryInternal);
-
-    browser.markupDocumentViewer.textZoom = parseFloat(tabData.zoom || 1);
-
-    for (var i = 0; i < tabData.entries.length; i++) {
-      history.addEntry(this._deserializeHistoryEntry(tabData.entries[i], idMap), true);
-    }
-
-    // make sure to reset the capabilities and attributes, in case this tab gets reused
-    var disallow = (tabData.disallow)?tabData.disallow.split(","):[];
-    CAPABILITIES.forEach(function(aCapability) {
-      browser.docShell["allow" + aCapability] = disallow.indexOf(aCapability) == -1;
-    });
-    Array.filter(tab.attributes, function(aAttr) {
-      return (_this.xulAttributes.indexOf(aAttr.name) > -1);
-    }).forEach(tab.removeAttribute, tab);
-    if (tabData.xultab) {
-      tabData.xultab.split(" ").forEach(function(aAttr) {
-        if (/^([^\s=]+)=(.*)/.test(aAttr)) {
-          tab.setAttribute(RegExp.$1, decodeURI(RegExp.$2));
-        }
-      });
-    }
-
-    // notify the tabbrowser that the tab chrome has been restored
-    var event = aWindow.document.createEvent("Events");
-    event.initEvent("SSTabRestoring", true, false);
-    tab.dispatchEvent(event);
-
-    var activeIndex = (tabData.index || tabData.entries.length) - 1;
-    try {
-      browser.webNavigation.gotoIndex(activeIndex);
-    }
-    catch (ex) { } // ignore an invalid tabData.index
-
-    // restore those aspects of the currently active documents
-    // which are not preserved in the plain history entries
-    // (mainly scroll state and text data)
-    browser.__SS_restore_data = tabData.entries[activeIndex] || {};
-    browser.__SS_restore_text = tabData.text || "";
-    browser.__SS_restore_tab = tab;
-    browser.__SS_restore = this.restoreDocument_proxy;
-    browser.addEventListener("load", browser.__SS_restore, true);
-  },
-  _deserializeHistoryEntry: function TB__deserializeHistoryEntry(aEntry, aIdMap) {
-    var shEntry = Cc["@mozilla.org/browser/session-history-entry;1"].
-                  createInstance(Ci.nsISHEntry);
-
-    var ioService = Cc["@mozilla.org/network/io-service;1"].
-                    getService(Ci.nsIIOService);
-    shEntry.setURI(ioService.newURI(aEntry.url, null, null));
-    shEntry.setTitle(aEntry.title || aEntry.url);
-    shEntry.setIsSubFrame(aEntry.subframe || false);
-    shEntry.loadType = Ci.nsIDocShellLoadInfo.loadHistory;
-
-    if (aEntry.cacheKey) {
-      var cacheKey = Cc["@mozilla.org/supports-PRUint32;1"].
-                     createInstance(Ci.nsISupportsPRUint32);
-      cacheKey.data = aEntry.cacheKey;
-      shEntry.cacheKey = cacheKey;
-    }
-    if (aEntry.ID) {
-      // get a new unique ID for this frame (since the one from the last
-      // start might already be in use)
-      var id = aIdMap[aEntry.ID] || 0;
-      if (!id) {
-        for (id = Date.now(); aIdMap.used[id]; id++);
-        aIdMap[aEntry.ID] = id;
-        aIdMap.used[id] = true;
-      }
-      shEntry.ID = id;
-    }
-
-    var scrollPos = (aEntry.scroll || "0,0").split(",");
-    scrollPos = [parseInt(scrollPos[0]) || 0, parseInt(scrollPos[1]) || 0];
-    shEntry.setScrollPosition(scrollPos[0], scrollPos[1]);
-
-    if (aEntry.postdata) {
-      var stream = Cc["@mozilla.org/io/string-input-stream;1"].
-                   createInstance(Ci.nsIStringInputStream);
-      stream.setData(aEntry.postdata, -1);
-      shEntry.postData = stream;
-    }
-
-    if (Ci.nsISHEntry_MOZILLA_1_8_BRANCH2 &&
-        shEntry instanceof Ci.nsISHEntry_MOZILLA_1_8_BRANCH2 &&
-        aEntry.ownerURI)
-    {
-      shEntry.ownerURI = ioService.newURI(aEntry.ownerURI, null, null);
-    }
-
-    if (aEntry.children && shEntry instanceof Ci.nsISHContainer) {
-      for (var i = 0; i < aEntry.children.length; i++) {
-        shEntry.AddChild(this._deserializeHistoryEntry(aEntry.children[i], aIdMap), i);
-      }
-    }
-
-    return shEntry;
-  },
-  restoreDocument_proxy: function TB_restoreDocument_proxy(aEvent) {
-    // wait for the top frame to be loaded completely
-    if (!aEvent || !aEvent.originalTarget || !aEvent.originalTarget.defaultView || aEvent.originalTarget.defaultView != aEvent.originalTarget.defaultView.top) {
-      return;
-    }
-
-    var textArray = this.__SS_restore_text ? this.__SS_restore_text.split(" ") : [];
-    function restoreTextData(aContent, aPrefix) {
-      textArray.forEach(function(aEntry) {
-        if (/^((?:\d+\|)*)(#?)([^\s=]+)=(.*)$/.test(aEntry) && (!RegExp.$1 || RegExp.$1 == aPrefix)) {
-          var document = aContent.document;
-          var node = RegExp.$2 ? document.getElementById(RegExp.$3) : document.getElementsByName(RegExp.$3)[0] || null;
-          if (node && "value" in node) {
-            node.value = decodeURI(RegExp.$4);
-
-            var event = document.createEvent("UIEvents");
-            event.initUIEvent("input", true, true, aContent, 0);
-            node.dispatchEvent(event);
-          }
-        }
-      });
-    }
-
-    function restoreTextDataAndScrolling(aContent, aData, aPrefix) {
-      restoreTextData(aContent, aPrefix);
-      if (aData.innerHTML) {
-        aContent.setTimeout(function(aHTML) { if (this.document.designMode == "on") { this.document.body.innerHTML = aHTML; } }, 0, aData.innerHTML);
-      }
-      if (aData.scroll && /(\d+),(\d+)/.test(aData.scroll)) {
-        aContent.scrollTo(RegExp.$1, RegExp.$2);
-      }
-      for (var i = 0; i < aContent.frames.length; i++) {
-        if (aData.children && aData.children[i]) {
-          restoreTextDataAndScrolling(aContent.frames[i], aData.children[i], i + "|" + aPrefix);
-        }
-      }
-    }
-
-    var content = XPCNativeWrapper(aEvent.originalTarget).defaultView;
-    if (this.currentURI.spec == "about:config") {
-      // unwrap the document for about:config because otherwise the properties
-      // of the XBL bindings - as the textbox - aren't accessible (see bug 350718)
-      content = content.wrappedJSObject;
-    }
-    restoreTextDataAndScrolling(content, this.__SS_restore_data, "");
-
-    // notify the tabbrowser that this document has been completely restored
-    var event = this.ownerDocument.createEvent("Events");
-    event.initEvent("SSTabRestored", true, false);
-    this.__SS_restore_tab.dispatchEvent(event);
-
-    this.removeEventListener("load", this.__SS_restore, true);
-    delete this.__SS_restore_data;
-    delete this.__SS_restore_text;
-    delete this.__SS_restore_tab;
-  },
-  xulAttributes: [],
 
   getInterfaces: function TB_getInterfaces(countRef) {
     var interfaces = [Ci.oyITaboo, Ci.nsIObserver, Ci.nsISupports];
