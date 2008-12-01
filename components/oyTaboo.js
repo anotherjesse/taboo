@@ -16,18 +16,6 @@
  *
  * Contributor(s):
  * Dietrich Ayala <autonome@gmail.com>
- *
- * Other portions derived from Firefox bookmarks code.
- *
- * Copyright (C) 1998 Netscape Communications Corporation.
- *
- * Contributor(s):
- *   Ben Goodger <ben@netscape.com> (Original Author)
- *   Joey Minta <jminta@gmail.com>
- *
- * Other portions derived from Flock favorites code.
- *
- * Copyright (C) 2005-2007 Flock Inc.
  */
 
 const TB_CONTRACTID = '@oy/taboo;1';
@@ -675,38 +663,30 @@ TabooService.prototype = {
         .getService(Ci.nsIIOService);
       var faviconURI = ios.newURI(faviconURL, null, null);
 
-      if (Ci.nsIFaviconService) {
-        var faviconSvc = Cc['@mozilla.org/browser/favicon-service;1']
-          .getService(Ci.nsIFaviconService);
+      var faviconSvc = Cc['@mozilla.org/browser/favicon-service;1']
+        .getService(Ci.nsIFaviconService);
 
-        var dataURL = null;
+      var dataURL = null;
 
-        try {
-          if (faviconSvc.getFaviconDataAsDataURL) {
-            dataURL = faviconSvc.getFaviconDataAsDataURL(faviconURI);
-          } else {
-            var mimeType = {};
-            var bytes = faviconSvc.getFaviconData(faviconURI, mimeType, {});
-            if (bytes) {
-              dataURL = 'data:';
-              dataURL += mimeType.value;
-              dataURL += ';base64,';
-              dataURL += btoa(String.fromCharCode.apply(null, bytes));
-            }
+      try {
+        if (faviconSvc.getFaviconDataAsDataURL) {
+          dataURL = faviconSvc.getFaviconDataAsDataURL(faviconURI);
+        } else {
+          var mimeType = {};
+          var bytes = faviconSvc.getFaviconData(faviconURI, mimeType, {});
+          if (bytes) {
+            dataURL = 'data:';
+            dataURL += mimeType.value;
+            dataURL += ';base64,';
+            dataURL += btoa(String.fromCharCode.apply(null, bytes));
           }
-        } catch (ex) {
-          // do nothing, use default value
         }
+      } catch (ex) {
+        // do nothing, use default value
+      }
 
-        if (dataURL) {
-          this._storage.saveFavicon(url, dataURL);
-        }
-      } else {
-        var chan = ios.newChannelFromURI(faviconURI);
-        var listener = new tabooFavIconLoadListener(url, faviconURL, chan,
-                                                    this._storage);
-        chan.notificationCallbacks = listener;
-        chan.asyncOpen(listener, null);
+      if (dataURL) {
+        this._storage.saveFavicon(url, dataURL);
       }
     }
 
@@ -1059,146 +1039,6 @@ TabooService.prototype = {
       return this;
     throw Cr.NS_ERROR_NO_INTERFACE;
   }
-}
-
-
-/* This is swiped from bookmarks.js in Firefox. It's only used when we're
- * on Gecko 1.8.x, since Gecko 1.9 has nsIFaviconService.
- */
-function tabooFavIconLoadListener(url, faviconurl, channel, storage) {
-  this.mURL = url;
-  this.mFavIconURL = faviconurl;
-  this.mCountRead = 0;
-  this.mChannel = channel;
-  this.mStorage = storage;
-}
-
-tabooFavIconLoadListener.prototype = {
-  mURL : null,
-  mFavIconURL : null,
-  mCountRead : null,
-  mChannel : null,
-  mBytes : Array(),
-  mStream : null,
-
-  QueryInterface: function (iid) {
-    if (!iid.equals(Components.interfaces.nsISupports) &&
-        !iid.equals(Components.interfaces.nsIInterfaceRequestor) &&
-        !iid.equals(Components.interfaces.nsIRequestObserver) &&
-        !iid.equals(Components.interfaces.nsIChannelEventSink) &&
-        !iid.equals(Components.interfaces.nsIProgressEventSink) && // see below
-        !iid.equals(Components.interfaces.nsIStreamListener)) {
-      throw Components.results.NS_ERROR_NO_INTERFACE;
-    }
-    return this;
-  },
-
-  // nsIInterfaceRequestor
-  getInterface: function (iid) {
-    try {
-      return this.QueryInterface(iid);
-    } catch (e) {
-      throw Components.results.NS_NOINTERFACE;
-    }
-  },
-
-  // nsIRequestObserver
-  onStartRequest : function (aRequest, aContext) {
-    this.mStream = Components.classes['@mozilla.org/binaryinputstream;1'].createInstance(Components.interfaces.nsIBinaryInputStream);
-  },
-
-  onStopRequest : function (aRequest, aContext, aStatusCode) {
-    var httpChannel = this.mChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
-    if ((httpChannel && httpChannel.requestSucceeded) &&
-        Components.isSuccessCode(aStatusCode) &&
-        this.mCountRead > 0)
-    {
-      var dataurl;
-      // XXX - arbitrary size beyond which we won't store a favicon.  This is /extremely/
-      // generous, and is probably too high.
-      if (this.mCountRead > 16384) {
-        dataurl = "data:";      // hack meaning "pretend this doesn't exist"
-      } else {
-        // get us a mime type for this
-        var mimeType = null;
-
-        const nsICategoryManager = Components.interfaces.nsICategoryManager;
-        const nsIContentSniffer = Components.interfaces.nsIContentSniffer;
-
-        var catMgr = Components.classes["@mozilla.org/categorymanager;1"].getService(nsICategoryManager);
-        var sniffers = catMgr.enumerateCategory("content-sniffing-services");
-        while (mimeType == null && sniffers.hasMoreElements()) {
-          var snifferCID = sniffers.getNext().QueryInterface(Components.interfaces.nsISupportsCString).toString();
-          var sniffer = Components.classes[snifferCID].getService(nsIContentSniffer);
-
-          try {
-            mimeType = sniffer.getMIMETypeFromContent(aRequest, this.mBytes, this.mCountRead);
-          } catch (e) {
-            mimeType = null;
-            // ignore
-          }
-        }
-      }
-
-      if (this.mBytes && this.mCountRead > 0 && mimeType != null) {
-        var data = 'data:';
-        data += mimeType;
-        data += ';base64,';
-
-        var iconData = String.fromCharCode.apply(null, this.mBytes);
-        data += base64Encode(iconData);
-
-        this.mStorage.saveFavicon(this.mURL, data);
-      }
-    }
-
-    this.mChannel = null;
-  },
-
-  // nsIStreamObserver
-  onDataAvailable : function (aRequest, aContext, aInputStream, aOffset, aCount) {
-    // we could get a different aInputStream, so we don't save this;
-    // it's unlikely we'll get more than one onDataAvailable for a
-    // favicon anyway
-    this.mStream.setInputStream(aInputStream);
-
-    var chunk = this.mStream.readByteArray(aCount);
-    this.mBytes = this.mBytes.concat(chunk);
-    this.mCountRead += aCount;
-  },
-
-  // nsIChannelEventSink
-  onChannelRedirect : function (aOldChannel, aNewChannel, aFlags) {
-    this.mChannel = aNewChannel;
-  },
-
-  // nsIProgressEventSink: the only reason we support
-  // nsIProgressEventSink is to shut up a whole slew of xpconnect
-  // warnings in debug builds.  (see bug #253127)
-  onProgress : function (aRequest, aContext, aProgress, aProgressMax) { },
-  onStatus : function (aRequest, aContext, aStatus, aStatusArg) { }
-}
-
-// From flockFavoritesService.js
-function base64Encode(aInput) {
-  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  var output = "";
-  while (aInput.length > 0) {
-    output += chars[aInput.charCodeAt(0) >> 2];
-    output += chars[((aInput.charCodeAt(0) & 0x03) << 4) |
-      (aInput.length > 1 ? ((aInput.charCodeAt(1) & 0xF0) >> 4) : 0)];
-    output += chars[aInput.length > 1 ?
-      ((aInput.charCodeAt(1) & 0x0F) << 2) |
-      (aInput.length > 2 ? ((aInput.charCodeAt(2) & 0xC0) >> 6) : 0) : 64];
-    output += chars[aInput.length > 2 ?
-      (aInput.charCodeAt(2) & 0x3F) : 64];
-    if (aInput.length > 3) {
-      aInput = aInput.substr(3);
-    } else {
-      break;
-    }
-  }
-  return output;
 }
 
 
