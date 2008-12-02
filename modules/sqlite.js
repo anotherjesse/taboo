@@ -14,14 +14,14 @@
 
 
 /*
- * DB: a better mozstorage wrapper (for some definition of better)
+ * SQLiteDB: a better mozstorage wrapper (for some definition of better)
  *
  *
  * Initializing the Database:
  *
  *   Creating an in-memory database:
  *
- *     var db = new DB();
+ *     var db = new SQLiteDB();
  *
  *   Loading/Creating a file-based database:
  *
@@ -29,7 +29,7 @@
  *                  .getService(Ci.nsIProperties).get('ProfD', Ci.nsILocalFile);
  *     file.append('mydb.sqlite');
  *
- *     var db = new DB(file);
+ *     var db = new SQLiteDB(file);
  *
  * Creating/Using a table:
  *
@@ -83,11 +83,13 @@
  *
  */
 
-function DB(dbFile) {
-  var self = this;
+var EXPORTED_SYMBOLS = [ "SQLiteDB" ];
 
-  const Cc = Components.classes;
-  const Ci = Components.interfaces;
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
+function SQLiteDB(dbFile) {
+  var self = this;
 
   // Create the sqlite database
 
@@ -214,7 +216,7 @@ function DB(dbFile) {
           return_one = true;
         }
 
-        if (conditions instanceof Array) {
+        if (conditions.constructor.toString().indexOf("Array") != -1) {
           // SECURITY HOLE: this is the incorrect way to do this...
           // the params need escaped
 

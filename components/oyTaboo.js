@@ -515,10 +515,10 @@ TabooStorageSQL.prototype = {
     }
   },
   _loadDB: function TSSQL__loadDB(aDBFile) {
-    var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
-    var newDB = new DB(aDBFile);
-    newDB.Table('taboo_data', this._schema);
-    return newDB;
+    Cu.import("resource://taboo/sqlite.js");
+    var db = new SQLiteDB(aDBFile);
+    db.Table('taboo_data', this._schema);
+    return db;
   }
 }
 
@@ -804,12 +804,3 @@ TabooService.prototype = {
 
 function NSGetModule(compMgr, fileSpec)
   XPCOMUtils.generateModule([TabooService]);
-
-
-function loadSubScript(spec) {
-  var loader = Cc['@mozilla.org/moz/jssubscript-loader;1']
-    .getService(Ci.mozIJSSubScriptLoader);
-  var context = {};
-  loader.loadSubScript(spec, context);
-  return context;
-}
