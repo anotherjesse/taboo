@@ -41,6 +41,8 @@ const IMAGE_THUMB_HEIGHT = 125;
 
 const PREF_DEBUG = 'extensions.taboo.debug';
 
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
 
 function getObserverService() {
   return Cc['@mozilla.org/observer-service;1']
@@ -106,13 +108,7 @@ function TabooInfo(url, title, description, favicon, imageURL, thumbURL,
 }
 
 TabooInfo.prototype = {
-  QueryInterface: function(iid) {
-    if (!iid.equals(Ci.nsISupports) &&
-        !iid.equals(Ci.oyITabooInfo)) {
-      throw Cr.NS_ERROR_NO_INTERFACE;
-    }
-    return this;
-  }
+  QueryInterface: XPCOMUtils.generateQI([Ci.oyITabooInfo])
 }
 
 /*
@@ -792,86 +788,12 @@ TabooService.prototype = {
   classID: TB_CLASSID,
   implementationLanguage: Ci.nsIProgrammingLanguage.JAVASCRIPT,
   flags: Ci.nsIClassInfo.SINGLETON,
-
-  QueryInterface: function TB_QueryInterface(iid) {
-    if (iid.equals(Ci.oyITaboo) ||
-        iid.equals(Ci.nsIObserver) ||
-        iid.equals(Ci.nsISupports))
-      return this;
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  }
+  _xpcom_categories: [{ category: 'app-startup', service: true }],
+  QueryInterface: XPCOMUtils.generateQI([Ci.oyITaboo, Ci.nsIObserver])
 }
-
-
-function GenericComponentFactory(ctor) {
-  this._ctor = ctor;
-}
-
-GenericComponentFactory.prototype = {
-
-  _ctor: null,
-
-  // nsIFactory
-  createInstance: function(outer, iid) {
-    if (outer != null)
-      throw Cr.NS_ERROR_NO_AGGREGATION;
-    return (new this._ctor()).QueryInterface(iid);
-  },
-
-  // nsISupports
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIFactory) ||
-        iid.equals(Ci.nsISupports))
-      return this;
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
-};
-
-var Module = {
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIModule) ||
-        iid.equals(Ci.nsISupports))
-      return this;
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
-
-  getClassObject: function(cm, cid, iid) {
-    if (!iid.equals(Ci.nsIFactory))
-      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-
-    if (cid.equals(TB_CLASSID))
-      return new GenericComponentFactory(TabooService)
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
-
-  registerSelf: function(cm, file, location, type) {
-    var cr = cm.QueryInterface(Ci.nsIComponentRegistrar);
-    cr.registerFactoryLocation(TB_CLASSID, TB_CLASSNAME, TB_CONTRACTID,
-                               file, location, type);
-
-    var catman = Cc['@mozilla.org/categorymanager;1']
-      .getService(Ci.nsICategoryManager);
-    catman.addCategoryEntry('app-startup', TB_CLASSNAME,
-                            'service,' + TB_CONTRACTID,
-                            true, true);
-  },
-
-  unregisterSelf: function(cm, location, type) {
-    var cr = cm.QueryInterface(Ci.nsIComponentRegistrar);
-    cr.unregisterFactoryLocation(TB_CLASSID, location);
-  },
-
-  canUnload: function(cm) {
-    return true;
-  },
-};
 
 function NSGetModule(compMgr, fileSpec)
-{
-  return Module;
-}
+  XPCOMUtils.generateModule([TabooService]);
 
 
 function loadSubScript(spec) {
