@@ -108,7 +108,18 @@ function TabooInfo(url, title, description, favicon, imageURL, thumbURL,
 }
 
 TabooInfo.prototype = {
-  QueryInterface: XPCOMUtils.generateQI([Ci.oyITabooInfo])
+  getInterfaces: function TI_getInterfaces(countRef) {
+    var interfaces = [Ci.oyITabooInfo, Ci.nsIClassInfo, Ci.nsISupports];
+    countRef.value = interfaces.length;
+    return interfaces;
+  },
+  getHelperForLanguage: function TI__getHelperForLanguage(language) null,
+  contractID: null,
+  classDescription: "Taboo Info",
+  classID: null,
+  implementationLanguage: Ci.nsIProgrammingLanguage.JAVASCRIPT,
+  flags: 0,
+  QueryInterface: XPCOMUtils.generateQI([Ci.oyITabooInfo, Ci.nsIClassInfo])
 }
 
 /*
@@ -780,16 +791,15 @@ TabooService.prototype = {
     countRef.value = interfaces.length;
     return interfaces;
   },
-  getHelperForLanguage: function TB_getHelperForLanguage(language) {
-    return null;
-  },
+  getHelperForLanguage: function TB_getHelperForLanguage(language) null,
   contractID: TB_CONTRACTID,
   classDescription: TB_CLASSNAME,
   classID: TB_CLASSID,
   implementationLanguage: Ci.nsIProgrammingLanguage.JAVASCRIPT,
   flags: Ci.nsIClassInfo.SINGLETON,
   _xpcom_categories: [{ category: 'app-startup', service: true }],
-  QueryInterface: XPCOMUtils.generateQI([Ci.oyITaboo, Ci.nsIObserver])
+  QueryInterface: XPCOMUtils.generateQI([Ci.oyITaboo, Ci.nsIObserver,
+                                         Ci.nsIClassInfo])
 }
 
 function NSGetModule(compMgr, fileSpec)
