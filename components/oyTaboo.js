@@ -33,10 +33,6 @@ const PR_TRUNCATE    = 0x20;
 const PR_SYNC        = 0x40;
 const PR_EXCL        = 0x80;
 
-const CAPABILITIES = [
-  "Subframes", "Plugins", "Javascript", "MetaRedirects", "Images"
-];
-
 const IMAGE_FULL_WIDTH = 500;
 const IMAGE_FULL_HEIGHT = 500;
 
