@@ -19,17 +19,7 @@ const SVC = Components.classes['@oy/taboo;1']
 var tboPrefs = Cc['@mozilla.org/preferences-service;1']
   .getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
 
-function FF3() {
-  var ss = Cc['@mozilla.org/browser/sessionstore;1']
-    .getService(Ci.nsISessionStore);
-  return ss.getTabState;
-}
-
 function init() {
-  if (FF3()) {
-    $('#tools').show();
-  }
-
   DomBuilder.apply(window);
 
   controller = new Controller();
