@@ -27,7 +27,9 @@ function FF3() {
 
 function init() {
   if (FF3()) {
-    $('#tools').show();
+    $('#tools-container').show();
+  } else {
+    $('#ff2-tools-container').show();
   }
 
   DomBuilder.apply(window);
