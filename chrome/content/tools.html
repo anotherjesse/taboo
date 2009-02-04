@@ -55,17 +55,45 @@
         }
       }
 
+      function exportAsHTML() {
+        var file = getFile(Ci.nsIFilePicker.modeSave, "Choose Where to Save Backup");
+        var numExported;
+        try {
+          if (file) {
+            numExported = SVC.exportAsHTML(file);
+            if (numExported) { // > 0) {
+              humanMsg.displayMsg('Successfully exported ' + numExported + ' taboos.');
+            }
+          }
+        }
+        catch (e) {
+          humanMsg.displayMsg('Failed to export taboos.');
+        }
+      }
   </script>
 </head>
 
 <body class="tools">
-  <h1>Import and Export Taboos</h1>
-  <br />
-  <div style='text-align: center;'>
-    <input type='button' value='Import Taboos' onclick='importer();' /><br />
-    <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
-    <input type='button' value='Export Taboos' onclick='exporter();' /><br />
-    <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
+  <div id="tools-container" style="display:none">
+    <h1>Import and Export Taboos</h1>
+    <br />
+    <div style='text-align: center;'>
+      <input type='button' value='Import Taboos' onclick='importer();' /><br />
+      <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
+      <input type='button' value='Export Taboos' onclick='exporter();' /><br />
+      <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
+      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
+      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
+    </div>
+  </div>
+
+  <div id="ff2-tools-container" style="display:none">
+    <h1>Export Taboos</h1>
+    <br />
+    <div style='text-align: center;'>
+      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
+      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
+    </div>
   </div>
 
   <!--h1>Key Bindings</h1>
