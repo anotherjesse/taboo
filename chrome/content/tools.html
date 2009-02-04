@@ -10,12 +10,14 @@
       const Ci = Components.interfaces;
       const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
-      function getFile(mode, msg) {
-      var fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+      function getFile(mode, msg, filterDesc, defName, defExt) {
+        var fp = Cc["@mozilla.org/filepicker;1"]
+          .createInstance(Ci.nsIFilePicker);
         fp.init(window, msg, mode);
-        fp.defaultExtension = "zip";
-        fp.defaultString = "taboos.zip";
-        fp.appendFilter("Taboo Backups (ZIP)", "*.zip");
+        fp.defaultExtension = defExt;
+        fp.defaultString = defName;
+        fp.appendFilter(filterDesc + " (" + defExt.toUpperCase() + ")",
+                        "*." + defExt);
         var res = fp.show();
         if (res == Ci.nsIFilePicker.returnOK) {
           return fp.file;
@@ -23,7 +25,9 @@
       }
 
       function importer() {
-        var file = getFile(Ci.nsIFilePicker.modeOpen, "Choose Taboo Backup to Import");
+        var file = getFile(Ci.nsIFilePicker.modeOpen,
+                           "Choose Taboo Backup to Import", "Taboo Backups",
+                           "taboos.zip", "zip");
         var numImported;
         try {
           if (file) {
@@ -39,7 +43,9 @@
       }
 
       function exporter() {
-        var file = getFile(Ci.nsIFilePicker.modeSave, "Choose Where to Save Backup");
+        var file = getFile(Ci.nsIFilePicker.modeSave,
+                           "Choose Where to Save Backup", "Taboo Backups",
+                           "taboos.zip", "zip");
         var numExported;
         try {
           if (file) {
@@ -55,7 +61,9 @@
       }
 
       function exportAsHTML() {
-        var file = getFile(Ci.nsIFilePicker.modeSave, "Choose Where to Save Backup");
+        var file = getFile(Ci.nsIFilePicker.modeSave,
+                           "Choose Where to Save Backup HTML", "Taboo HTML",
+                           "taboos.html", "html");
         var numExported;
         try {
           if (file) {
@@ -124,5 +132,20 @@
       <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
     </tr>
   </table-->
+
+<script type="text/javascript">
+    function FF3() {
+      var ss = Cc['@mozilla.org/browser/sessionstore;1']
+        .getService(Ci.nsISessionStore);
+      return ss.getTabState;
+    }
+
+    if (FF3()) {
+      $('#tools-container').show();
+    } else {
+      $('#ff2-tools-container').show();
+    }
+</script>
+
 </body>
 </html>
