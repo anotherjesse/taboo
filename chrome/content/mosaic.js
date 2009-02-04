@@ -30,19 +30,20 @@ function Mosaic(container) {
   $(title).editInPlace();
 
   $(title).bind('callback', function(e, value) {
-		  SVC.update(currentUrl, value, null);
-		});
+                  SVC.update(currentUrl, value, null);
+                });
 
   $(description).editInPlace({
-			       field_type: "textarea",
-			       textarea_rows: "5",
-			       textarea_cols: "35",
-			       bg_out: '#fff'
-			     });
+                               field_type: "textarea",
+                               textarea_rows: "5",
+                               textarea_cols: "35",
+                               default_text: "(Click here to add notes)",
+                               bg_out: '#fff'
+                             });
 
   $(description).bind('callback', function(e, value) {
-			SVC.update(currentUrl, null, value);
-		      });
+                        SVC.update(currentUrl, null, value);
+                      });
 
   function openCurrent(event) {
     SVC.open(currentUrl, whereToOpenLink(event));
