@@ -510,7 +510,7 @@ TabooStorageSQL.prototype = {
     for each (var result in results) {
       var entry = '    <DT><A HREF="' + result.url + '"';
 
-      if (result.favicon) { 
+      if (result.favicon) {
         entry += ' ICON="' + result.favicon + '"';
       }
 
@@ -545,6 +545,8 @@ TabooStorageSQL.prototype = {
 
     ostream.flush();
     ostream.close();
+
+    return results.length;
   },
   _getImageFile: function TSSQL__getImageFile(id) {
     var file = this._tabooDir.clone();
