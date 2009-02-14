@@ -457,7 +457,7 @@ function init() {
 
   prefs.setCharPref("lastversion", version);
   if (pageURL && pageURL != "null") {
-    setTimeout(function(){window.openUILinkIn(pageURL, "tab")}, STARTUP_SHOW_DELAY);
+    setTimeout(function(){ window.openUILinkIn(pageURL, "tab"); }, STARTUP_SHOW_DELAY);
   }
 
   var runtime = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULRuntime);

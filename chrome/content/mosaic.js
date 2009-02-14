@@ -74,7 +74,7 @@ function Mosaic(container) {
       DIV({'class': 'preview'},
           IMG({src: tab.imageURL}),
           SPAN(tab.title || ''),
-          DIV({'class': 'delete'}, 'x')
+          DIV({'class': 'delete', 'title': 'delete taboo'}, 'x')
       )
     );
 

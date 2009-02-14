@@ -4,5 +4,6 @@ taboo.xpi
 CVS
 .cvsignore
 .project
+s3.yml
 '
 *#

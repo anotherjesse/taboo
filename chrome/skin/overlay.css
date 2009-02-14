@@ -121,6 +121,7 @@ taboo label {
 
 #taboo-search-box textbox {
   font-size: 20px;
+  background-color: white;
 }
 
 #taboo-search-box label {
@@ -145,3 +146,7 @@ taboo label {
   -moz-border-radius: 8px;
 }
 
+#taboo-quickShow[OS=Darwin] #taboo-quickShow-container
+{
+  background: none;
+}
