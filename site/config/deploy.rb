@@ -22,11 +22,11 @@ ssh_options[:paranoid] = false
 
 desc "copy config files in after deploy"
 task :after_update_code do
-  run "cp #{shared_path}/config/*.yml #{release_path}/config/"
+  run "cp #{shared_path}/config/*.yml #{release_path}/site/config/"
 end
 
 namespace :deploy do
   task :restart, :roles => :app do
-    run "touch #{current_path}/tmp/restart.txt"
+    run "touch #{current_path}/site/tmp/restart.txt"
   end
 end
