@@ -81,26 +81,15 @@
 </head>
 
 <body class="tools">
-  <div id="tools-container" style="display:none">
-    <h1>Import and Export Taboos</h1>
-    <br />
-    <div style='text-align: center;'>
-      <input type='button' value='Import Taboos' onclick='importer();' /><br />
-      <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
-      <input type='button' value='Export Taboos' onclick='exporter();' /><br />
-      <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
-      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
-      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
-    </div>
-  </div>
-
-  <div id="ff2-tools-container" style="display:none">
-    <h1>Export Taboos</h1>
-    <br />
-    <div style='text-align: center;'>
-      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
-      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
-    </div>
+  <h1>Import and Export Taboos</h1>
+  <br />
+  <div style='text-align: center;'>
+    <input type='button' value='Import Taboos' onclick='importer();' /><br />
+    <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
+    <input type='button' value='Export Taboos' onclick='exporter();' /><br />
+    <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
+    <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
+    <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
   </div>
 
   <!--h1>Key Bindings</h1>
@@ -132,20 +121,6 @@
       <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
     </tr>
   </table-->
-
-<script type="text/javascript">
-    function FF3() {
-      var ss = Cc['@mozilla.org/browser/sessionstore;1']
-        .getService(Ci.nsISessionStore);
-      return ss.getTabState;
-    }
-
-    if (FF3()) {
-      $('#tools-container').show();
-    } else {
-      $('#ff2-tools-container').show();
-    }
-</script>
 
 </body>
 </html>
