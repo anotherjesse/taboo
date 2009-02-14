@@ -56,7 +56,7 @@
            hidden="true"
            onpopupshown="taboo.focusQuickShow()"
            onpopuphiding="taboo.hideQuickShow()">
-      <vbox flex="1">
+      <vbox flex="1" id="taboo-quickShow-container">
         <hbox id="taboo-search-box">
           <label value="Search" />
           <textbox id="taboo-quickShow-search"

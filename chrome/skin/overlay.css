@@ -129,8 +129,13 @@ taboo label {
 
 #taboo-quickShow {
   -moz-appearance: menupopup;
-  padding: 10px 8px 6px 8px;
-  margin-top: 4px;
+}
+
+#taboo-quickShow-container
+{
+  padding: 14px 8px 6px 8px;
+  background-color: #000;
+  color: #fff;
 }
 
 #taboo-quickShow[OS=Darwin] {
@@ -138,6 +143,5 @@ taboo label {
   background-color: rgba(68,68,68,0.9);
   border: 1px solid rgba(255,255,255,0.15);
   -moz-border-radius: 8px;
-  color: #ffffff;
 }
 
