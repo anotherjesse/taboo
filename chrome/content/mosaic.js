@@ -72,13 +72,18 @@ function Mosaic(container) {
         IMG({src: tab.thumbURL})
       ),
       DIV({'class': 'preview'},
-        IMG({src: tab.imageURL}),
-        SPAN(tab.title || '')
+          IMG({src: tab.imageURL}),
+          SPAN(tab.title || ''),
+          DIV({'class': 'delete'}, 'x')
       )
     );
 
     box.onclick = function(event) {
       currentUrl = tab.url;
+      if (event && event.originalTarget.className.search('delete') != -1) {
+        return controller.tabDelete(tab, box);
+      }
+
       var updatedTab = SVC.getForURL(tab.url);
       img.setAttribute('src', updatedTab.imageURL);
       $(title).trigger('update', [updatedTab.title]);

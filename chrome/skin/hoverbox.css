@@ -55,6 +55,22 @@
 }
 
 
+.mosaic #content li:hover .delete
+{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: #888;
+  padding: 3px 8px;
+  color: #fff;
+  -moz-border-radius: 0 0 0 8px;
+}
+
+.mosaic #content li:hover .delete:hover
+{
+  background: #f00;
+}
+
 .mosaic #content li:hover span {
   position: absolute;
   top: 0px;
