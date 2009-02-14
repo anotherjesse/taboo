@@ -38,7 +38,7 @@ interface oyITabooObserver : nsISupports {
   void onReallyDelete(in AUTF8String aURL);
 };
 
-[scriptable, uuid(2fc0961d-8408-465d-866d-ea8e1f21c17b)]
+[scriptable, uuid(7de46719-54d0-4570-a96a-214fa4037c8c)]
 interface oyITaboo : nsISupports {
   void open(in AUTF8String aURL, in AUTF8String aWhere);
   void openInTab(in AUTF8String aURL, in nsIDOMNode aTab);
@@ -64,4 +64,5 @@ interface oyITaboo : nsISupports {
 
   PRUint32 import(in nsIFile aFile);
   PRUint32 export(in nsIFile aFile);
+  PRUint32 exportAsHTML(in nsIFile aFile);
 };

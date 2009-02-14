@@ -481,6 +481,57 @@ TabooStorageSQL.prototype = {
 
     return results.length;
   },
+  exportAsHTML: function TSSQL_exportAsHTML(aFile) {
+    var data = '<!DOCTYPE NETSCAPE-Bookmark-file-1>\n';
+    data += '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; ' +
+            'charset=UTF-8">\n';
+    data += '<TITLE>Bookmarks</TITLE>\n';
+    data += '<H1>Bookmarks</H1>\n';
+    data += '<DL><p>\n';
+
+    var results = this._store.find(["deleted IS NULL"]);
+
+    for each (var result in results) {
+      var entry = '    <DT><A HREF="' + result.url + '"';
+
+      if (result.favicon) {
+        entry += ' ICON="' + result.favicon + '"';
+      }
+
+      entry += '>';
+
+      if (result.title) {
+        entry += result.title
+      }
+
+      entry += '</A>\n';
+
+      if (result.description) {
+        entry += '<DD>' + result.description + '\n';
+      }
+
+      data += entry;
+    }
+
+    data += '</DL><p>';
+
+    var ostream = Cc['@mozilla.org/network/file-output-stream;1']
+      .createInstance(Ci.nsIFileOutputStream);
+    ostream.init(aFile, PR_WRONLY | PR_CREATE_FILE | PR_TRUNCATE, 0600, 0);
+
+    var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter']
+      .createInstance(Ci.nsIScriptableUnicodeConverter);
+    converter.charset = 'UTF-8';
+
+    var convdata = converter.ConvertFromUnicode(data) + converter.Finish();
+
+    ostream.write(convdata, convdata.length);
+
+    ostream.flush();
+    ostream.close();
+
+    return results.length;
+  },
   _getImageFile: function TSSQL__getImageFile(id) {
     var file = this._tabooDir.clone();
     file.append(id + '.png');
@@ -719,6 +770,9 @@ TabooService.prototype = {
   },
   export: function TB_export(aFile) {
     return this._storage.export(aFile);
+  },
+  exportAsHTML: function TB_exportAsHTML(aFile) {
+    return this._storage.exportAsHTML(aFile);
   },
 
   _tabEnumerator: function TB__tabEnumerator(aURLs) {

@@ -12,10 +12,12 @@
  */
 
 function Trash(container) {
-  this.trash = true;
+  var inst = this;
+
+  inst.trash = true;
   document.body.className = 'trash';
 
-  var deleted = [];
+  var taboos = [];
 
   var deleteAll = DIV({id: 'deleteAll',
                        style: 'visibility: visible; width: 275px; padding-top: 10px; margin: 0 auto 0 auto;'});
@@ -26,24 +28,29 @@ function Trash(container) {
   deleteAll.appendChild(deleteButton);
 
   deleteButton.onclick = function() {
-    for (var i in deleted) {
-      controller.tabFinalDelete(deleted[i]);
+    inst.disableUpdate = true;
+
+    for (var i in taboos) {
+      controller.tabFinalDelete(taboos[i]);
     }
     humanMsg.displayMsg("All taboo in trash have been permanently deleted.");
+
+    inst.disableUpdate = false;
+    controller.display();
   };
   container.appendChild(deleteAll);
 
   var ul = UL();
   container.appendChild(ul);
 
-  this.start = function() {
-    deleted = [];
+  inst.start = function() {
+    taboos = [];
     ul.innerHTML = '';
   };
 
-  this.finish = function() {};
+  inst.finish = function() {};
 
-  this.add = function(tab) {
+  inst.add = function(tab) {
     var box = LI({},
       DIV({},
         SPAN({'class': 'delete', title: 'Permenantly delete this taboo'}),
@@ -65,6 +72,6 @@ function Trash(container) {
       }
     };
     ul.appendChild(box);
-    deleted.push(tab);
+    taboos.push(tab);
   };
 }

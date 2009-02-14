@@ -4,19 +4,20 @@
   <link rel="stylesheet" href="chrome://taboo/content/vendor/humanmsg.css" />
   <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
   <script type="text/javascript" src="chrome://taboo/content/vendor/humanmsg.js"></script>
-  <script type="text/javascript" src="chrome://taboo/content/browserOverlay.js"></script>
   <script type="text/javascript">
 
       const Cc = Components.classes;
       const Ci = Components.interfaces;
       const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
-      function getFile(mode, msg) {
-      var fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+      function getFile(mode, msg, filterDesc, defName, defExt) {
+        var fp = Cc["@mozilla.org/filepicker;1"]
+          .createInstance(Ci.nsIFilePicker);
         fp.init(window, msg, mode);
-        fp.defaultExtension = "zip";
-        fp.defaultString = "taboos.zip";
-        fp.appendFilter("Taboo Backups (ZIP)", "*.zip");
+        fp.defaultExtension = defExt;
+        fp.defaultString = defName;
+        fp.appendFilter(filterDesc + " (" + defExt.toUpperCase() + ")",
+                        "*." + defExt);
         var res = fp.show();
         if (res == Ci.nsIFilePicker.returnOK) {
           return fp.file;
@@ -24,12 +25,14 @@
       }
 
       function importer() {
-        var file = getFile(Ci.nsIFilePicker.modeOpen, "Choose Taboo Backup to Import");
+        var file = getFile(Ci.nsIFilePicker.modeOpen,
+                           "Choose Taboo Backup to Import", "Taboo Backups",
+                           "taboos.zip", "zip");
         var numImported;
         try {
           if (file) {
             numImported = SVC.import(file);
-            if (numImported) {// > 0) {
+            if (numImported) {
               humanMsg.displayMsg('Successfully imported ' + numImported + ' taboos.');
             }
           }
@@ -40,12 +43,14 @@
       }
 
       function exporter() {
-        var file = getFile(Ci.nsIFilePicker.modeSave, "Choose Where to Save Backup");
+        var file = getFile(Ci.nsIFilePicker.modeSave,
+                           "Choose Where to Save Backup", "Taboo Backups",
+                           "taboos.zip", "zip");
         var numExported;
         try {
           if (file) {
             numExported = SVC.export(file);
-            if (numExported) { // > 0) {
+            if (numExported) {
               humanMsg.displayMsg('Successfully exported ' + numExported + ' taboos.');
             }
           }
@@ -55,17 +60,47 @@
         }
       }
 
+      function exportAsHTML() {
+        var file = getFile(Ci.nsIFilePicker.modeSave,
+                           "Choose Where to Save Backup HTML", "Taboo HTML",
+                           "taboos.html", "html");
+        var numExported;
+        try {
+          if (file) {
+            numExported = SVC.exportAsHTML(file);
+            if (numExported) {
+              humanMsg.displayMsg('Successfully exported ' + numExported + ' taboos.');
+            }
+          }
+        }
+        catch (e) {
+          humanMsg.displayMsg('Failed to export taboos.');
+        }
+      }
   </script>
 </head>
 
 <body class="tools">
-  <h1>Import and Export Taboos</h1>
-  <br />
-  <div style='text-align: center;'>
-    <input type='button' value='Import Taboos' onclick='importer();' /><br />
-    <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
-    <input type='button' value='Export Taboos' onclick='exporter();' /><br />
-    <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
+  <div id="tools-container" style="display:none">
+    <h1>Import and Export Taboos</h1>
+    <br />
+    <div style='text-align: center;'>
+      <input type='button' value='Import Taboos' onclick='importer();' /><br />
+      <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
+      <input type='button' value='Export Taboos' onclick='exporter();' /><br />
+      <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
+      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
+      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
+    </div>
+  </div>
+
+  <div id="ff2-tools-container" style="display:none">
+    <h1>Export Taboos</h1>
+    <br />
+    <div style='text-align: center;'>
+      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
+      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
+    </div>
   </div>
 
   <!--h1>Key Bindings</h1>
@@ -97,5 +132,20 @@
       <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
     </tr>
   </table-->
+
+<script type="text/javascript">
+    function FF3() {
+      var ss = Cc['@mozilla.org/browser/sessionstore;1']
+        .getService(Ci.nsISessionStore);
+      return ss.getTabState;
+    }
+
+    if (FF3()) {
+      $('#tools-container').show();
+    } else {
+      $('#ff2-tools-container').show();
+    }
+</script>
+
 </body>
 </html>

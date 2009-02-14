@@ -127,6 +127,9 @@ function Controller() {
   }
 
   this.display = function(searchTxt) {
+    if (view.disableUpdate)
+      return;
+
     view.start();
 
     var taboos = SVC.get(searchTxt, view.trash);
