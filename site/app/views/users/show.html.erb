@@ -1,0 +1,9 @@
+<h2><%= h @user.username %></h2>
+
+<p><%= pluralize @user.taboos.count, 'taboo' %></p>
+
+<ul>
+  <% @user.taboos.each do |taboo| %>
+    <li><%= link_to h(taboo.title), taboo.url %></li>
+  <% end %>
+</ul>

@@ -1,0 +1,11 @@
+base: &base
+  adapter: mysql
+  encoding: utf8
+  username: root
+  password:
+  socket: /var/run/mysqld/mysqld.sock
+
+
+development:
+  <<: *base
+  database: taboo_dev

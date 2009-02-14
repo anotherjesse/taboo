@@ -1,0 +1,7 @@
+<ul>
+  <% User.all.each do |user| %>
+    <li><%= link_to h(user.username), user %></li>
+  <% end %>
+</ul>
+
+<%= link_to 'signup', new_user_path %>
