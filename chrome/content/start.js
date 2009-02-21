@@ -43,8 +43,6 @@ function init() {
   }
   searchBox.value = '';
   searchBox.focus();
-
-  jQuery.fn.hue();
 }
 
 function uninit() {

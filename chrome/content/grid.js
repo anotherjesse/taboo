@@ -71,22 +71,22 @@ function Grid(container, footerControls) {
       )
     );
 
-    box.onmouseover = function(event) {
-      jQuery(document.body).trigger('hue.over', [
-                                      DIV(
-                                          SPAN({'class': 'title'}, (tab.title || 'untitled')),
-                                          IMG({src: tab.imageURL}),
-                                          SPAN({'class': 'description'}, (tab.description || ''))
-                                      ),
-				      function(event) {
-					SVC.open(tab.url, whereToOpenLink(event));
-                                      }
-                                      ]);
-    };
+    // box.onmouseover = function(event) {
+    //   jQuery(document.body).trigger('hue.over', [
+    //                                   DIV(
+    //                                       SPAN({'class': 'title'}, (tab.title || 'untitled')),
+    //                                       IMG({src: tab.imageURL}),
+    //                                       SPAN({'class': 'description'}, (tab.description || ''))
+    //                                   ),
+    //          function(event) {
+    //      SVC.open(tab.url, whereToOpenLink(event));
+    //                                   }
+    //                                   ]);
+    // };
 
-    box.onmouseout = function(event) {
-      jQuery(document.body).trigger('hue.out');
-    };
+    // box.onmouseout = function(event) {
+    //   jQuery(document.body).trigger('hue.out');
+    // };
 
     box.onclick = function(event) {
       if (event.originalTarget.className.search('delete') != -1) {
