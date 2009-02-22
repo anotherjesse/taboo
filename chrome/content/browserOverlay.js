@@ -4,7 +4,6 @@ var taboo;
 
 var $ = function $(id) { return document.getElementById(id); };
 var log = function log(msg) {}; // maybe overridden in init
-var FF3 = false; // maybe overridden in init
 var debug = false;
 var prefs;
 
@@ -71,14 +70,8 @@ function Taboo() {
   };
 
   this.showDropdown = function(event) {
-    if (FF3) {
-      taboo.showPanel(event);
-      return false; // cancel default popup
-    }
-    else {
-      taboo.showRecentList('taboo-recent-list');
-      return true;
-    }
+    taboo.showPanel(event);
+    return false; // cancel default popup
   }
 
   this.showRecentList = function(domId) {
@@ -129,13 +122,7 @@ function Taboo() {
 
   // This is a Flock only function (called in flockOverlay.xul)
   this.toggleTopbar = function(event) {
-    if ("undefined" != typeof FlockTopbar) {
-      // Flock 2.0
-      FlockTopbar.selectById("tabooTopbarBroadcaster");
-    } else {
-      // Flock 1.2
-      flock_topbarSelectById("tabooTopbarBroadcaster");
-    }
+    FlockTopbar.selectById("tabooTopbarBroadcaster");
   };
 
   this.updateContext = function(popup) {
@@ -456,12 +443,6 @@ function init() {
                                  Ci.nsIWebProgress.NOTIFY_LOCATION);
   }
 
-  FF3 = (function() {
-    var ss = Cc['@mozilla.org/browser/sessionstore;1']
-      .getService(Ci.nsISessionStore);
-    return !!ss.getTabState;
-  })()
-
   var version = Cc["@mozilla.org/extensions/manager;1"]
            .getService(Ci.nsIExtensionManager)
            .getItemForID("taboo@runningfrombears.com").version;
@@ -479,13 +460,9 @@ function init() {
     setTimeout(function(){ window.openUILinkIn(pageURL, "tab"); }, STARTUP_SHOW_DELAY);
   }
 
-  if (FF3) {
-    $('taboo-quickShow').removeAttribute('hidden');
-    $('taboo-details').removeAttribute('hidden');
-    var runtime = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULRuntime);
-    $('taboo-quickShow').setAttribute('OS', runtime.OS);
-    $('taboo-details').setAttribute('OS', runtime.OS);
-  }
+  var runtime = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULRuntime);
+  $('taboo-quickShow').setAttribute('OS', runtime.OS);
+  $('taboo-details').setAttribute('OS', runtime.OS);
 }
 
 function uninit() {

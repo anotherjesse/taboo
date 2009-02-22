@@ -4,3 +4,5 @@ skin	taboo	classic/1.0	chrome/skin/
 overlay	chrome://browser/content/browser.xul	chrome://taboo/content/browserOverlay.xul
 overlay chrome://flock/content/topbar/topbarOverlay.xul   chrome://taboo/content/flockOverlay.xul
 overlay chrome://global/content/customizeToolbar.xul         chrome://taboo/content/customizeToolbarOverlay.xul
+
+resource taboo modules/

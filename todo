@@ -1,8 +1,5 @@
 support drag and drop into bookmarkbar/... (dnd flavors)
 
-fix https://bugzilla.mozilla.org/show_bug.cgi?id=393716 and adapt taboo
-to use new API.
-
 need visual feedback when you resave/save (animation on the button?)
 
 =======

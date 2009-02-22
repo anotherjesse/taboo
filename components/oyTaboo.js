@@ -9,25 +9,6 @@
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
- *
- * Portions are derived from the Mozilla nsSessionStore component:
- *
- * Copyright (C) 2006 Simon Bünzli <zeniko@gmail.com>
- *
- * Contributor(s):
- * Dietrich Ayala <autonome@gmail.com>
- *
- * Other portions derived from Firefox bookmarks code.
- *
- * Copyright (C) 1998 Netscape Communications Corporation.
- *
- * Contributor(s):
- *   Ben Goodger <ben@netscape.com> (Original Author)
- *   Joey Minta <jminta@gmail.com>
- *
- * Other portions derived from Flock favorites code.
- *
- * Copyright (C) 2005-2007 Flock Inc.
  */
 
 const TB_CONTRACTID = '@oy/taboo;1';
@@ -52,10 +33,6 @@ const PR_TRUNCATE    = 0x20;
 const PR_SYNC        = 0x40;
 const PR_EXCL        = 0x80;
 
-const CAPABILITIES = [
-  "Subframes", "Plugins", "Javascript", "MetaRedirects", "Images"
-];
-
 const IMAGE_FULL_WIDTH = 500;
 const IMAGE_FULL_HEIGHT = 500;
 
@@ -63,6 +40,8 @@ const IMAGE_THUMB_WIDTH = 125;
 const IMAGE_THUMB_HEIGHT = 125;
 
 const PREF_DEBUG = 'extensions.taboo.debug';
+
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 
 function getObserverService() {
@@ -129,13 +108,18 @@ function TabooInfo(url, title, description, favicon, imageURL, thumbURL,
 }
 
 TabooInfo.prototype = {
-  QueryInterface: function(iid) {
-    if (!iid.equals(Ci.nsISupports) &&
-        !iid.equals(Ci.oyITabooInfo)) {
-      throw Cr.NS_ERROR_NO_INTERFACE;
-    }
-    return this;
-  }
+  getInterfaces: function TI_getInterfaces(countRef) {
+    var interfaces = [Ci.oyITabooInfo, Ci.nsIClassInfo, Ci.nsISupports];
+    countRef.value = interfaces.length;
+    return interfaces;
+  },
+  getHelperForLanguage: function TI__getHelperForLanguage(language) null,
+  contractID: null,
+  classDescription: "Taboo Info",
+  classID: null,
+  implementationLanguage: Ci.nsIProgrammingLanguage.JAVASCRIPT,
+  flags: 0,
+  QueryInterface: XPCOMUtils.generateQI([Ci.oyITabooInfo, Ci.nsIClassInfo])
 }
 
 /*
@@ -582,14 +566,12 @@ TabooStorageSQL.prototype = {
     }
   },
   _loadDB: function TSSQL__loadDB(aDBFile) {
-    var DB = loadSubScript('chrome://taboo/content/sqlite.js').DB;
-    var newDB = new DB(aDBFile);
-    newDB.Table('taboo_data', this._schema);
-    return newDB;
+    Cu.import("resource://taboo/sqlite.js");
+    var db = new SQLiteDB(aDBFile);
+    db.Table('taboo_data', this._schema);
+    return db;
   }
 }
-
-var newSSApi = false;
 
 function TabooService() {
   this._observers = [];
@@ -601,17 +583,6 @@ function TabooService() {
 TabooService.prototype = {
   _init: function TB__init() {
     this._storage = new TabooStorageSQL();
-
-    var ss = Cc['@mozilla.org/browser/sessionstore;1']
-      .getService(Ci.nsISessionStore);
-    var extMgr = Cc['@mozilla.org/extensions/manager;1']
-      .getService(Ci.nsIExtensionManager);
-
-    var TorButtonGUID = '{e0204bd5-9d31-402b-a99d-a6aa8ffebdca}';
-
-    if (!extMgr.getItemForID(TorButtonGUID) && ss.getTabState) {
-      newSSApi = true;
-    }
   },
   observe: function TB_observe(subject, topic, state) {
     var obs = getObserverService();
@@ -688,25 +659,13 @@ TabooService.prototype = {
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
       .getService(Ci.nsISessionStore);
 
-    var state;
+    var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
+
+    if (getBoolPref(PREF_DEBUG, false))
+      dump(tabJSON + "\n");
+
     var sandbox = new Cu.Sandbox('about:blank');
-
-    if (newSSApi) {
-      var tabJSON = "(" + ss.getTabState(selectedTab) + ")";
-
-      if (getBoolPref(PREF_DEBUG, false))
-        dump(tabJSON + "\n");
-
-      state = Cu.evalInSandbox(tabJSON, sandbox);
-    } else {
-      var winJSON = "(" + ss.getWindowState(win) + ")";
-
-      if (getBoolPref(PREF_DEBUG, false))
-        dump(winJSON + "\n");
-
-      var winState = Cu.evalInSandbox(winJSON, sandbox);
-      state = winState.windows[0].tabs[currentTab];
-    }
+    var state = Cu.evalInSandbox(tabJSON, sandbox);
 
     return this._saveTab(state, win.content, selectedTab, aDescription);
   },
@@ -726,38 +685,30 @@ TabooService.prototype = {
         .getService(Ci.nsIIOService);
       var faviconURI = ios.newURI(faviconURL, null, null);
 
-      if (Ci.nsIFaviconService) {
-        var faviconSvc = Cc['@mozilla.org/browser/favicon-service;1']
-          .getService(Ci.nsIFaviconService);
+      var faviconSvc = Cc['@mozilla.org/browser/favicon-service;1']
+        .getService(Ci.nsIFaviconService);
 
-        var dataURL = null;
+      var dataURL = null;
 
-        try {
-          if (faviconSvc.getFaviconDataAsDataURL) {
-            dataURL = faviconSvc.getFaviconDataAsDataURL(faviconURI);
-          } else {
-            var mimeType = {};
-            var bytes = faviconSvc.getFaviconData(faviconURI, mimeType, {});
-            if (bytes) {
-              dataURL = 'data:';
-              dataURL += mimeType.value;
-              dataURL += ';base64,';
-              dataURL += btoa(String.fromCharCode.apply(null, bytes));
-            }
+      try {
+        if (faviconSvc.getFaviconDataAsDataURL) {
+          dataURL = faviconSvc.getFaviconDataAsDataURL(faviconURI);
+        } else {
+          var mimeType = {};
+          var bytes = faviconSvc.getFaviconData(faviconURI, mimeType, {});
+          if (bytes) {
+            dataURL = 'data:';
+            dataURL += mimeType.value;
+            dataURL += ';base64,';
+            dataURL += btoa(String.fromCharCode.apply(null, bytes));
           }
-        } catch (ex) {
-          // do nothing, use default value
         }
+      } catch (ex) {
+        // do nothing, use default value
+      }
 
-        if (dataURL) {
-          this._storage.saveFavicon(url, dataURL);
-        }
-      } else {
-        var chan = ios.newChannelFromURI(faviconURI);
-        var listener = new tabooFavIconLoadListener(url, faviconURL, chan,
-                                                    this._storage);
-        chan.notificationCallbacks = listener;
-        chan.asyncOpen(listener, null);
+      if (dataURL) {
+        this._storage.saveFavicon(url, dataURL);
       }
     }
 
@@ -886,451 +837,24 @@ TabooService.prototype = {
 
     var ss = Cc['@mozilla.org/browser/sessionstore;1']
              .getService(Ci.nsISessionStore);
-
-    if (newSSApi) {
-      ss.setTabState(aTab, tabData);
-    } else {
-      var win = aTab.ownerDocument.defaultView;
-      this._setTabStatePrecursor(win, aTab, tabData, 0);
-    }
+    ss.setTabState(aTab, tabData);
   },
-
-  /* Because Firefox 2's sessionstore doesn't let us restore a single tab,
-   * we cut'n'paste a bunch of code here
-   */
-  _setTabStatePrecursor: function TB__setTabStatePrecursor(aWindow, aTab, aState, aCount) {
-    var tabbrowser = aWindow.getBrowser();
-
-    try {
-      if (!tabbrowser.getBrowserForTab(aTab).markupDocumentViewer) {
-       throw "Tab not ready";
-     }
-    }
-    catch (ex) {
-      if (aCount < 10) {
-        var setTabStateFunc = function(self) {
-          self._setTabStatePrecursor(aWindow, aTab, aState, aCount + 1);
-        };
-      }
-      aWindow.setTimeout(setTabStateFunc, 100, this);
-      return;
-    }
-
-    this._setTabState(aWindow, aTab, aState);
-  },
-
-  _setTabState: function TB__setTabState(aWindow, aTab, aState) {
-    var sandbox = new Cu.Sandbox('about:blank');
-    var tabData = Cu.evalInSandbox(aState, sandbox);
-
-    // helper hash for ensuring unique frame IDs
-    var idMap = { used: {} };
-
-    var _this = this;
-
-    var tab = aTab;
-    var browser = aWindow.getBrowser().getBrowserForTab(tab);
-    var history = browser.webNavigation.sessionHistory;
-
-    if (history.count > 0) {
-      history.PurgeHistory(history.count);
-    }
-    history.QueryInterface(Ci.nsISHistoryInternal);
-
-    browser.markupDocumentViewer.textZoom = parseFloat(tabData.zoom || 1);
-
-    for (var i = 0; i < tabData.entries.length; i++) {
-      history.addEntry(this._deserializeHistoryEntry(tabData.entries[i], idMap), true);
-    }
-
-    // make sure to reset the capabilities and attributes, in case this tab gets reused
-    var disallow = (tabData.disallow)?tabData.disallow.split(","):[];
-    CAPABILITIES.forEach(function(aCapability) {
-      browser.docShell["allow" + aCapability] = disallow.indexOf(aCapability) == -1;
-    });
-    Array.filter(tab.attributes, function(aAttr) {
-      return (_this.xulAttributes.indexOf(aAttr.name) > -1);
-    }).forEach(tab.removeAttribute, tab);
-    if (tabData.xultab) {
-      tabData.xultab.split(" ").forEach(function(aAttr) {
-        if (/^([^\s=]+)=(.*)/.test(aAttr)) {
-          tab.setAttribute(RegExp.$1, decodeURI(RegExp.$2));
-        }
-      });
-    }
-
-    // notify the tabbrowser that the tab chrome has been restored
-    var event = aWindow.document.createEvent("Events");
-    event.initEvent("SSTabRestoring", true, false);
-    tab.dispatchEvent(event);
-
-    var activeIndex = (tabData.index || tabData.entries.length) - 1;
-    try {
-      browser.webNavigation.gotoIndex(activeIndex);
-    }
-    catch (ex) { } // ignore an invalid tabData.index
-
-    // restore those aspects of the currently active documents
-    // which are not preserved in the plain history entries
-    // (mainly scroll state and text data)
-    browser.__SS_restore_data = tabData.entries[activeIndex] || {};
-    browser.__SS_restore_text = tabData.text || "";
-    browser.__SS_restore_tab = tab;
-    browser.__SS_restore = this.restoreDocument_proxy;
-    browser.addEventListener("load", browser.__SS_restore, true);
-  },
-  _deserializeHistoryEntry: function TB__deserializeHistoryEntry(aEntry, aIdMap) {
-    var shEntry = Cc["@mozilla.org/browser/session-history-entry;1"].
-                  createInstance(Ci.nsISHEntry);
-
-    var ioService = Cc["@mozilla.org/network/io-service;1"].
-                    getService(Ci.nsIIOService);
-    shEntry.setURI(ioService.newURI(aEntry.url, null, null));
-    shEntry.setTitle(aEntry.title || aEntry.url);
-    shEntry.setIsSubFrame(aEntry.subframe || false);
-    shEntry.loadType = Ci.nsIDocShellLoadInfo.loadHistory;
-
-    if (aEntry.cacheKey) {
-      var cacheKey = Cc["@mozilla.org/supports-PRUint32;1"].
-                     createInstance(Ci.nsISupportsPRUint32);
-      cacheKey.data = aEntry.cacheKey;
-      shEntry.cacheKey = cacheKey;
-    }
-    if (aEntry.ID) {
-      // get a new unique ID for this frame (since the one from the last
-      // start might already be in use)
-      var id = aIdMap[aEntry.ID] || 0;
-      if (!id) {
-        for (id = Date.now(); aIdMap.used[id]; id++);
-        aIdMap[aEntry.ID] = id;
-        aIdMap.used[id] = true;
-      }
-      shEntry.ID = id;
-    }
-
-    var scrollPos = (aEntry.scroll || "0,0").split(",");
-    scrollPos = [parseInt(scrollPos[0]) || 0, parseInt(scrollPos[1]) || 0];
-    shEntry.setScrollPosition(scrollPos[0], scrollPos[1]);
-
-    if (aEntry.postdata) {
-      var stream = Cc["@mozilla.org/io/string-input-stream;1"].
-                   createInstance(Ci.nsIStringInputStream);
-      stream.setData(aEntry.postdata, -1);
-      shEntry.postData = stream;
-    }
-
-    if (Ci.nsISHEntry_MOZILLA_1_8_BRANCH2 &&
-        shEntry instanceof Ci.nsISHEntry_MOZILLA_1_8_BRANCH2 &&
-        aEntry.ownerURI)
-    {
-      shEntry.ownerURI = ioService.newURI(aEntry.ownerURI, null, null);
-    }
-
-    if (aEntry.children && shEntry instanceof Ci.nsISHContainer) {
-      for (var i = 0; i < aEntry.children.length; i++) {
-        shEntry.AddChild(this._deserializeHistoryEntry(aEntry.children[i], aIdMap), i);
-      }
-    }
-
-    return shEntry;
-  },
-  restoreDocument_proxy: function TB_restoreDocument_proxy(aEvent) {
-    // wait for the top frame to be loaded completely
-    if (!aEvent || !aEvent.originalTarget || !aEvent.originalTarget.defaultView || aEvent.originalTarget.defaultView != aEvent.originalTarget.defaultView.top) {
-      return;
-    }
-
-    var textArray = this.__SS_restore_text ? this.__SS_restore_text.split(" ") : [];
-    function restoreTextData(aContent, aPrefix) {
-      textArray.forEach(function(aEntry) {
-        if (/^((?:\d+\|)*)(#?)([^\s=]+)=(.*)$/.test(aEntry) && (!RegExp.$1 || RegExp.$1 == aPrefix)) {
-          var document = aContent.document;
-          var node = RegExp.$2 ? document.getElementById(RegExp.$3) : document.getElementsByName(RegExp.$3)[0] || null;
-          if (node && "value" in node) {
-            node.value = decodeURI(RegExp.$4);
-
-            var event = document.createEvent("UIEvents");
-            event.initUIEvent("input", true, true, aContent, 0);
-            node.dispatchEvent(event);
-          }
-        }
-      });
-    }
-
-    function restoreTextDataAndScrolling(aContent, aData, aPrefix) {
-      restoreTextData(aContent, aPrefix);
-      if (aData.innerHTML) {
-        aContent.setTimeout(function(aHTML) { if (this.document.designMode == "on") { this.document.body.innerHTML = aHTML; } }, 0, aData.innerHTML);
-      }
-      if (aData.scroll && /(\d+),(\d+)/.test(aData.scroll)) {
-        aContent.scrollTo(RegExp.$1, RegExp.$2);
-      }
-      for (var i = 0; i < aContent.frames.length; i++) {
-        if (aData.children && aData.children[i]) {
-          restoreTextDataAndScrolling(aContent.frames[i], aData.children[i], i + "|" + aPrefix);
-        }
-      }
-    }
-
-    var content = XPCNativeWrapper(aEvent.originalTarget).defaultView;
-    if (this.currentURI.spec == "about:config") {
-      // unwrap the document for about:config because otherwise the properties
-      // of the XBL bindings - as the textbox - aren't accessible (see bug 350718)
-      content = content.wrappedJSObject;
-    }
-    restoreTextDataAndScrolling(content, this.__SS_restore_data, "");
-
-    // notify the tabbrowser that this document has been completely restored
-    var event = this.ownerDocument.createEvent("Events");
-    event.initEvent("SSTabRestored", true, false);
-    this.__SS_restore_tab.dispatchEvent(event);
-
-    this.removeEventListener("load", this.__SS_restore, true);
-    delete this.__SS_restore_data;
-    delete this.__SS_restore_text;
-    delete this.__SS_restore_tab;
-  },
-  xulAttributes: [],
 
   getInterfaces: function TB_getInterfaces(countRef) {
     var interfaces = [Ci.oyITaboo, Ci.nsIObserver, Ci.nsISupports];
     countRef.value = interfaces.length;
     return interfaces;
   },
-  getHelperForLanguage: function TB_getHelperForLanguage(language) {
-    return null;
-  },
+  getHelperForLanguage: function TB_getHelperForLanguage(language) null,
   contractID: TB_CONTRACTID,
   classDescription: TB_CLASSNAME,
   classID: TB_CLASSID,
   implementationLanguage: Ci.nsIProgrammingLanguage.JAVASCRIPT,
   flags: Ci.nsIClassInfo.SINGLETON,
-
-  QueryInterface: function TB_QueryInterface(iid) {
-    if (iid.equals(Ci.oyITaboo) ||
-        iid.equals(Ci.nsIObserver) ||
-        iid.equals(Ci.nsISupports))
-      return this;
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  }
+  _xpcom_categories: [{ category: 'app-startup', service: true }],
+  QueryInterface: XPCOMUtils.generateQI([Ci.oyITaboo, Ci.nsIObserver,
+                                         Ci.nsIClassInfo])
 }
-
-
-/* This is swiped from bookmarks.js in Firefox. It's only used when we're
- * on Gecko 1.8.x, since Gecko 1.9 has nsIFaviconService.
- */
-function tabooFavIconLoadListener(url, faviconurl, channel, storage) {
-  this.mURL = url;
-  this.mFavIconURL = faviconurl;
-  this.mCountRead = 0;
-  this.mChannel = channel;
-  this.mStorage = storage;
-}
-
-tabooFavIconLoadListener.prototype = {
-  mURL : null,
-  mFavIconURL : null,
-  mCountRead : null,
-  mChannel : null,
-  mBytes : Array(),
-  mStream : null,
-
-  QueryInterface: function (iid) {
-    if (!iid.equals(Components.interfaces.nsISupports) &&
-        !iid.equals(Components.interfaces.nsIInterfaceRequestor) &&
-        !iid.equals(Components.interfaces.nsIRequestObserver) &&
-        !iid.equals(Components.interfaces.nsIChannelEventSink) &&
-        !iid.equals(Components.interfaces.nsIProgressEventSink) && // see below
-        !iid.equals(Components.interfaces.nsIStreamListener)) {
-      throw Components.results.NS_ERROR_NO_INTERFACE;
-    }
-    return this;
-  },
-
-  // nsIInterfaceRequestor
-  getInterface: function (iid) {
-    try {
-      return this.QueryInterface(iid);
-    } catch (e) {
-      throw Components.results.NS_NOINTERFACE;
-    }
-  },
-
-  // nsIRequestObserver
-  onStartRequest : function (aRequest, aContext) {
-    this.mStream = Components.classes['@mozilla.org/binaryinputstream;1'].createInstance(Components.interfaces.nsIBinaryInputStream);
-  },
-
-  onStopRequest : function (aRequest, aContext, aStatusCode) {
-    var httpChannel = this.mChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
-    if ((httpChannel && httpChannel.requestSucceeded) &&
-        Components.isSuccessCode(aStatusCode) &&
-        this.mCountRead > 0)
-    {
-      var dataurl;
-      // XXX - arbitrary size beyond which we won't store a favicon.  This is /extremely/
-      // generous, and is probably too high.
-      if (this.mCountRead > 16384) {
-        dataurl = "data:";      // hack meaning "pretend this doesn't exist"
-      } else {
-        // get us a mime type for this
-        var mimeType = null;
-
-        const nsICategoryManager = Components.interfaces.nsICategoryManager;
-        const nsIContentSniffer = Components.interfaces.nsIContentSniffer;
-
-        var catMgr = Components.classes["@mozilla.org/categorymanager;1"].getService(nsICategoryManager);
-        var sniffers = catMgr.enumerateCategory("content-sniffing-services");
-        while (mimeType == null && sniffers.hasMoreElements()) {
-          var snifferCID = sniffers.getNext().QueryInterface(Components.interfaces.nsISupportsCString).toString();
-          var sniffer = Components.classes[snifferCID].getService(nsIContentSniffer);
-
-          try {
-            mimeType = sniffer.getMIMETypeFromContent(aRequest, this.mBytes, this.mCountRead);
-          } catch (e) {
-            mimeType = null;
-            // ignore
-          }
-        }
-      }
-
-      if (this.mBytes && this.mCountRead > 0 && mimeType != null) {
-        var data = 'data:';
-        data += mimeType;
-        data += ';base64,';
-
-        var iconData = String.fromCharCode.apply(null, this.mBytes);
-        data += base64Encode(iconData);
-
-        this.mStorage.saveFavicon(this.mURL, data);
-      }
-    }
-
-    this.mChannel = null;
-  },
-
-  // nsIStreamObserver
-  onDataAvailable : function (aRequest, aContext, aInputStream, aOffset, aCount) {
-    // we could get a different aInputStream, so we don't save this;
-    // it's unlikely we'll get more than one onDataAvailable for a
-    // favicon anyway
-    this.mStream.setInputStream(aInputStream);
-
-    var chunk = this.mStream.readByteArray(aCount);
-    this.mBytes = this.mBytes.concat(chunk);
-    this.mCountRead += aCount;
-  },
-
-  // nsIChannelEventSink
-  onChannelRedirect : function (aOldChannel, aNewChannel, aFlags) {
-    this.mChannel = aNewChannel;
-  },
-
-  // nsIProgressEventSink: the only reason we support
-  // nsIProgressEventSink is to shut up a whole slew of xpconnect
-  // warnings in debug builds.  (see bug #253127)
-  onProgress : function (aRequest, aContext, aProgress, aProgressMax) { },
-  onStatus : function (aRequest, aContext, aStatus, aStatusArg) { }
-}
-
-// From flockFavoritesService.js
-function base64Encode(aInput) {
-  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  var output = "";
-  while (aInput.length > 0) {
-    output += chars[aInput.charCodeAt(0) >> 2];
-    output += chars[((aInput.charCodeAt(0) & 0x03) << 4) |
-      (aInput.length > 1 ? ((aInput.charCodeAt(1) & 0xF0) >> 4) : 0)];
-    output += chars[aInput.length > 1 ?
-      ((aInput.charCodeAt(1) & 0x0F) << 2) |
-      (aInput.length > 2 ? ((aInput.charCodeAt(2) & 0xC0) >> 6) : 0) : 64];
-    output += chars[aInput.length > 2 ?
-      (aInput.charCodeAt(2) & 0x3F) : 64];
-    if (aInput.length > 3) {
-      aInput = aInput.substr(3);
-    } else {
-      break;
-    }
-  }
-  return output;
-}
-
-
-function GenericComponentFactory(ctor) {
-  this._ctor = ctor;
-}
-
-GenericComponentFactory.prototype = {
-
-  _ctor: null,
-
-  // nsIFactory
-  createInstance: function(outer, iid) {
-    if (outer != null)
-      throw Cr.NS_ERROR_NO_AGGREGATION;
-    return (new this._ctor()).QueryInterface(iid);
-  },
-
-  // nsISupports
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIFactory) ||
-        iid.equals(Ci.nsISupports))
-      return this;
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
-};
-
-var Module = {
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIModule) ||
-        iid.equals(Ci.nsISupports))
-      return this;
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
-
-  getClassObject: function(cm, cid, iid) {
-    if (!iid.equals(Ci.nsIFactory))
-      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
-
-    if (cid.equals(TB_CLASSID))
-      return new GenericComponentFactory(TabooService)
-
-    throw Cr.NS_ERROR_NO_INTERFACE;
-  },
-
-  registerSelf: function(cm, file, location, type) {
-    var cr = cm.QueryInterface(Ci.nsIComponentRegistrar);
-    cr.registerFactoryLocation(TB_CLASSID, TB_CLASSNAME, TB_CONTRACTID,
-                               file, location, type);
-
-    var catman = Cc['@mozilla.org/categorymanager;1']
-      .getService(Ci.nsICategoryManager);
-    catman.addCategoryEntry('app-startup', TB_CLASSNAME,
-                            'service,' + TB_CONTRACTID,
-                            true, true);
-  },
-
-  unregisterSelf: function(cm, location, type) {
-    var cr = cm.QueryInterface(Ci.nsIComponentRegistrar);
-    cr.unregisterFactoryLocation(TB_CLASSID, location);
-  },
-
-  canUnload: function(cm) {
-    return true;
-  },
-};
 
 function NSGetModule(compMgr, fileSpec)
-{
-  return Module;
-}
-
-
-function loadSubScript(spec) {
-  var loader = Cc['@mozilla.org/moz/jssubscript-loader;1']
-    .getService(Ci.mozIJSSubScriptLoader);
-  var context = {};
-  loader.loadSubScript(spec, context);
-  return context;
-}
+  XPCOMUtils.generateModule([TabooService]);

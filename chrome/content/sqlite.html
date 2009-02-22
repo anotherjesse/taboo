@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>DB TEST</title>
-  <script type="text/javascript" src="sqlite.js"></script>
+  <script type="text/javascript" src="resource://taboo/sqlite.js"></script>
   <style type="text/css">
     pre {
       border-left: 3px solid #333;
@@ -32,7 +32,7 @@
 </head>
 <body>
 <pre>
-var db = new DB();
+var db = new SQLiteDB();
 db.Table('urls', {url: 'TEXT PRIMARY KEY', name: 'TEXT'});
 
 var url = db.urls.new();
