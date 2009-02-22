@@ -77,7 +77,7 @@ function Calendar(container) {
 
 
           img.onmouseover = function(event) {
-            jQuery(document.body).trigger('hue.over', [
+/*            jQuery(document.body).trigger('hue.over', [
                                             DIV(
                                               SPAN({'class': 'title'}, (tab.title || 'untitled')),
                                               IMG({src: tab.imageURL}),
@@ -85,12 +85,13 @@ function Calendar(container) {
                                             ),
                                             function(event) {
                                               SVC.open(tab.url, whereToOpenLink(event));
-                                            }
+  e                                          }
                                           ]);
+ */
           };
 
           img.onmouseout = function(event) {
-            jQuery(document.body).trigger('hue.out');
+ /*           jQuery(document.body).trigger('hue.out'); */
           };
 
           div.appendChild(img);

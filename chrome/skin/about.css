@@ -31,8 +31,16 @@
   background-position: bottom;
 }
 
+.accel:before {
+  content: 'Control';
+}
+
+body[OS=Darwin] .accel:before {
+  content: 'Apple';
+}
+
 .about #content h1 {
-	text-align: center;
+  text-align: center;
   width: 500px;
   font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
   font-size: medium;

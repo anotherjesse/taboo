@@ -33,7 +33,7 @@ function Trash(container) {
     for (var i in taboos) {
       controller.tabFinalDelete(taboos[i]);
     }
-    humanMsg.displayMsg("All taboo in trash have been permanently deleted.");
+    // humanMsg.displayMsg("All taboo in trash have been permanently deleted.");
 
     inst.disableUpdate = false;
     controller.display();

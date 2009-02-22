@@ -20,6 +20,13 @@ var tboPrefs = Cc['@mozilla.org/preferences-service;1']
   .getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
 
 function init() {
+
+  // Allow platform specific CSS
+
+  var runtime = Cc['@mozilla.org/xre/app-info;1']
+    .getService(Ci.nsIXULRuntime);
+  document.body.setAttribute('OS', runtime.OS);
+
   DomBuilder.apply(window);
 
   controller = new Controller();
@@ -40,7 +47,8 @@ function init() {
   var searchBox = document.getElementById('search');
   searchBox.onkeyup = function(event) {
     controller.filter(this.value);
-  }
+  };
+
   searchBox.value = '';
   searchBox.focus();
 }
@@ -89,7 +97,7 @@ function Controller() {
     this.display();
 
     SVC.addObserver(this.tabooObserver);
-  }
+  };
 
   this.unload = function() {
     SVC.removeObserver(this.tabooObserver);
@@ -102,30 +110,25 @@ function Controller() {
 
     this.display(str);
     this._filterStr = str;
-  }
+  };
 
   this.tabDelete = function(tab, el) {
     el.style.display = "none";
-    this.displayUndelete(tab, el);
     SVC.delete(tab.url);
-  }
+    // humanMsg.displayMsg("This taboo has been deleted.<br /><small>View the trashcan to restore or permanently delete taboos.</small>");
+  };
 
   this.tabFinalDelete = function(tab) {
     SVC.reallyDelete(tab.url);
-  }
+  };
 
   this.tabUndelete = function(tab) {
-    humanMsg.displayMsg("This taboo has been restored.");
     SVC.undelete(tab.url);
-  }
-
-  this.displayUndelete = function(tab, el) {
-    humanMsg.displayMsg("This taboo has been deleted.<br /><small>View the trashcan to restore or permanently delete taboos.</small>");
-    return;
-  }
+    // humanMsg.displayMsg("This taboo has been restored.");
+  };
 
   this.display = function(searchTxt) {
-    if (view.disableUpdate)
+    if (view.disableUpdate || view.info)
       return;
 
     view.start();

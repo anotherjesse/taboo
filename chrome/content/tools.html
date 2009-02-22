@@ -1,151 +1,45 @@
-<html>
-<head>
-  <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
-  <link rel="stylesheet" href="chrome://taboo/content/vendor/humanmsg.css" />
-  <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
-  <script type="text/javascript" src="chrome://taboo/content/vendor/humanmsg.js"></script>
-  <script type="text/javascript">
+<center>
 
-      const Cc = Components.classes;
-      const Ci = Components.interfaces;
-      const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
+  <h1>Import and Export Taboos</h1>
+  <br />
 
-      function getFile(mode, msg, filterDesc, defName, defExt) {
-        var fp = Cc["@mozilla.org/filepicker;1"]
-          .createInstance(Ci.nsIFilePicker);
-        fp.init(window, msg, mode);
-        fp.defaultExtension = defExt;
-        fp.defaultString = defName;
-        fp.appendFilter(filterDesc + " (" + defExt.toUpperCase() + ")",
-                        "*." + defExt);
-        var res = fp.show();
-        if (res == Ci.nsIFilePicker.returnOK) {
-          return fp.file;
-        }
-      }
+  <input type='button' value='Import Taboos' onclick='importer();' /><br />
+  <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
 
-      function importer() {
-        var file = getFile(Ci.nsIFilePicker.modeOpen,
-                           "Choose Taboo Backup to Import", "Taboo Backups",
-                           "taboos.zip", "zip");
-        var numImported;
-        try {
-          if (file) {
-            numImported = SVC.import(file);
-            if (numImported) {
-              humanMsg.displayMsg('Successfully imported ' + numImported + ' taboos.');
-            }
-          }
-        }
-        catch (e) {
-          humanMsg.displayMsg('Failed to import taboos.');
-        }
-      }
+  <input type='button' value='Export Taboos' onclick='exporter();' /><br />
+  <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
 
-      function exporter() {
-        var file = getFile(Ci.nsIFilePicker.modeSave,
-                           "Choose Where to Save Backup", "Taboo Backups",
-                           "taboos.zip", "zip");
-        var numExported;
-        try {
-          if (file) {
-            numExported = SVC.export(file);
-            if (numExported) {
-              humanMsg.displayMsg('Successfully exported ' + numExported + ' taboos.');
-            }
-          }
-        }
-        catch (e) {
-          humanMsg.displayMsg('Failed to export taboos.');
-        }
-      }
+  <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
+  <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
 
-      function exportAsHTML() {
-        var file = getFile(Ci.nsIFilePicker.modeSave,
-                           "Choose Where to Save Backup HTML", "Taboo HTML",
-                           "taboos.html", "html");
-        var numExported;
-        try {
-          if (file) {
-            numExported = SVC.exportAsHTML(file);
-            if (numExported) {
-              humanMsg.displayMsg('Successfully exported ' + numExported + ' taboos.');
-            }
-          }
-        }
-        catch (e) {
-          humanMsg.displayMsg('Failed to export taboos.');
-        }
-      }
-  </script>
-</head>
+</center>
 
-<body class="tools">
-  <div id="tools-container" style="display:none">
-    <h1>Import and Export Taboos</h1>
-    <br />
-    <div style='text-align: center;'>
-      <input type='button' value='Import Taboos' onclick='importer();' /><br />
-      <p style='padding-top: 8px;'>Import Taboos from a saved file.</p><br /><br /><br />
-      <input type='button' value='Export Taboos' onclick='exporter();' /><br />
-      <p style='padding-top: 8px'>Export your Taboos to a file.</p><br /><br />
-      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
-      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
-    </div>
-  </div>
-
-  <div id="ff2-tools-container" style="display:none">
-    <h1>Export Taboos</h1>
-    <br />
-    <div style='text-align: center;'>
-      <input type='button' value='Export Taboos as HTML' onclick='exportAsHTML();' /><br />
-      <p style='padding-top: 8px'>Export your Taboos to an HTML file.</p><br /><br />
-    </div>
-  </div>
-
-  <!--h1>Key Bindings</h1>
-  <table>
-    <tr>
-      <th>Action</th>
-      <th>Key Binding</th>
-    </tr>
-    <tr>
-      <td>Save Current Tab</td>
-      <td class="shortcut">
-        <span><input type='checkbox' name='save-key-shift' /></span>
-        <span><input type='checkbox' name='save-key-accel' /></span>
-        <span><input type='checkbox' name='save-key-alt' /></span>
-        <span><input type='text' name='save-key' /></span>
-        <span class="accel">Accel</span>-Shift-A
-      </td>
-    </tr>
-    <tr>
-      <td>Save Current Tab and Close Tab</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-C</td>
-    </tr>
-    <tr>
-      <td>Unsave Current Tab</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-U</td>
-    </tr>
-    <tr>
-      <td>Show Taboos</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
-    </tr>
-  </table-->
-
-<script type="text/javascript">
-    function FF3() {
-      var ss = Cc['@mozilla.org/browser/sessionstore;1']
-        .getService(Ci.nsISessionStore);
-      return ss.getTabState;
-    }
-
-    if (FF3()) {
-      $('#tools-container').show();
-    } else {
-      $('#ff2-tools-container').show();
-    }
-</script>
-
-</body>
-</html>
+<!--h1>Key Bindings</h1>
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Key Binding</th>
+  </tr>
+  <tr>
+    <td>Save Current Tab</td>
+    <td class="shortcut">
+      <span><input type='checkbox' name='save-key-shift' /></span>
+      <span><input type='checkbox' name='save-key-accel' /></span>
+      <span><input type='checkbox' name='save-key-alt' /></span>
+      <span><input type='text' name='save-key' /></span>
+      <span class="accel">Accel</span>-Shift-A
+    </td>
+  </tr>
+  <tr>
+    <td>Save Current Tab and Close Tab</td>
+    <td class="shortcut"><span class="accel">Accel</span>-Shift-C</td>
+  </tr>
+  <tr>
+    <td>Unsave Current Tab</td>
+    <td class="shortcut"><span class="accel">Accel</span>-Shift-U</td>
+  </tr>
+  <tr>
+    <td>Show Taboos</td>
+    <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
+  </tr>
+</table-->

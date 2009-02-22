@@ -1,71 +1,69 @@
-<html>
-<head>
-  <link rel="stylesheet" href="chrome://taboo/skin/about.css" />
-  <script type="text/javascript" src="chrome://taboo/content/vendor/jquery-1.2.6.min.js"></script>
-</head>
+<div>
 
-<body class="about">
-  <h1>Saving Your Tabs</h1>
-  <p>Taboo lets you save a tab for use at a later time.  After "tabooing" a tab, a screenshot, the current position on the page and information you've typed into form elements are saved.</p>
-  <p>When you reload that tab you will be returned to the page, at the proper location, with the back button history intact and the form fields filled in.</p>
+<h1>Saving Your Tabs</h1>
 
-  <h1>Using Taboo</h1>
-  <table>
+<p>Taboo lets you save a tab for use at a later time.  After "tabooing" a tab, a screenshot, the current position on the page and information you've typed into form elements are saved.</p>
+
+<p>When you reload that tab you will be returned to the page, at the proper location, with the back button history intact and the form fields filled in.</p>
+
+<h1>Using Taboo</h1>
+
+<table>
   <tr>
-  	<td style="width: 50px"><span id="taboo-toolbarbutton-add"></span></td>
-  	<td>To use Taboo, just click on this icon, found next to your address bar. This saves the tab for you.</td>
+    <td style="width: 50px"><span id="taboo-toolbarbutton-add"></span></td>
+    <td>To use Taboo, just click on this icon, found next to your address bar. This saves the tab for you.</td>
   </tr>
   <tr>
-  	<td><span id="taboo-toolbarbutton-add-saved"></span></td>
-  	<td>Saved Taboos display this icon instead. Clicking will open an edit details panel where you can change the title of the taboo and add notes.  You can also delete the taboo from here (it will be moved to the trash where you can recover it later).</td>
+    <td><span id="taboo-toolbarbutton-add-saved"></span></td>
+    <td>Saved Taboos display this icon instead. Clicking will open an edit details panel where you can change the title of the taboo and add notes.  You can also delete the taboo from here (it will be moved to the trash where you can recover it later).</td>
   </tr>
   <tr>
-  	<td><span id="taboo-toolbarbutton-view"></span></td>
-  	<td>To view your saved taboos, click on this icon.  Clicking the arrow next to it will show the QuickView panel.</td>
+    <td><span id="taboo-toolbarbutton-view"></span></td>
+    <td>To view your saved taboos, click on this icon.  Clicking the arrow next to it will show the QuickView panel.</td>
   </tr>
-  </table><br/>
-  <p>In the grid view, you can increase and decrease the size of your Taboos by clicking the "Zoom In" and "Zoom Out" buttons at the bottom of the page.</p>
-  <h1>Keyboard Shortcuts</h1>
-  <table>
-    <tr>
-      <th>Action</th>
-      <th>Key Combo</th>
-    </tr>
-    <tr>
-      <td>Save Current Tab</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-A</td>
-    </tr>
-    <tr>
-      <td>Save Current Tab and Close Tab</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-C</td>
-    </tr>
-    <tr>
-      <td>Unsave Current Tab</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-U</td>
-    </tr>
-    <tr>
-      <td>Quick View Taboo Panel</td>
-      <td class="shortcut"><span class="accel">Accel</span>-Shift-F</td>
-    </tr>
-  </table>
+</table>
 
-  <br />
-  <br />
+<br/>
 
-  <h1>About Taboo</h1>
-  <p>Taboo was created by <a target="_blank" href="http://overstimulate.com">Jesse Andrews</a>,
-                          <a target="_blank" href="http://yosh.org">Manish Singh</a>,
-                          <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>,
-                          <a target="_blank" href="http://jakedahn.com">Jake Dahn</a>,
-                          <a target="_blank" href="http://erwan.jp">Erwan Loisant</a> and 
-                          <a target="_blank" href="http://cognition.ca">Joshua McKenty</a>.
-  </p>
-  <script type="text/javascript">
-    jQuery(function() {
-      var mac = navigator.appVersion.match(/mac/i);
-      var accel = (mac) ? 'Command' : 'Control';
-      jQuery(".accel").html(accel);
-    });
-  </script>
-</body>
-</html>
+<p>In the grid view, you can increase and decrease the size of your Taboos by clicking the "Zoom In" and "Zoom Out" buttons at the bottom of the page.</p>
+
+<h1>Keyboard Shortcuts</h1>
+
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Key Combo</th>
+  </tr>
+  <tr>
+    <td>Save Current Tab</td>
+    <td class="shortcut"><span class="accel"></span>-Shift-A</td>
+  </tr>
+  <tr>
+    <td>Save Current Tab and Close Tab</td>
+    <td class="shortcut"><span class="accel"></span>-Shift-C</td>
+  </tr>
+  <tr>
+    <td>Unsave Current Tab</td>
+    <td class="shortcut"><span class="accel"></span>-Shift-U</td>
+  </tr>
+  <tr>
+    <td>Quick View Taboo Panel</td>
+    <td class="shortcut"><span class="accel"></span>-Shift-F</td>
+  </tr>
+</table>
+
+<br />
+<br />
+
+<h1>About Taboo</h1>
+
+<p>Taboo is the work of
+  <a target="_blank" href="http://overstimulate.com">Jesse Andrews</a>,
+  <a target="_blank" href="http://yosh.org">Manish Singh</a>,
+  <a target="_blank" href="http://iantriesagain.com">Ian Fischer</a>,
+  <a target="_blank" href="http://jakedahn.com">Jake Dahn</a>,
+  <a target="_blank" href="http://erwan.jp">Erwan Loisant</a> and
+  <a target="_blank" href="http://cognition.ca">Joshua McKenty</a>.
+</p>
+
+</div>

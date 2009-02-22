@@ -12,14 +12,14 @@
  */
 
 function About(container) {
+  this.info = true;
   document.body.className = 'about';
 
-  var div = document.createElement('div');
-  container.appendChild(div);
-  div.innerHTML = '<iframe src="about.html" style="width: 100%; height: 800px; border: 0;" />';
-
-  this.start = function() {}
-  this.finish = function() {}
-  this.add = function(tab) {}
-  this.info = true;
+  var req = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"]
+              .createInstance(Ci.nsIXMLHttpRequest);
+  req.open("GET", 'chrome://taboo/content/about.html');
+  req.onload = function() {
+    container.innerHTML = req.responseText;
+  };
+  req.send(null);
 }
