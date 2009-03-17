@@ -19,6 +19,8 @@ const SVC = Components.classes['@oy/taboo;1']
 var tboPrefs = Cc['@mozilla.org/preferences-service;1']
   .getService(Ci.nsIPrefService).getBranch('extensions.taboo.');
 
+var $ = function(x) { return document.getElementById(x); }
+
 function init() {
 
   // Allow platform specific CSS
@@ -44,7 +46,7 @@ function init() {
     controller.load('Grid');
   }
 
-  var searchBox = document.getElementById('search');
+  var searchBox = $('search');
   searchBox.onkeyup = function(event) {
     controller.filter(this.value);
   };
@@ -61,8 +63,8 @@ window.addEventListener("load", init, false);
 window.addEventListener("unload", uninit, false);
 
 function Controller() {
-  var content = document.getElementById('content');
-  var footerControls = document.getElementById('footer-controls');
+  var content = $('content');
+  var footerControls = $('footer-controls');
   var view = null;
   var inst = this;
 
@@ -142,5 +144,5 @@ function Controller() {
     }
 
     view.finish();
-  }
+  };
 }

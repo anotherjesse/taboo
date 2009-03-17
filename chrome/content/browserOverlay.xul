@@ -19,7 +19,8 @@
          xmlns:html="http://www.w3.org/1999/xhtml"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://taboo/content/browserOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://taboo/content/init.js"/>
+  <script type="application/x-javascript" src="chrome://taboo/content/panels.js"/>
 
   <menupopup id="menu_ToolsPopup">
     <menuitem label="Taboo" command="cmd_showTaboos" />
@@ -33,12 +34,20 @@
                      command="cmd_addTaboo"
                      type="menu-button"
                      class="toolbarbutton-1 chromeclass-toolbar-additional">
-        <menupopup id="taboo-add-options" onpopupshowing="taboo.updateContext(this)">
-          <menuitem class="unsaved" label="Save Tab" command="cmd_addTabooWithDetails" />
-          <menuitem class="saved" label="Edit Notes" command="cmd_addTabooWithDetails" />
-          <menuitem class="saved" label="Remove Taboo" command="cmd_removeTaboo" />
+        <menupopup id="taboo-add-options"
+                   onpopupshowing="taboo.updateContext(this)">
+          <menuitem class="unsaved"
+                    label="Save Tab"
+                    command="cmd_addTabooWithDetails" />
+          <menuitem class="saved"
+                    label="Edit Notes"
+                    command="cmd_addTabooWithDetails" />
+          <menuitem class="saved"
+                    label="Remove Taboo"
+                    command="cmd_removeTaboo" />
           <menuseparator />
-          <menuitem label="Save All Tabs" command="cmd_tabooAll" />
+          <menuitem label="Save All Tabs"
+                    command="cmd_tabooAll" />
         </menupopup>
       </toolbarbutton>
       <toolbarbutton id="taboo-toolbarbutton-view"
@@ -52,7 +61,7 @@
       </toolbarbutton>
     </toolbarpalette>
 
-    <panel id='taboo-quickShow'
+    <panel id="taboo-quickShow"
            onpopupshown="taboo.focusQuickShow()"
            onpopuphiding="taboo.hideQuickShow()">
       <vbox flex="1" id="taboo-quickShow-container">
@@ -64,9 +73,9 @@
                    class="plain"
                    flex="1" />
         </hbox>
-        <groupbox id='taboo-groupbox'>
-          <grid id='taboo-grid'>
-            <rows id='tabs-rows' />
+        <groupbox id="taboo-groupbox">
+          <grid id="taboo-grid">
+            <rows id="tabs-rows" />
           </grid>
         </groupbox>
       </vbox>

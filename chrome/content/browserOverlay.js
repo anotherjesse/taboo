@@ -1,50 +1,17 @@
-var taboo;
+var taboo = {};
 
-(function() { // keep our privates to ourselves
+(
+function() { // keep our privates to ourselves
 
-var $ = function $(id) { return document.getElementById(id); };
-var log = function log(msg) {}; // maybe overridden in init
-var debug = false;
-var prefs;
-
-function currentUrl() {
-  return gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
-}
-
-function Taboo() {
   const SVC = Cc['@oy/taboo;1'].getService(Ci.oyITaboo);
 
-  const START_URL = 'chrome://taboo/content/start.html';
+  var $ = function $(id) { return document.getElementById(id); };
+  var log = function log(msg) {}; // maybe overridden in init
+  var debug = false;
 
-  function saved(state) {
-    if ($('taboo-toolbarbutton-add')) {
-      if (state) {
-        $('taboo-toolbarbutton-add').setAttribute('saved', true);
-      }
-      else {
-        $('taboo-toolbarbutton-add').removeAttribute('saved');
-      }
-    }
+  function currentUrl() {
+    return gBrowser.selectedBrowser.webNavigation.currentURI.spec.replace(/#.*/, '');
   }
-
-  this.focusDetails = function() {
-    document.getElementById('taboo-notes').focus();
-  };
-
-  function editDetails(url) {
-    url = url || currentUrl();
-
-    var tab = SVC.getForURL(url);
-
-    var panel = document.getElementById('taboo-details');
-
-    document.getElementById('taboo-image').setAttribute('src', tab.thumbURL);
-    document.getElementById('taboo-title').value = (tab.title || '');
-    document.getElementById('taboo-notes').value = (tab.description || '');
-
-    panel.openPopup(document.getElementById('taboo-toolbarbutton-add'), 'after_start', -1, -1);
-    panel.focus();
-  };
 
   this.panelDelete = function() {
     SVC.delete(currentUrl());

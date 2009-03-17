@@ -27,6 +27,7 @@ function Mosaic(container) {
 
   container.appendChild(DIV({id: 'main'}, img, url, title, description));
 
+/*
   $(title).editInPlace();
 
   $(title).bind('callback', function(e, value) {
@@ -44,6 +45,8 @@ function Mosaic(container) {
   $(description).bind('callback', function(e, value) {
                         SVC.update(currentUrl, null, value);
                       });
+
+*/
 
   function openCurrent(event) {
     SVC.open(currentUrl, whereToOpenLink(event));
@@ -86,13 +89,13 @@ function Mosaic(container) {
 
       var updatedTab = SVC.getForURL(tab.url);
       img.setAttribute('src', updatedTab.imageURL);
-      $(title).trigger('update', [updatedTab.title]);
-      $(description).trigger('update', [updatedTab.description]);
+//      $(title).trigger('update', [updatedTab.title]);
+//      $(description).trigger('update', [updatedTab.description]);
       setText(url, updatedTab.url);
     };
 
     box.onmouseover = function(event) {
-      $('.preview', this).css('top', (box.clientHeight/2-$('.preview', this)[0].clientHeight/2)+'px');
+//      $('.preview', this).css('top', (box.clientHeight/2-$('.preview', this)[0].clientHeight/2)+'px');
     };
 
     list.appendChild(box);
