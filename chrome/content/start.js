@@ -59,6 +59,15 @@ function uninit() {
   controller.unload();
 }
 
+function notify(html) {
+  $('notification').getElementsByTagName('span')[0].innerHTML = html;
+  $('notification').style.display = 'block';
+}
+
+setTimeout(function() {
+             notify('hi');
+           }, 1000);
+
 window.addEventListener("load", init, false);
 window.addEventListener("unload", uninit, false);
 
