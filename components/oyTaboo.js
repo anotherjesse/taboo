@@ -166,7 +166,7 @@ function snapshot(win, outputWidth, outputHeight) {
 
   var ctx = canvas.getContext("2d");
   ctx.scale(p, p);
-  ctx.drawWindow(win, win.scrollX, win.scrollY, realW, realH, "rgb(0,0,0)");
+  ctx.drawWindow(win, win.scrollX, win.scrollY, realW, realH, "rgb(255,255,255)");
 
   var imageData = canvas.toDataURL();
   return win.atob(imageData.substr('data:image/png;base64,'.length));
