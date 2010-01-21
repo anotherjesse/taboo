@@ -24,10 +24,10 @@
         onload="tabooTopbar.load();"
         onunload="tabooTopbar.unload();">
 
-  <script type="text/javascript" src="chrome://browser/content/utilityOverlay.js"></script>
+  <script type="application/x-javascript;version=1.7" src="chrome://browser/content/utilityOverlay.js"></script>
   <script type="text/javascript" src="chrome://taboo/content/topbar.js"></script>
   <!-- We don't use DND (yet) but Flock's slideybox is buggy without that -->
-  <script type="application/x-javascript" src="chrome://global/content/nsDragAndDrop.js" />
+  <script type="application/x-javascript;version=1.7" src="chrome://global/content/nsDragAndDrop.js" />
 
   <toolbar id="taboo-toolbar">
     <spacer flex="1" />
